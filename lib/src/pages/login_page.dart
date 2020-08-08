@@ -11,8 +11,10 @@ class _LoginPageState extends State<LoginPage> {
   Color _colorBlueApp = Color(0xff0A6ED1);
   TextStyle _styleTitle = TextStyle(
     fontSize: 40,
+    fontFamily: 'fuente72',
     color: Color(0xff0A6ED1),
   );
+  bool stateCheck = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,6 +65,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           _labelCard('Contraseña:'),
           _inputPassCard(),
+          _rememberCheck(),
           sizedBox1,
           _enterButton(),
         ],
@@ -134,6 +137,23 @@ class _LoginPageState extends State<LoginPage> {
       alignment: Alignment.bottomCenter,
       child: Text(
         '© 2020 Innovadis | Todos los derechos reservados',
+      ),
+    );
+  }
+
+  Widget _rememberCheck() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 28.0),
+      child: CheckboxListTile(
+        title: Text("Recuerdame"),
+        value: stateCheck,
+        onChanged: (newValue) {
+          setState(() {
+            stateCheck = newValue;
+          });
+        },
+        controlAffinity:
+            ListTileControlAffinity.leading, //  <-- leading Checkbox
       ),
     );
   }
