@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import 'dart:ui';
 
@@ -15,29 +14,61 @@ class _MenuPageState extends State<MenuPage> {
   Color _colorGradbeg = Color(0xffDFE3E4);
   Color _colorGradend = Color(0xffF3F4F5);
   Color _colorTitleItems = Color(0xff32363A);
+  Color _appBarColor = Color(0xff354A5F);
+  Color _subtitleColor = Color(0xff6A6D70);
   TextStyle _titleStyle = TextStyle(
       fontSize: 24.0,
       fontFamily: 'fuente72',
       color: Color(0xff32363A),
       fontWeight: FontWeight.normal);
+
+  TextStyle _titleCardStyle = TextStyle(
+      fontSize: 16.0,
+      fontFamily: 'fuente72',
+      color: Color(0xff32363A),
+      fontWeight: FontWeight.normal);
+
+  List<BoxShadow> _shadowsCards = [
+    BoxShadow(
+      color: Colors.black26,
+      offset: Offset(0.0, 1.0), //(x,y)
+      blurRadius: 10.0,
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: Text('Inicio'),
+          backgroundColor: _appBarColor,
+          actions: [
+            CircleAvatar(
+              backgroundColor: Colors.transparent,
+              radius: 20.0,
+              child: Icon(
+                Icons.supervised_user_circle,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
         body: Stack(
-      children: <Widget>[
-        _loguinBg(),
-        SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              _titulos("Ordenes de Trabajo"),
-              _botonesRedondeados(),
-              _titulos("Activos"),
-              _botonesRedondeados1()
-            ],
-          ),
-        )
-      ],
-    ));
+          children: <Widget>[
+            _loguinBg(),
+            SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  _titulos("Ordenes de Trabajo"),
+                  _botonesRedondeadosOT(),
+                  _titulos("Activos"),
+                  _botonesRedondeadosAT()
+                ],
+              ),
+            )
+          ],
+        ));
   }
 
   Widget _loguinBg() {
@@ -57,7 +88,7 @@ class _MenuPageState extends State<MenuPage> {
     return SafeArea(
       child: Container(
         width: double.infinity,
-        padding: EdgeInsets.only(top: 20.0, left: 20.0),
+        padding: EdgeInsets.only(top: 15.0, left: 20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -68,36 +99,66 @@ class _MenuPageState extends State<MenuPage> {
     );
   }
 
-  Widget _botonesRedondeados() {
+  Widget _botonesRedondeadosOT() {
     return Table(
       children: [
         TableRow(children: [
           _roundButtonStatus(_colorTitleItems, Icons.border_all,
               'Estatus de ordenes para hoy'),
-          _roundButtonWeek(_colorTitleItems, Icons.directions_bus,
-              'Cumplimiento del programa semanal'),
+          _roundButtonWeek(
+              _colorTitleItems, 'Cumplimiento del programa semanal'),
         ]),
-        // TableRow(children: [
-        //   _crearBotonRedondeado(Colors.pinkAccent, Icons.shop, 'Buy'),
-        //   _crearBotonRedondeado(Colors.orange, Icons.insert_drive_file, 'File'),
-        // ]),
       ],
     );
   }
 
-  Widget _botonesRedondeados1() {
+  Widget _botonesRedondeadosAT() {
     return Table(
       children: [
         TableRow(children: [
-          _roundButtonUT(
-              _colorTitleItems, Icons.border_all, 'Ubicaciones Tecnicas'),
-          _roundButtonTeams(_colorTitleItems, Icons.directions_bus, 'Equipos'),
+          roundButtonAT(_colorTitleItems, 'assets/images/tool_image.png',
+              'Ubicaciones Tecnicas'),
+          roundButtonAT(
+              _colorTitleItems, 'assets/images/tool_image2.png', 'Equipos'),
         ]),
-        // TableRow(children: [
-        //   _crearBotonRedondeado(Colors.pinkAccent, Icons.shop, 'Buy'),
-        //   _crearBotonRedondeado(Colors.orange, Icons.insert_drive_file, 'File'),
-        // ]),
       ],
+    );
+  }
+
+  Widget roundButtonAT(Color color, String icon, String texto) {
+    Widget iconRb = Padding(
+      padding: EdgeInsets.only(left: 20.0),
+      child: Image(
+        image: AssetImage(icon.toString()),
+        width: 30.0,
+        height: 50.0,
+      ),
+    );
+
+    Widget contentRb = Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Text(texto, style: _titleCardStyle),
+        ),
+        iconRb,
+        SizedBox(height: 5.0)
+      ],
+    );
+
+    return ClipRect(
+      child: Container(
+        height: 180.0,
+        margin: EdgeInsets.all(15.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(4.0),
+          boxShadow: _shadowsCards,
+        ),
+        child: contentRb,
+      ),
     );
   }
 
@@ -168,90 +229,32 @@ class _MenuPageState extends State<MenuPage> {
     );
   }
 
-  Widget _roundButtonWeek(Color color, IconData icono, String texto) {
-    return ClipRect(
-      child: Container(
-        height: 180.0,
-        margin: EdgeInsets.all(15.0),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(4.0),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              offset: Offset(0.0, 1.0), //(x,y)
-              blurRadius: 10.0,
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Text(texto,
-                  style: TextStyle(
-                      color: color, fontFamily: 'fuente72', fontSize: 16.0)),
-            ),
-            SizedBox(height: 5.0),
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0),
-              child: CircularPercentIndicator(
-                radius: 60.0,
-                lineWidth: 5.0,
-                percent: 0.81,
-                center: new Text("81%"),
-                progressColor: Colors.blue[300],
-              ),
-            ),
-            SizedBox(height: 5.0)
-          ],
-        ),
+  Widget _roundButtonWeek(Color color, String texto) {
+    Widget valueProgressCircular = Padding(
+      padding: EdgeInsets.only(right: 20.0),
+      child: CircularPercentIndicator(
+        radius: 60.0,
+        lineWidth: 5.0,
+        percent: 0.81,
+        center: new Text("81%"),
+        progressColor: Colors.blue[300],
       ),
     );
-  }
 
-  Widget _roundButtonUT(Color color, IconData icono, String texto) {
-    return ClipRect(
-      child: Container(
-        height: 180.0,
-        margin: EdgeInsets.all(15.0),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(4.0),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              offset: Offset(0.0, 1.0), //(x,y)
-              blurRadius: 10.0,
-            ),
-          ],
+    Widget contentRb = Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Text(texto, style: _titleCardStyle),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Text(texto,
-                  style: TextStyle(
-                      color: color, fontFamily: 'fuente72', fontSize: 16.0)),
-            ),
-            SizedBox(height: 5.0),
-            CircleAvatar(
-              backgroundColor: Colors.transparent,
-              radius: 35.0,
-              child: Image(image: AssetImage('assets/images/tool_image.png')),
-            ),
-            SizedBox(height: 5.0)
-          ],
-        ),
-      ),
+        // Text('2020W31',style: TextStyle(fontFamily: 'fuente72',color: _subtitleColor,),),
+        valueProgressCircular,
+        SizedBox(height: 5.0)
+      ],
     );
-  }
 
-  Widget _roundButtonTeams(Color color, IconData icono, String texto) {
     return ClipRect(
       child: Container(
         height: 180.0,
@@ -259,33 +262,9 @@ class _MenuPageState extends State<MenuPage> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(4.0),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              offset: Offset(0.0, 1.0), //(x,y)
-              blurRadius: 10.0,
-            ),
-          ],
+          boxShadow: _shadowsCards,
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Text(texto,
-                  style: TextStyle(
-                      color: color, fontFamily: 'fuente72', fontSize: 16.0)),
-            ),
-            SizedBox(height: 5.0),
-            CircleAvatar(
-              backgroundColor: Colors.transparent,
-              radius: 35.0,
-              child: Image(image: AssetImage('assets/images/tool_image2.png')),
-            ),
-            SizedBox(height: 5.0)
-          ],
-        ),
+        child: contentRb,
       ),
     );
   }
