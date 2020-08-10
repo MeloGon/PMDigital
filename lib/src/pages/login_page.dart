@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pmdigital_app/src/widgets/loginbg_widget.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -6,8 +7,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  Color _colorGradbeg = Color(0xffDFE3E4);
-  Color _colorGradend = Color(0xffF3F4F5);
   Color _colorBlueApp = Color(0xff0A6ED1);
   TextStyle _styleTitle = TextStyle(
     fontSize: 40,
@@ -21,23 +20,10 @@ class _LoginPageState extends State<LoginPage> {
       resizeToAvoidBottomPadding: false,
       body: Stack(
         children: <Widget>[
-          _loguinBg(),
+          LoguinBackground(),
           _loguinCard(context),
           _textoCopy(),
         ],
-      ),
-    );
-  }
-
-  Widget _loguinBg() {
-    return Container(
-      height: double.infinity,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-            colors: [_colorGradbeg, _colorGradend],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter),
       ),
     );
   }

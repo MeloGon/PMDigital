@@ -4,6 +4,8 @@ import 'dart:ui';
 
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:pmdigital_app/src/widgets/loginbg_widget.dart';
+import 'package:pmdigital_app/src/widgets/roundbt_widget.dart';
 
 class MenuPage extends StatefulWidget {
   @override
@@ -11,11 +13,8 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
-  Color _colorGradbeg = Color(0xffDFE3E4);
-  Color _colorGradend = Color(0xffF3F4F5);
-  Color _colorTitleItems = Color(0xff32363A);
   Color _appBarColor = Color(0xff354A5F);
-  Color _subtitleColor = Color(0xff6A6D70);
+  // Color _subtitleColor = Color(0xff6A6D70);
   TextStyle _titleStyle = TextStyle(
       fontSize: 24.0,
       fontFamily: 'fuente72',
@@ -28,13 +27,11 @@ class _MenuPageState extends State<MenuPage> {
       color: Color(0xff32363A),
       fontWeight: FontWeight.normal);
 
-  List<BoxShadow> _shadowsCards = [
-    BoxShadow(
-      color: Colors.black26,
-      offset: Offset(0.0, 1.0), //(x,y)
-      blurRadius: 10.0,
-    ),
-  ];
+  TextStyle _labelPercentStyle = TextStyle(
+      fontSize: 12.0,
+      fontFamily: 'fuente72',
+      color: Color(0xff32363A),
+      fontWeight: FontWeight.normal);
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +53,7 @@ class _MenuPageState extends State<MenuPage> {
         ),
         body: Stack(
           children: <Widget>[
-            _loguinBg(),
+            LoguinBackground(),
             SingleChildScrollView(
               child: Column(
                 children: <Widget>[
@@ -69,19 +66,6 @@ class _MenuPageState extends State<MenuPage> {
             )
           ],
         ));
-  }
-
-  Widget _loguinBg() {
-    return Container(
-      height: double.infinity,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-            colors: [_colorGradbeg, _colorGradend],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter),
-      ),
-    );
   }
 
   Widget _titulos(String titleValue) {
@@ -100,136 +84,15 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   Widget _botonesRedondeadosOT() {
-    return Table(
-      children: [
-        TableRow(children: [
-          _roundButtonStatus(_colorTitleItems, Icons.border_all,
-              'Estatus de ordenes para hoy'),
-          _roundButtonWeek(
-              _colorTitleItems, 'Cumplimiento del programa semanal'),
-        ]),
-      ],
-    );
-  }
+    // cuando recibamos datos ponerlos como globales y añadir la funcion del color dinamico de acuerdo al progreso
+    var x = 0.11;
+    var y = 0.19;
+    var z = 0.7;
 
-  Widget _botonesRedondeadosAT() {
-    return Table(
-      children: [
-        TableRow(children: [
-          roundButtonAT(_colorTitleItems, 'assets/images/tool_image.png',
-              'Ubicaciones Tecnicas'),
-          roundButtonAT(
-              _colorTitleItems, 'assets/images/tool_image2.png', 'Equipos'),
-        ]),
-      ],
-    );
-  }
+    Widget linePercent = linearPercent(x, Colors.red);
+    Widget linePercent1 = linearPercent(y, Colors.deepOrange[300]);
+    Widget linePercent2 = linearPercent(z, Colors.green);
 
-  Widget roundButtonAT(Color color, String icon, String texto) {
-    Widget iconRb = Padding(
-      padding: EdgeInsets.only(left: 20.0),
-      child: Image(
-        image: AssetImage(icon.toString()),
-        width: 30.0,
-        height: 50.0,
-      ),
-    );
-
-    Widget contentRb = Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Text(texto, style: _titleCardStyle),
-        ),
-        iconRb,
-        SizedBox(height: 5.0)
-      ],
-    );
-
-    return ClipRect(
-      child: Container(
-        height: 180.0,
-        margin: EdgeInsets.all(15.0),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(4.0),
-          boxShadow: _shadowsCards,
-        ),
-        child: contentRb,
-      ),
-    );
-  }
-
-  Widget _roundButtonStatus(Color color, IconData icono, String texto) {
-    return ClipRect(
-      child: Container(
-        height: 180.0,
-        margin: EdgeInsets.all(15.0),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(4.0),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              offset: Offset(0.0, 1.0), //(x,y)
-              blurRadius: 10.0,
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Text(texto,
-                  style: TextStyle(
-                      color: color, fontFamily: 'fuente72', fontSize: 16.0)),
-            ),
-            SizedBox(height: 5.0),
-            Text('Pendiente'),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: LinearPercentIndicator(
-                width: 140.0,
-                lineHeight: 8.0,
-                percent: 0.11,
-                backgroundColor: Colors.grey[200],
-                progressColor: Colors.red,
-              ),
-            ),
-            Text('En Progreso'),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: LinearPercentIndicator(
-                width: 140.0,
-                lineHeight: 8.0,
-                percent: 0.19,
-                backgroundColor: Colors.grey[200],
-                progressColor: Colors.deepOrange[300],
-              ),
-            ),
-            Text('Completadas     70%'),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: LinearPercentIndicator(
-                width: 140.0,
-                lineHeight: 8.0,
-                percent: 0.7,
-                backgroundColor: Colors.grey[200],
-                progressColor: Colors.green,
-              ),
-            ),
-            SizedBox(height: 5.0)
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _roundButtonWeek(Color color, String texto) {
     Widget valueProgressCircular = Padding(
       padding: EdgeInsets.only(right: 20.0),
       child: CircularPercentIndicator(
@@ -241,13 +104,14 @@ class _MenuPageState extends State<MenuPage> {
       ),
     );
 
-    Widget contentRb = Column(
+    Widget contentWe = Column(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Text(texto, style: _titleCardStyle),
+          child:
+              Text('Cumplimiento del programa semanal', style: _titleCardStyle),
         ),
         // Text('2020W31',style: TextStyle(fontFamily: 'fuente72',color: _subtitleColor,),),
         valueProgressCircular,
@@ -255,17 +119,108 @@ class _MenuPageState extends State<MenuPage> {
       ],
     );
 
-    return ClipRect(
-      child: Container(
-        height: 180.0,
-        margin: EdgeInsets.all(15.0),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(4.0),
-          boxShadow: _shadowsCards,
-        ),
-        child: contentRb,
+    Widget contentSt = Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text('Estatus de ordenes para hoy', style: _titleCardStyle),
+            Text('Pendientes         11%', style: _labelPercentStyle),
+            linePercent,
+            Text('En progreso        19%', style: _labelPercentStyle),
+            linePercent1,
+            Text('Completadas      70%', style: _labelPercentStyle),
+            linePercent2,
+            SizedBox(height: 5.0)
+          ],
+        ));
+
+    return Table(
+      children: [
+        TableRow(children: [
+          RoundButtonWidget(
+            contentRb: contentSt,
+            actionRb: 1,
+          ),
+          RoundButtonWidget(
+            contentRb: contentWe,
+            actionRb: 2,
+          ),
+        ]),
+      ],
+    );
+  }
+
+  Widget linearPercent(double percent, Color color) {
+    return LinearPercentIndicator(
+      lineHeight: 8.0,
+      percent: percent,
+      backgroundColor: Colors.grey[200],
+      progressColor: color,
+    );
+  }
+
+  Widget _botonesRedondeadosAT() {
+    Widget iconUt = Padding(
+      padding: EdgeInsets.only(left: 20.0),
+      child: Image(
+        image: AssetImage('assets/images/tool_image.png'),
+        width: 30.0,
+        height: 50.0,
       ),
+    );
+
+    //no reutilizo el codigo por que los tamaños de las imagenes cambia por cuestiones del diseñador UI
+
+    Widget iconTe = Padding(
+      padding: EdgeInsets.only(left: 20.0),
+      child: Image(
+        image: AssetImage('assets/images/tool_image2.png'),
+        width: 37.0,
+        height: 50.0,
+      ),
+    );
+
+    Widget contentUt = Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Text('Ubicaciones Tecnicas', style: _titleCardStyle),
+        ),
+        iconUt,
+        SizedBox(height: 5.0)
+      ],
+    );
+
+    Widget contentTe = Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Text('Equipos', style: _titleCardStyle),
+        ),
+        iconTe,
+        SizedBox(height: 5.0)
+      ],
+    );
+
+    return Table(
+      children: [
+        TableRow(children: [
+          RoundButtonWidget(
+            contentRb: contentUt,
+            actionRb: 3,
+          ),
+          RoundButtonWidget(
+            contentRb: contentTe,
+            actionRb: 4,
+          ),
+        ]),
+      ],
     );
   }
 }
