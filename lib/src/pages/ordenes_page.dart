@@ -99,16 +99,20 @@ class _OrdenesPageState extends State<OrdenesPage> {
         flexibleSpace: Stack(
           children: [
             Container(
-              margin: EdgeInsets.only(top: 70.0),
+              margin: EdgeInsets.only(top: 95.0),
               width: double.infinity,
               color: Colors.white,
               height: 60,
             ),
             FlexibleSpaceBar(
-              centerTitle: false,
-              title: Text(
-                'Mis órdenes para hoy',
-                style: _expandedBarStyle,
+              centerTitle: true,
+              title: Container(
+                padding: EdgeInsets.only(left: 20),
+                width: double.infinity,
+                child: Text(
+                  'Mis órdenes para hoy',
+                  style: _expandedBarStyle,
+                ),
               ),
             ),
           ],
@@ -120,7 +124,11 @@ class _OrdenesPageState extends State<OrdenesPage> {
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 23.0),
       child: Row(
         children: [
-          Text('Ordenes de Trabajo', overflow: TextOverflow.clip),
+          Text(
+            'Ordenes de Trabajo',
+            overflow: TextOverflow.clip,
+            style: _oTextStyle,
+          ),
           SizedBox(
             width: 10.0,
           ),
