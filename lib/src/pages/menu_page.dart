@@ -16,7 +16,7 @@ class _MenuPageState extends State<MenuPage> {
   Color _appBarColor = Color(0xff354A5F);
   // Color _subtitleColor = Color(0xff6A6D70);
   TextStyle _titleStyle = TextStyle(
-      fontSize: 24.0,
+      fontSize: 21.0,
       fontFamily: 'fuente72',
       color: Color(0xff32363A),
       fontWeight: FontWeight.normal);
@@ -35,37 +35,44 @@ class _MenuPageState extends State<MenuPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          title: Text('Inicio'),
-          backgroundColor: _appBarColor,
-          actions: [
-            CircleAvatar(
-              backgroundColor: Colors.transparent,
-              radius: 20.0,
-              child: Icon(
-                Icons.supervised_user_circle,
-                color: Colors.white,
-              ),
+    return SafeArea(
+      child: WillPopScope(
+        onWillPop: () => Future.value(false),
+        child: Scaffold(
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
+              title: Text('Inicio',
+                  style: TextStyle(fontFamily: 'fuente72', fontSize: 14.0)),
+              backgroundColor: _appBarColor,
+              centerTitle: false,
+              actions: [
+                CircleAvatar(
+                  backgroundColor: Colors.transparent,
+                  radius: 20.0,
+                  child: Icon(
+                    Icons.supervised_user_circle,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-        body: Stack(
-          children: <Widget>[
-            LoguinBackground(),
-            SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  _titulos("Ordenes de Trabajo"),
-                  _botonesRedondeadosOT(),
-                  _titulos("Activos"),
-                  _botonesRedondeadosAT()
-                ],
-              ),
-            )
-          ],
-        ));
+            body: Stack(
+              children: <Widget>[
+                LoguinBackground(),
+                SingleChildScrollView(
+                  child: Column(
+                    children: <Widget>[
+                      _titulos("Ordenes de Trabajo"),
+                      _botonesRedondeadosOT(),
+                      _titulos("Activos"),
+                      _botonesRedondeadosAT()
+                    ],
+                  ),
+                )
+              ],
+            )),
+      ),
+    );
   }
 
   Widget _titulos(String titleValue) {
@@ -89,11 +96,11 @@ class _MenuPageState extends State<MenuPage> {
     var y = 0.19;
     var z = 0.7;
 
-    Widget linePercent = linearPercent(x, Colors.red);
-    Widget linePercent1 = linearPercent(y, Colors.deepOrange[300]);
-    Widget linePercent2 = linearPercent(z, Colors.green);
+    Widget _linePercent = linearPercent(x, Colors.red);
+    Widget _linePercent1 = linearPercent(y, Colors.deepOrange[300]);
+    Widget _linePercent2 = linearPercent(z, Colors.green);
 
-    Widget valueProgressCircular = Padding(
+    Widget _valueProgressCircular = Padding(
       padding: EdgeInsets.only(right: 20.0),
       child: CircularPercentIndicator(
         radius: 60.0,
@@ -101,10 +108,13 @@ class _MenuPageState extends State<MenuPage> {
         percent: 0.81,
         center: new Text("81%"),
         progressColor: Colors.blue[300],
+        backgroundColor: Colors.grey[200],
+        animation: true,
+        animationDuration: 1500,
       ),
     );
 
-    Widget contentWe = Column(
+    Widget _contentWe = Column(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: <Widget>[
@@ -114,12 +124,12 @@ class _MenuPageState extends State<MenuPage> {
               Text('Cumplimiento del programa semanal', style: _titleCardStyle),
         ),
         // Text('2020W31',style: TextStyle(fontFamily: 'fuente72',color: _subtitleColor,),),
-        valueProgressCircular,
+        _valueProgressCircular,
         SizedBox(height: 5.0)
       ],
     );
 
-    Widget contentSt = Padding(
+    Widget _contentSt = Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -127,11 +137,11 @@ class _MenuPageState extends State<MenuPage> {
           children: <Widget>[
             Text('Estatus de ordenes para hoy', style: _titleCardStyle),
             Text('Pendientes         11%', style: _labelPercentStyle),
-            linePercent,
+            _linePercent,
             Text('En progreso        19%', style: _labelPercentStyle),
-            linePercent1,
+            _linePercent1,
             Text('Completadas      70%', style: _labelPercentStyle),
-            linePercent2,
+            _linePercent2,
             SizedBox(height: 5.0)
           ],
         ));
@@ -140,11 +150,11 @@ class _MenuPageState extends State<MenuPage> {
       children: [
         TableRow(children: [
           RoundButtonWidget(
-            contentRb: contentSt,
+            contentRb: _contentSt,
             actionRb: 1,
           ),
           RoundButtonWidget(
-            contentRb: contentWe,
+            contentRb: _contentWe,
             actionRb: 2,
           ),
         ]),
@@ -158,11 +168,14 @@ class _MenuPageState extends State<MenuPage> {
       percent: percent,
       backgroundColor: Colors.grey[200],
       progressColor: color,
+      linearStrokeCap: LinearStrokeCap.butt,
+      animation: true,
+      animationDuration: 1500,
     );
   }
 
   Widget _botonesRedondeadosAT() {
-    Widget iconUt = Padding(
+    Widget _iconUt = Padding(
       padding: EdgeInsets.only(left: 20.0),
       child: Image(
         image: AssetImage('assets/images/tool_image.png'),
@@ -173,16 +186,16 @@ class _MenuPageState extends State<MenuPage> {
 
     //no reutilizo el codigo por que los tamaños de las imagenes cambia por cuestiones del diseñador UI
 
-    Widget iconTe = Padding(
+    Widget _iconTe = Padding(
       padding: EdgeInsets.only(left: 20.0),
       child: Image(
         image: AssetImage('assets/images/tool_image2.png'),
         width: 37.0,
-        height: 50.0,
+        height: 70.0,
       ),
     );
 
-    Widget contentUt = Column(
+    Widget _contentUt = Column(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -190,12 +203,12 @@ class _MenuPageState extends State<MenuPage> {
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Text('Ubicaciones Tecnicas', style: _titleCardStyle),
         ),
-        iconUt,
+        _iconUt,
         SizedBox(height: 5.0)
       ],
     );
 
-    Widget contentTe = Column(
+    Widget _contentTe = Column(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -203,7 +216,7 @@ class _MenuPageState extends State<MenuPage> {
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Text('Equipos', style: _titleCardStyle),
         ),
-        iconTe,
+        _iconTe,
         SizedBox(height: 5.0)
       ],
     );
@@ -212,11 +225,11 @@ class _MenuPageState extends State<MenuPage> {
       children: [
         TableRow(children: [
           RoundButtonWidget(
-            contentRb: contentUt,
+            contentRb: _contentUt,
             actionRb: 3,
           ),
           RoundButtonWidget(
-            contentRb: contentTe,
+            contentRb: _contentTe,
             actionRb: 4,
           ),
         ]),

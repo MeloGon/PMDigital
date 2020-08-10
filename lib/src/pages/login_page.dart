@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:pmdigital_app/src/widgets/loginbg_widget.dart';
 
@@ -9,21 +11,28 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   Color _colorBlueApp = Color(0xff0A6ED1);
   TextStyle _styleTitle = TextStyle(
-    fontSize: 40,
+      fontSize: 40,
+      fontFamily: 'fuente72',
+      color: Color(0xff0A6ED1),
+      fontWeight: FontWeight.w100);
+  TextStyle _styleLabel = TextStyle(
+    fontSize: 14.0,
     fontFamily: 'fuente72',
-    color: Color(0xff0A6ED1),
   );
   bool stateCheck = false;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomPadding: false,
-      body: Stack(
-        children: <Widget>[
-          LoguinBackground(),
-          _loguinCard(context),
-          _textoCopy(),
-        ],
+    return WillPopScope(
+      onWillPop: () => Future.value(false),
+      child: Scaffold(
+        resizeToAvoidBottomPadding: false,
+        body: Stack(
+          children: <Widget>[
+            LoguinBackground(),
+            _loguinCard(context),
+            _textoCopy(),
+          ],
+        ),
       ),
     );
   }
@@ -71,7 +80,10 @@ class _LoginPageState extends State<LoginPage> {
     return Container(
       padding: EdgeInsets.only(left: 55.0),
       width: double.infinity,
-      child: Text(label.toString()),
+      child: Text(
+        label.toString(),
+        style: _styleLabel,
+      ),
     );
   }
 
@@ -131,7 +143,10 @@ class _LoginPageState extends State<LoginPage> {
     return Padding(
       padding: const EdgeInsets.only(left: 28.0),
       child: CheckboxListTile(
-        title: Text("Recuerdame"),
+        title: Text(
+          "Recuerdame",
+          style: _styleLabel,
+        ),
         value: stateCheck,
         onChanged: (newValue) {
           setState(() {

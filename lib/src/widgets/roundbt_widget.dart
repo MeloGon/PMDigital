@@ -12,8 +12,8 @@ class _RoundButtonWidgetState extends State<RoundButtonWidget> {
   List<BoxShadow> _shadowsCards = [
     BoxShadow(
       color: Colors.black26,
-      offset: Offset(0.0, 1.0), //(x,y)
-      blurRadius: 10.0,
+      offset: Offset(0.0, 2.0), //(x,y)
+      blurRadius: 8.0,
     ),
   ];
   @override
