@@ -158,6 +158,9 @@ class _OrdenesPageState extends State<OrdenesPage> {
 
   Widget _itemTempList() {
     return ListTile(
+      onTap: () {
+        Navigator.pushNamed(context, 'detallesot');
+      },
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -204,18 +207,27 @@ class _OrdenesPageState extends State<OrdenesPage> {
       ),
       trailing: Container(
         width: 100.0,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text(
-              'Pendiente',
-              style: TextStyle(
-                  fontWeight: FontWeight.w700, color: Color(0xffBB0000)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  'Pendiente',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w700, color: Color(0xffBB0000)),
+                ),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  size: 15.0,
+                ),
+              ],
             ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 15.0,
-            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 15.0),
+              child: Text('4-Baja'),
+            )
           ],
         ),
       ),

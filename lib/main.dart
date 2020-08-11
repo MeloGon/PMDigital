@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pmdigital_app/src/pages/detalleot_page.dart';
 import 'package:pmdigital_app/src/pages/login_page.dart';
 import 'package:pmdigital_app/src/pages/menu_page.dart';
 import 'package:pmdigital_app/src/pages/ordenes_page.dart';
@@ -16,6 +17,7 @@ class MyApp extends StatelessWidget {
         '/': (BuildContext context) => LoginPage(),
         'menu': (BuildContext context) => MenuPage(),
         'ordenes': (BuildContext context) => OrdenesPage(),
+        'detallesot': (BuildContext context) => DetallesOtPage(),
       },
     );
   }
