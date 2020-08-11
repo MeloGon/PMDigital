@@ -99,7 +99,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
         flexibleSpace: Stack(
           children: [
             Container(
-              margin: EdgeInsets.only(top: 95.0),
+              margin: EdgeInsets.only(top: 70.0),
               width: double.infinity,
               color: Colors.white,
               height: 60,
