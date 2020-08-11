@@ -16,7 +16,7 @@ class _MenuPageState extends State<MenuPage> {
   Color _appBarColor = Color(0xff354A5F);
   // Color _subtitleColor = Color(0xff6A6D70);
   TextStyle _titleStyle = TextStyle(
-      fontSize: 21.0,
+      fontSize: 18.0,
       fontFamily: 'fuente72',
       color: Color(0xff32363A),
       fontWeight: FontWeight.normal);
@@ -41,8 +41,54 @@ class _MenuPageState extends State<MenuPage> {
         child: Scaffold(
             appBar: AppBar(
               automaticallyImplyLeading: false,
-              title: Text('Inicio',
-                  style: TextStyle(fontFamily: 'fuente72', fontSize: 14.0)),
+              title: PopupMenuButton<String>(
+                child: Row(
+                  children: <Widget>[
+                    Text(
+                      'Inicio',
+                      style: TextStyle(fontFamily: 'fuente72', fontSize: 13.0),
+                    ),
+                    Icon(Icons.arrow_drop_down)
+                  ],
+                ),
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  PopupMenuItem<String>(
+                    value: "perfil",
+                    child: Text(
+                      "Estatus de ordenes para hoy",
+                      style: TextStyle(fontFamily: 'fuente72', fontSize: 13.0),
+                    ),
+                  ),
+                  PopupMenuItem<String>(
+                    value: "cerrar_sesion",
+                    child: Text(
+                      "Cumplimiento del programa semanal",
+                      style: TextStyle(fontFamily: 'fuente72', fontSize: 13.0),
+                    ),
+                  ),
+                  PopupMenuItem<String>(
+                    value: "cerrar_sesion",
+                    child: Text(
+                      "Ubicaciones Tecnicas",
+                      style: TextStyle(fontFamily: 'fuente72', fontSize: 13.0),
+                    ),
+                  ),
+                  PopupMenuItem<String>(
+                    value: "cerrar_sesion",
+                    child: Text(
+                      "Equipos",
+                      style: TextStyle(fontFamily: 'fuente72', fontSize: 13.0),
+                    ),
+                  ),
+                ],
+                /* onSelected: (value) {
+                  if (value == "cerrar_sesion") {
+                    print('Menu');
+                  }
+                },*/
+              ),
+              //title: Text('Inicio',
+              //style: TextStyle(fontFamily: 'fuente72', fontSize: 14.0)),
               backgroundColor: _appBarColor,
               centerTitle: false,
               actions: [

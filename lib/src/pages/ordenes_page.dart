@@ -95,7 +95,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
         ),
         floating: true,
         pinned: true,
-        collapsedHeight: 100,
+        //collapsedHeight: 100.0,
         flexibleSpace: Stack(
           children: [
             Container(

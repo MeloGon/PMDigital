@@ -38,7 +38,7 @@ class _RoundButtonWidgetState extends State<RoundButtonWidget> {
       },
       child: ClipRect(
         child: Container(
-          height: 180.0,
+          height: 188.0,
           margin: EdgeInsets.all(15.0),
           decoration: BoxDecoration(
             color: Colors.white,
