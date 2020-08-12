@@ -15,7 +15,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
   TextStyle _expandedBarStyle = TextStyle(
     fontFamily: 'fuente72',
     color: Colors.black,
-    fontSize: 20.0,
+    fontSize: 18.0,
   );
   TextStyle _oTextStyle =
       TextStyle(fontFamily: 'fuente72', fontSize: 14.0, color: Colors.black);
@@ -179,8 +179,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
           ),
           RichText(
             text: TextSpan(style: _oTextStyle, children: [
-              TextSpan(
-                  text: 'Nro. Orden: ', style: TextStyle(color: _greyColor)),
+              TextSpan(text: 'Orden: ', style: TextStyle(color: _greyColor)),
               TextSpan(text: '100707229'),
             ]),
           ),
@@ -190,8 +189,8 @@ class _OrdenesPageState extends State<OrdenesPage> {
           RichText(
             text: TextSpan(style: _oTextStyle, children: [
               TextSpan(
-                  text: 'Criticidad: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: 'Alta'),
+                  text: 'Tipo Orden: ', style: TextStyle(color: _greyColor)),
+              TextSpan(text: 'PM01'),
             ]),
           ),
           SizedBox(
@@ -199,35 +198,27 @@ class _OrdenesPageState extends State<OrdenesPage> {
           ),
           RichText(
             text: TextSpan(style: _oTextStyle, children: [
-              TextSpan(text: 'Tipo: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: 'PM01'),
+              TextSpan(
+                  text: 'Prioridad: ', style: TextStyle(color: _greyColor)),
+              TextSpan(text: '2-alta'),
             ]),
           ),
         ],
       ),
       trailing: Container(
         width: 100.0,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  'Pendiente',
-                  style: TextStyle(
-                      fontWeight: FontWeight.w700, color: Color(0xffBB0000)),
-                ),
-                Icon(
-                  Icons.arrow_forward_ios,
-                  size: 15.0,
-                ),
-              ],
+            Text(
+              'Pendiente',
+              style: TextStyle(
+                  fontWeight: FontWeight.w700, color: Color(0xffBB0000)),
             ),
-            Padding(
-              padding: const EdgeInsets.only(right: 15.0),
-              child: Text('4-Baja'),
-            )
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 15.0,
+            ),
           ],
         ),
       ),

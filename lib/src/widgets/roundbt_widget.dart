@@ -31,9 +31,6 @@ class _RoundButtonWidgetState extends State<RoundButtonWidget> {
           if (widget.actionRb == 3) {
             print('vamonos a la pagina 3');
           }
-          if (widget.actionRb == 4) {
-            print('vamonos a la pagina 4');
-          }
         });
       },
       child: ClipRect(

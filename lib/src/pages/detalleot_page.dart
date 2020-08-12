@@ -31,61 +31,26 @@ List<Item> generateItems(int numberOfItems) {
 List<Item> _data = generateItems(1);
 
 class _DetallesOtPageState extends State<DetallesOtPage> {
+  Color _appBarColor = Color(0xff354A5F);
+  TextStyle _styleAppBarTitle = TextStyle(
+      fontFamily: 'fuente72', fontSize: 14.0, fontWeight: FontWeight.w400);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: _appBarColor,
         title: Text('Orden 100711361'),
       ),
       body: Stack(
         children: [
-          detalles(),
-          panelCabecera(),
-          panelBtn(),
-        ],
-      ),
-    );
-  }
-
-  Widget detalles() {
-    return Container(
-      margin: EdgeInsets.only(top: 80),
-      child: ListView(
-        children: [
-          Text('Detalles de la Orden'),
-          ListTile(
-            title: Text('Main Work Ctr.:'),
-            subtitle: Text('MFLO'),
-          ),
-          ListTile(
-            title: Text('Supervisor:'),
-            subtitle: Text('Paul Torres / Jorge Alaluna'),
-          ),
-          ListTile(
-            title: Text('Tipo de Actividad:'),
-            subtitle: Text('006 - Inspection'),
-          ),
-          Text('Programacion'),
-          ListTile(
-            title: Text('Inicio:'),
-            subtitle: Text('Jul 27, 2020'),
-          ),
-          ListTile(
-            title: Text('Fin:'),
-            subtitle: Text('Jul 27, 2020'),
-          ),
-          ListTile(
-            title: Text('Revisión:'),
-            subtitle: Text('2020W31'),
-          ),
-          Text('Equipo de referencia'),
-          ListTile(
-            title: Text('Ubicación Funcional:'),
-            subtitle: Text('MFLO'),
-          ),
-          ListTile(
-            title: Text('Sort field:'),
-            subtitle: Text('0330-CPB-0002'),
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            child: Column(
+              children: [
+                panelCabecera(),
+              ],
+            ),
           ),
         ],
       ),
@@ -95,7 +60,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
   Widget panelCabecera() {
     return Container(
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        // mainAxisSize: MainAxisSize.min,
         children: [
           ExpansionPanelList(
             animationDuration: Duration(milliseconds: 300),
@@ -155,24 +120,6 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
             style: TextStyle(fontSize: 20),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget panelBtn() {
-    return Container(
-      margin: EdgeInsets.only(top: 550.0),
-      height: 60.0,
-      width: double.infinity,
-      // child: FlatButton(onPressed: () {}, child: Text('Iniciar')),
-      child: Card(
-        elevation: 6,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            FlatButton(onPressed: () {}, child: Text('Iniciar')),
-          ],
-        ),
       ),
     );
   }

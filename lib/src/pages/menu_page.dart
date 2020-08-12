@@ -73,13 +73,6 @@ class _MenuPageState extends State<MenuPage> {
                       style: TextStyle(fontFamily: 'fuente72', fontSize: 13.0),
                     ),
                   ),
-                  PopupMenuItem<String>(
-                    value: "cerrar_sesion",
-                    child: Text(
-                      "Equipos",
-                      style: TextStyle(fontFamily: 'fuente72', fontSize: 13.0),
-                    ),
-                  ),
                 ],
                 /* onSelected: (value) {
                   if (value == "cerrar_sesion") {
@@ -232,15 +225,6 @@ class _MenuPageState extends State<MenuPage> {
 
     //no reutilizo el codigo por que los tamaños de las imagenes cambia por cuestiones del diseñador UI
 
-    Widget _iconTe = Padding(
-      padding: EdgeInsets.only(left: 20.0),
-      child: Image(
-        image: AssetImage('assets/images/tool_image2.png'),
-        width: 37.0,
-        height: 70.0,
-      ),
-    );
-
     Widget _contentUt = Column(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -254,30 +238,18 @@ class _MenuPageState extends State<MenuPage> {
       ],
     );
 
-    Widget _contentTe = Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Text('Equipos', style: _titleCardStyle),
-        ),
-        _iconTe,
-        SizedBox(height: 5.0)
-      ],
-    );
-
     return Table(
+      columnWidths: {0: FractionColumnWidth(0.5)},
       children: [
         TableRow(children: [
           RoundButtonWidget(
             contentRb: _contentUt,
             actionRb: 3,
           ),
-          RoundButtonWidget(
-            contentRb: _contentTe,
-            actionRb: 4,
-          ),
+          SizedBox(
+            height:
+                188, // para la cuarta caja invisible, no existe un alignmnet para el tablerow
+          )
         ]),
       ],
     );
