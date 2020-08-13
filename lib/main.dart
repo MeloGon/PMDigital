@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pmdigital_app/src/pages/detalleot_page.dart';
 import 'package:pmdigital_app/src/pages/login_page.dart';
 import 'package:pmdigital_app/src/pages/menu_page.dart';
+import 'package:pmdigital_app/src/pages/operation_page.dart';
 import 'package:pmdigital_app/src/pages/ordenes_page.dart';
 
 void main() => runApp(MyApp());
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
         'menu': (BuildContext context) => MenuPage(),
         'ordenes': (BuildContext context) => OrdenesPage(),
         'detallesot': (BuildContext context) => DetallesOtPage(),
+        'operacion': (BuildContext context) => OperacionPage(),
       },
     );
   }
