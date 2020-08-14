@@ -36,13 +36,17 @@ class _OperacionPageState extends State<OperacionPage> {
       fontFamily: 'fuente72', fontSize: 14.0, fontWeight: FontWeight.w400);
 
   TextStyle _styleLabelTab =
-      TextStyle(fontFamily: 'fuente72', fontSize: 14, color: Color(0xff0854A0));
+      TextStyle(fontFamily: 'fuente72', fontSize: 13, color: Color(0xff0854A0));
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: false,
         backgroundColor: _appBarColor,
-        title: Text('Orden 100711361'),
+        title: Text(
+          'Operación 0020',
+          style: _styleAppBarTitle,
+        ),
       ),
       body: Stack(
         children: [
@@ -107,6 +111,8 @@ class _OperacionPageState extends State<OperacionPage> {
           panelTabs(),
           serviciosPanel(),
           materialesPanel(),
+          notasPanel(),
+          fotosPanel(),
           // estos dos containers tendra que cambiarse por un listviewbuilder esto es temporal
           // listaOperaciones(),
         ],
@@ -164,7 +170,7 @@ class _OperacionPageState extends State<OperacionPage> {
 
   Widget panelTabs() {
     return Container(
-      height: 50,
+      height: 45,
       child: DefaultTabController(
           length: 4,
           child: TabBar(
@@ -245,16 +251,6 @@ class _OperacionPageState extends State<OperacionPage> {
         child: Text('Servicios(1)'),
       ),
     );
-
-    Widget tituloMateriales() {
-      return Container(
-        padding: EdgeInsets.all(20.0),
-        color: Color(0xffF2F2F2),
-        width: double.infinity,
-        height: 60.0,
-        child: Text('MATERIALES'),
-      );
-    }
 
     Widget panelContenidoServicios = Container(
       padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
@@ -387,8 +383,17 @@ class _OperacionPageState extends State<OperacionPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Materiales'),
-          Text('Linea de Materiales(1)'),
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Text(
+              'MATERIALES',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Text('Linea de Materiales(1)'),
+          ),
           cabecera,
           ListTile(
             title: Text('CABLE,AMARILLO,R6QI-0-J9T2A-64,WILCOXON'),
@@ -405,6 +410,93 @@ class _OperacionPageState extends State<OperacionPage> {
                 Text('Reserva: 1453991'),
               ],
             ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget notasPanel() {
+    Widget cabecera = Container(
+      color: Color(0xffF2F2F2),
+      padding: EdgeInsets.symmetric(horizontal: 20.0),
+      height: 50.0,
+      child: Row(
+        children: [Expanded(child: Text('Notas(1)')), Icon(Icons.add)],
+      ),
+    );
+    return Container(
+      margin: EdgeInsets.only(top: 20.0),
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Text(
+              'NOTAS',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+          cabecera,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Text(
+                'Carlos Fuentes: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'),
+          ),
+          // Text('Jul 28, 2020 * 7:58 PM'),
+        ],
+      ),
+    );
+  }
+
+  Widget fotosPanel() {
+    Widget cabecera = Container(
+      color: Color(0xffF2F2F2),
+      padding: EdgeInsets.symmetric(horizontal: 20.0),
+      height: 50.0,
+      child: Row(
+        children: [Expanded(child: Text('Fotos(3)')), Icon(Icons.add)],
+      ),
+    );
+    return Container(
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Text(
+              'FOTOS',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+          cabecera,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Container(
+                width: 90.0,
+                height: 90.0,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(6.0),
+                    color: Colors.red),
+              ),
+              Container(
+                width: 90.0,
+                height: 90.0,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(6.0),
+                    color: Colors.cyan),
+              ),
+              Container(
+                width: 90.0,
+                height: 90.0,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(6.0),
+                    color: Colors.blue),
+              ),
+            ],
           )
         ],
       ),

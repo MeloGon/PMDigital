@@ -132,7 +132,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
             ),
           ),
           tituloMateriales(),
-          cuerpoPage(),
+          cuerpoPage1(),
           cabecera(),
           GestureDetector(
             onTap: () {
@@ -276,7 +276,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
 
   Widget panelTabs() {
     return Container(
-      height: 50,
+      height: 45,
       child: DefaultTabController(
           length: 2,
           child: TabBar(
@@ -348,7 +348,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
       width: double.infinity,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        child: Text('OPERACIONES'),
+        child: Text('Operaciones(2)'),
       ),
     );
     return Column(
@@ -462,6 +462,22 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
           )
         ],
       ),
+    );
+  }
+
+  Widget cuerpoPage1() {
+    Widget panelContador = Container(
+      height: 60,
+      width: double.infinity,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        child: Text('Lineas de Materiales(2)'),
+      ),
+    );
+    return Column(
+      children: [
+        panelContador,
+      ],
     );
   }
 }
