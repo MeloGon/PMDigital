@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 class OrdenesPage extends StatefulWidget {
+  final String token;
+  OrdenesPage({this.token});
+
   @override
   _OrdenesPageState createState() => _OrdenesPageState();
 }

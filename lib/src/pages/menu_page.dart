@@ -8,6 +8,8 @@ import 'package:pmdigital_app/src/widgets/loginbg_widget.dart';
 import 'package:pmdigital_app/src/widgets/roundbt_widget.dart';
 
 class MenuPage extends StatefulWidget {
+  final String token;
+  MenuPage({this.token});
   @override
   _MenuPageState createState() => _MenuPageState();
 }
@@ -189,13 +191,9 @@ class _MenuPageState extends State<MenuPage> {
       children: [
         TableRow(children: [
           RoundButtonWidget(
-            contentRb: _contentSt,
-            actionRb: 1,
-          ),
+              contentRb: _contentSt, actionRb: 1, token: widget.token),
           RoundButtonWidget(
-            contentRb: _contentWe,
-            actionRb: 2,
-          ),
+              contentRb: _contentWe, actionRb: 2, token: widget.token),
         ]),
       ],
     );
@@ -243,9 +241,7 @@ class _MenuPageState extends State<MenuPage> {
       children: [
         TableRow(children: [
           RoundButtonWidget(
-            contentRb: _contentUt,
-            actionRb: 3,
-          ),
+              contentRb: _contentUt, actionRb: 3, token: widget.token),
           SizedBox(
             height:
                 188, // para la cuarta caja invisible, no existe un alignmnet para el tablerow

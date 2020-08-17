@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:pmdigital_app/src/pages/ordenes_page.dart';
 
 class RoundButtonWidget extends StatefulWidget {
   final Widget contentRb;
   final int actionRb;
-  RoundButtonWidget({this.contentRb, this.actionRb});
+  final String token;
+  RoundButtonWidget({this.contentRb, this.actionRb, this.token});
   @override
   _RoundButtonWidgetState createState() => _RoundButtonWidgetState();
 }
@@ -24,6 +26,11 @@ class _RoundButtonWidgetState extends State<RoundButtonWidget> {
           if (widget.actionRb == 1) {
             print('vamonos a la pagina 1');
             Navigator.pushNamed(context, 'ordenes');
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return OrdenesPage(
+                token: widget.token,
+              );
+            }));
           }
           if (widget.actionRb == 2) {
             print('vamonos a la pagina 2');
