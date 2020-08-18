@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:pmdigital_app/src/models/OrdenModel.dart';
+import 'package:pmdigital_app/src/provider/ordenes_provider.dart';
 
 class OrdenesPage extends StatefulWidget {
   final String token;
@@ -27,50 +29,60 @@ class _OrdenesPageState extends State<OrdenesPage> {
       fontFamily: 'fuente72',
       color: Color(0xff32363A),
       fontWeight: FontWeight.w700);
+  final ordenesProvider = new OrdenesProvider();
   @override
   Widget build(BuildContext context) {
+    ordenesProvider.getOrdenes(widget.token);
     return Scaffold(
       body: CustomScrollView(
         slivers: [
           _appBarOrdenes(),
+
 //           SliverList(delegate: SliverChildBuilderDelegate((context, index) {
 //   return Container();
-// }));
+// })),
           SliverList(
               delegate: SliverChildListDelegate([
             _spaceSearch(),
             _headerBar(),
-            _itemTempList(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Divider(),
-            ),
-            _itemTempList(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Divider(),
-            ),
-            _itemTempList(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Divider(),
-            ),
-            _itemTempList(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Divider(),
-            ),
-            _itemTempList(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Divider(),
-            ),
-            _itemTempList(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Divider(),
-            ),
-          ]))
+            // StreamBuilder(
+            //   stream: ordenesProvider.ordenesStream,
+            //   builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
+            //     //ese signo de interrogacion dice has este foreach si existe data
+            //     snapshot.data?.forEach((element) {
+            //       print(element.title);
+            //     });
+            //   },
+            // ),
+
+            Container(
+              width: double.infinity,
+              height: 600,
+              child: StreamBuilder(
+                stream: ordenesProvider.ordenesStream,
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<OrdenModel>> snapshot) {
+                  //ese signo de interrogacion dice has este foreach si existe data
+                  snapshot.data?.forEach((element) {
+                    print(element.descripcion);
+                  });
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return itemOt(snapshot.data[index]);
+                      },
+                    );
+                  } else {
+                    //el progrssar solo aparece mientras se resuleve el future o cuando nohay datos
+                    return Container(
+                        height: 400,
+                        child: Center(child: CircularProgressIndicator()));
+                  }
+                },
+              ),
+            )
+          ])),
         ],
       ),
     );
@@ -159,75 +171,6 @@ class _OrdenesPageState extends State<OrdenesPage> {
     );
   }
 
-  Widget _itemTempList() {
-    return ListTile(
-      onTap: () {
-        Navigator.pushNamed(context, 'detallesot');
-      },
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: 10.0),
-          Text(
-            '2W Svce Lube Agitator',
-            style: _titleOtStyle,
-          ),
-        ],
-      ),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 5.0,
-          ),
-          RichText(
-            text: TextSpan(style: _oTextStyle, children: [
-              TextSpan(text: 'Orden: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: '100707229'),
-            ]),
-          ),
-          SizedBox(
-            height: 5.0,
-          ),
-          RichText(
-            text: TextSpan(style: _oTextStyle, children: [
-              TextSpan(
-                  text: 'Tipo Orden: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: 'PM01'),
-            ]),
-          ),
-          SizedBox(
-            height: 5.0,
-          ),
-          RichText(
-            text: TextSpan(style: _oTextStyle, children: [
-              TextSpan(
-                  text: 'Prioridad: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: '2-alta'),
-            ]),
-          ),
-        ],
-      ),
-      trailing: Container(
-        width: 100.0,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Text(
-              'Pendiente',
-              style: TextStyle(
-                  fontWeight: FontWeight.w700, color: Color(0xffBB0000)),
-            ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 15.0,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _headerBar() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.0),
@@ -239,6 +182,78 @@ class _OrdenesPageState extends State<OrdenesPage> {
           Expanded(child: Text('Descripción')),
           Text('Estatus'),
         ],
+      ),
+    );
+  }
+
+  Widget itemOt(OrdenModel data) {
+    return Padding(
+      padding: EdgeInsets.only(left: 5),
+      child: ListTile(
+        onTap: () {
+          Navigator.pushNamed(context, 'detallesot');
+        },
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 10.0),
+            Text(
+              '${data.descripcion}',
+              style: _titleOtStyle,
+            ),
+          ],
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 5.0,
+            ),
+            RichText(
+              text: TextSpan(style: _oTextStyle, children: [
+                TextSpan(text: 'Orden: ', style: TextStyle(color: _greyColor)),
+                TextSpan(text: '${data.numeroOt}'),
+              ]),
+            ),
+            SizedBox(
+              height: 5.0,
+            ),
+            RichText(
+              text: TextSpan(style: _oTextStyle, children: [
+                TextSpan(
+                    text: 'Tipo Orden: ', style: TextStyle(color: _greyColor)),
+                TextSpan(text: 'PM01'),
+              ]),
+            ),
+            SizedBox(
+              height: 5.0,
+            ),
+            RichText(
+              text: TextSpan(style: _oTextStyle, children: [
+                TextSpan(
+                    text: 'Prioridad: ', style: TextStyle(color: _greyColor)),
+                TextSpan(text: '${data.prioridad}'),
+              ]),
+            ),
+          ],
+        ),
+        trailing: Container(
+          width: 100.0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                '${data.estado}',
+                style: TextStyle(
+                    fontWeight: FontWeight.w700, color: Color(0xffBB0000)),
+              ),
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 15.0,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
