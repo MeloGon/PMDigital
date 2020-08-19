@@ -108,6 +108,8 @@ class _OrdenesPageState extends State<OrdenesPage> {
           'Estatus de órdenes',
           style: _appBarStyle,
         ),
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios), onPressed: atrasButton),
         floating: true,
         pinned: true,
         //collapsedHeight: 100.0,
@@ -134,7 +136,30 @@ class _OrdenesPageState extends State<OrdenesPage> {
         ));
   }
 
+  void atrasButton() {
+    Navigator.pop(context);
+  }
+
   Widget _spaceSearch() {
+    Widget inputBuscar = Expanded(
+      child: Container(
+        color: Colors.white,
+        height: 37,
+        child: TextField(
+          style: TextStyle(fontFamily: 'fuente72', fontSize: 14.0),
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.all(10),
+            border:
+                OutlineInputBorder(borderRadius: BorderRadius.circular(2.0)),
+            hintText: 'Buscar',
+            suffixIcon: Icon(
+              Icons.search,
+              color: Color(0xff0854a0),
+            ),
+          ),
+        ),
+      ),
+    );
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 23.0),
       child: Row(
@@ -147,25 +172,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
           SizedBox(
             width: 10.0,
           ),
-          Expanded(
-            child: Container(
-              color: Colors.white,
-              height: 37,
-              child: TextField(
-                style: TextStyle(fontFamily: 'fuente72', fontSize: 14.0),
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.all(10),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(2.0)),
-                  hintText: 'Buscar',
-                  suffixIcon: Icon(
-                    Icons.search,
-                    color: Color(0xff0854a0),
-                  ),
-                ),
-              ),
-            ),
-          )
+          inputBuscar,
         ],
       ),
     );

@@ -190,8 +190,7 @@ class _LoginPageState extends State<LoginPage> {
       toast('Alguno de los campos se encuentra vacio. Intente nuevamente',
           Colors.black, Colors.white);
     } else {
-      toast("Validando credenciales. Un momento porfavor ..", Colors.black,
-          Colors.white);
+      toast("Validando credenciales..", Colors.black, Colors.white);
       var rsp = await loguinProvider.loguinUser(
           emailController.text, passwordController.text);
       // print(rsp);

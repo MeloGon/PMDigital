@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pmdigital_app/src/pages/cumplimiento_page.dart';
 import 'package:pmdigital_app/src/pages/ordenes_page.dart';
 
 class RoundButtonWidget extends StatefulWidget {
@@ -25,7 +26,6 @@ class _RoundButtonWidgetState extends State<RoundButtonWidget> {
         setState(() {
           if (widget.actionRb == 1) {
             print('vamonos a la pagina 1');
-            Navigator.pushNamed(context, 'ordenes');
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               return OrdenesPage(
                 token: widget.token,
@@ -34,6 +34,11 @@ class _RoundButtonWidgetState extends State<RoundButtonWidget> {
           }
           if (widget.actionRb == 2) {
             print('vamonos a la pagina 2');
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return CumplimientoPage(
+                token: widget.token,
+              );
+            }));
           }
           if (widget.actionRb == 3) {
             print('vamonos a la pagina 3');

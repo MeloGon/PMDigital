@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pmdigital_app/src/pages/cumplimiento_page.dart';
 import 'package:pmdigital_app/src/pages/detalleot_page.dart';
 import 'package:pmdigital_app/src/pages/login_page.dart';
 import 'package:pmdigital_app/src/pages/menu_page.dart';
@@ -20,6 +21,7 @@ class MyApp extends StatelessWidget {
         'ordenes': (BuildContext context) => OrdenesPage(),
         'detallesot': (BuildContext context) => DetallesOtPage(),
         'operacion': (BuildContext context) => OperacionPage(),
+        'cumplimiento': (BuildContext context) => CumplimientoPage(),
       },
     );
   }

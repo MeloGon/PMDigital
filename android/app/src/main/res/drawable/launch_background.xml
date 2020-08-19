@@ -9,6 +9,11 @@
             android:gravity="center"
             android:src="@mipmap/logo_pmd" />
     </item> 
+    <item>
+        <bitmap
+            android:gravity="bottom"
+            android:src="@mipmap/logo_inn" />
+    </item> 
 
     
 </layer-list>
