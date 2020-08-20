@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pmdigital_app/src/models/OrdenModel.dart';
+import 'package:pmdigital_app/src/pages/detalleot_page.dart';
 import 'package:pmdigital_app/src/provider/ordenes_provider.dart';
 
 class OrdenesPage extends StatefulWidget {
@@ -198,7 +199,13 @@ class _OrdenesPageState extends State<OrdenesPage> {
       padding: EdgeInsets.only(left: 5),
       child: ListTile(
         onTap: () {
-          Navigator.pushNamed(context, 'detallesot');
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return DetallesOtPage(
+              nrot: data.numeroOt.toString(),
+              descriot: data.descripcion,
+              token: widget.token,
+            );
+          }));
         },
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:pmdigital_app/src/models/OrdenFullModel.dart';
+import 'package:pmdigital_app/src/provider/ordenes_provider.dart';
 
 class DetallesOtPage extends StatefulWidget {
+  String nrot;
+  String descriot;
+  String token;
+  DetallesOtPage({this.nrot, this.descriot, this.token});
   @override
   _DetallesOtPageState createState() => _DetallesOtPageState();
 }
@@ -39,12 +45,27 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
       TextStyle(fontFamily: 'fuente72', fontSize: 14, color: Color(0xff0854A0));
 
   bool opRealizada = false;
+  OrdenesProvider ordenesProvider = new OrdenesProvider();
+  OrdenFullModel resp;
+
+  // @override
+  // void initState() {
+  //   // TODO: implement initState
+  //   //resp = detallesOt();
+  //   ordenesProvider.obtenerOrden(widget.nrot, widget.token).then((value) {
+  //     setState(() {
+  //       resp = value;
+  //     });
+  //   });
+  //   super.initState();
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: _appBarColor,
-        title: Text('Orden 100711361'),
+        title: Text('Orden ${widget.nrot}'),
       ),
       body: Stack(
         children: [
@@ -89,7 +110,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
               padding: const EdgeInsets.all(5.0),
               child: ListTile(
                 title: Text(
-                  '2W Ins Mech Blower Air System',
+                  '${widget.descriot}',
                   style: TextStyle(fontSize: 20, fontFamily: 'fuente72'),
                 ),
               ),
@@ -210,26 +231,40 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
   }
 
   Widget contenidoPanelExpansible() {
+    return FutureBuilder(
+        future: ordenesProvider.obtenerOrden(widget.nrot, widget.token),
+        builder:
+            (BuildContext context, AsyncSnapshot<OrdenFullModel> snapshot) {
+          if (snapshot.hasData) {
+            resp = snapshot.data;
+            return algo(resp);
+          } else {
+            return Center(child: CircularProgressIndicator());
+          }
+        });
+  }
+
+  Widget algo(OrdenFullModel resp) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 25.0),
       width: double.infinity,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('Pendiente'),
+          Text('${resp.estado}'),
           Text('Detalles de la orden'),
           SizedBox(
             height: 15,
           ),
-          Text('Main Work Ctr.: MFLO'),
+          Text('Main Work Ctr.: ${resp.mainWork}'),
           SizedBox(
             height: 7,
           ),
-          Text('Tipo de orden: PM01'),
+          Text('Tipo de orden: ${resp.tipoOt}'),
           SizedBox(
             height: 7,
           ),
-          Text('Tipo actividad: 006 - Inspection'),
+          Text('Tipo actividad: ${resp.tipoActividad}'),
           SizedBox(
             height: 15,
           ),
@@ -237,19 +272,19 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
           SizedBox(
             height: 15,
           ),
-          Text('Inicio: Jul 27, 2020'),
+          Text('Inicio: ${resp.fechaFechaIniPlan}'),
           SizedBox(
             height: 7,
           ),
-          Text('Fin: Jul 27, 2020'),
+          Text('Fin: ${resp.fechaFinPlan}'),
           SizedBox(
             height: 7,
           ),
-          Text('Prioridad: 2 - Alta'),
+          Text('Prioridad: ${resp.prioridad}'),
           SizedBox(
             height: 7,
           ),
-          Text('Revision: 2020W31'),
+          Text('Revision: ${resp.revision}'),
           SizedBox(
             height: 15,
           ),
@@ -257,7 +292,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
           SizedBox(
             height: 15,
           ),
-          Text('Ubic. func: PE01-20-20-50-FLBW001.BW02'),
+          Text('Ubic. func: ${resp.ubiFuncional}'),
           SizedBox(
             height: 7,
           ),
@@ -265,7 +300,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
           SizedBox(
             height: 7,
           ),
-          Text('Sort field: 0330-CPB-0002'),
+          Text('Sort field: ${resp.sortField}'),
           SizedBox(
             height: 15,
           ),

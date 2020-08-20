@@ -2,11 +2,15 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:pmdigital_app/src/models/OrdenFullModel.dart';
 import 'package:pmdigital_app/src/models/OrdenModel.dart';
 
 class OrdenesProvider {
   String _url =
       'https://innovadis.net.pe/apiPMDigital/public/orden_trabajo/getAllOTs';
+
+  String _urlGlobal =
+      'https://innovadis.net.pe/apiPMDigital/public/orden_trabajo/';
   int _grupoPage = 0;
   int _cantGrupo = 20;
   bool _cargando = false;
@@ -55,5 +59,18 @@ class OrdenesProvider {
     ordenesSink(_ordenes);
     _cargando = false;
     return resp;
+  }
+
+  Future<OrdenFullModel> obtenerOrden(String id, String token) async {
+    final resp = await http.get(_urlGlobal + id.toString(), headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": token,
+    });
+
+    OrdenFullModel ordenfull =
+        OrdenFullModel.fromJsonMap(json.decode(resp.body)['rpta']);
+    print(ordenfull.id);
+    return ordenfull;
   }
 }
