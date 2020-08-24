@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:pmdigital_app/src/models/OperacionFullModel.dart';
+import 'package:pmdigital_app/src/models/OrdenFullModel.dart';
+import 'package:pmdigital_app/src/provider/operacion_provider.dart';
 
 class OperacionPage extends StatefulWidget {
+  String token;
+  String idop;
+  String descriop;
+  OperacionPage({this.token, this.idop, this.descriop});
   @override
   _OperacionPageState createState() => _OperacionPageState();
 }
@@ -32,11 +39,23 @@ List<Item> _data = generateItems(1);
 
 class _OperacionPageState extends State<OperacionPage> {
   Color _appBarColor = Color(0xff354A5F);
+  TextStyle _styleTitleExpansibleBar = TextStyle(
+      fontFamily: 'fuente72', fontSize: 14.0, fontWeight: FontWeight.w700);
+
   TextStyle _styleAppBarTitle = TextStyle(
       fontFamily: 'fuente72', fontSize: 14.0, fontWeight: FontWeight.w400);
 
   TextStyle _styleLabelTab =
       TextStyle(fontFamily: 'fuente72', fontSize: 13, color: Color(0xff0854A0));
+
+  TextStyle _oTextStyle =
+      TextStyle(fontFamily: 'fuente72', fontSize: 14.0, color: Colors.black);
+
+  Color _greyColor = Color(0xff6A6D70);
+
+  final OperacionMaterialProvider operacionMaterialProvider =
+      new OperacionMaterialProvider();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,13 +110,13 @@ class _OperacionPageState extends State<OperacionPage> {
               padding: const EdgeInsets.all(5.0),
               child: ListTile(
                 title: Text(
-                  '2W Ins Mech Blower Air System',
+                  '${widget.descriop}',
                   style: TextStyle(fontSize: 20, fontFamily: 'fuente72'),
                 ),
               ),
             );
           },
-          body: contenidoPanelExpansible(),
+          body: panelExpansibleFuture(),
           isExpanded: item.isExpanded,
         );
       }).toList(),
@@ -113,59 +132,10 @@ class _OperacionPageState extends State<OperacionPage> {
           materialesPanel(),
           notasPanel(),
           fotosPanel(),
-          // estos dos containers tendra que cambiarse por un listviewbuilder esto es temporal
           // listaOperaciones(),
         ],
       ),
     );
-    // return Container(
-    //   child: Column(
-    //     // mainAxisSize: MainAxisSize.min,
-    //     children: [
-    //       ExpansionPanelList(
-    //         animationDuration: Duration(milliseconds: 300),
-    //         expansionCallback: (int index, bool isExpanded) {
-    //           setState(() {
-    //             _data[index].isExpanded = !isExpanded;
-    //           });
-    //         },
-    //         children: _data.map<ExpansionPanel>((Item item) {
-    //           return ExpansionPanel(
-    //             headerBuilder: (BuildContext context, bool isExpanded) {
-    //               return Padding(
-    //                 padding: const EdgeInsets.all(8.0),
-    //                 child: ListTile(
-    //                   title: Text(
-    //                     '2W Ins Mech Blower Air System',
-    //                     style: TextStyle(fontSize: 20, fontFamily: 'fuente72'),
-    //                   ),
-    //                 ),
-    //               );
-    //             },
-    //             body: contenidoPanelExpansible(),
-    //             isExpanded: item.isExpanded,
-    //           );
-    //         }).toList(),
-    //       ),
-    //       panelTabs(),
-    //       cuerpoPage(),
-    //       cabecera(),
-    //       Container(
-    //         height: 105.0,
-    //         width: double.infinity,
-    //         child: listaOperaciones(),
-    //       ),
-    //       Divider(),
-    //       Container(
-    //         height: 105.0,
-    //         width: double.infinity,
-    //         child: listaOperaciones(),
-    //       ),
-    //       Divider()
-    //       // listaOperaciones(),
-    //     ],
-    //   ),
-    // );
   }
 
   Widget panelTabs() {
@@ -265,68 +235,17 @@ class _OperacionPageState extends State<OperacionPage> {
     );
   }
 
-  Widget contenidoPanelExpansible() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 25.0),
-      width: double.infinity,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text('No Confirmada'),
-          Text('Detalles de la operación'),
-          SizedBox(
-            height: 15,
-          ),
-          Text('Oper. Work Ctr.: MFLO-MEC'),
-          SizedBox(
-            height: 7,
-          ),
-          Text('Cond. Sist.: 3 - Offline - PU'),
-          SizedBox(
-            height: 15,
-          ),
-          Text('Programacion'),
-          SizedBox(
-            height: 15,
-          ),
-          Text('Inicio: Jul 27, 2020'),
-          SizedBox(
-            height: 7,
-          ),
-          Text('Fin: Jul 27, 2020'),
-          SizedBox(
-            height: 7,
-          ),
-          Text('Duracion: 3 HR'),
-          SizedBox(
-            height: 7,
-          ),
-          Text('Personal: 2'),
-          SizedBox(
-            height: 7,
-          ),
-          Text('Trabajo: 6 HH'),
-          SizedBox(
-            height: 15,
-          ),
-          Text('Equipo de Referencia'),
-          SizedBox(
-            height: 15,
-          ),
-          Text('Ubic. func: PE01-20-20-50-FLBW001.BW02'),
-          SizedBox(
-            height: 7,
-          ),
-          Text('Descripcion: Blower Air System 2 Cleaner Cells'),
-          SizedBox(
-            height: 7,
-          ),
-          Text('Sort field: 0330-CPB-0002'),
-          SizedBox(
-            height: 15,
-          ),
-        ],
-      ),
+  Widget panelExpansibleFuture() {
+    return FutureBuilder(
+      future:
+          operacionMaterialProvider.obtenerOperacion(widget.idop, widget.token),
+      builder: (context, AsyncSnapshot<OperacionFullModel> snapshot) {
+        if (snapshot.hasData) {
+          return contenidoPanelExpansible(snapshot.data);
+        } else {
+          return Center(child: CircularProgressIndicator());
+        }
+      },
     );
   }
 
@@ -395,22 +314,7 @@ class _OperacionPageState extends State<OperacionPage> {
             child: Text('Linea de Materiales(1)'),
           ),
           cabecera,
-          ListTile(
-            title: Text('CABLE,AMARILLO,R6QI-0-J9T2A-64,WILCOXON'),
-            trailing: Container(
-              alignment: Alignment.topRight,
-              width: 60.0,
-              child: Text('4 EA'),
-            ),
-            // trailing: Text('4 EA'),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Material: 10191123'),
-                Text('Reserva: 1453991'),
-              ],
-            ),
-          )
+          futureBuilderMateriales(),
         ],
       ),
     );
@@ -439,11 +343,7 @@ class _OperacionPageState extends State<OperacionPage> {
             ),
           ),
           cabecera,
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Text(
-                'Carlos Fuentes: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'),
-          ),
+          futureBuilderNotas(),
           // Text('Jul 28, 2020 * 7:58 PM'),
         ],
       ),
@@ -500,6 +400,242 @@ class _OperacionPageState extends State<OperacionPage> {
           )
         ],
       ),
+    );
+  }
+
+  Widget contenidoPanelExpansible(OperacionFullModel data) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 25.0),
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text('${data.estadoOp}'),
+          Text(
+            'Detalles de la operación',
+            style: _styleTitleExpansibleBar,
+          ),
+          SizedBox(
+            height: 15,
+          ),
+          RichText(
+            text: TextSpan(style: _oTextStyle, children: [
+              TextSpan(
+                  text: 'Oper. Work Ctr.: ',
+                  style: TextStyle(color: _greyColor)),
+              TextSpan(text: '${data.operationWorkCenter}'),
+            ]),
+          ),
+          SizedBox(
+            height: 7,
+          ),
+          RichText(
+            text: TextSpan(style: _oTextStyle, children: [
+              TextSpan(
+                  text: 'Cond. Sist.: ', style: TextStyle(color: _greyColor)),
+              TextSpan(text: 'ver condicion sistema'),
+            ]),
+          ),
+          SizedBox(
+            height: 15,
+          ),
+          Text(
+            'Programacion',
+            style: _styleTitleExpansibleBar,
+          ),
+          SizedBox(
+            height: 15,
+          ),
+          RichText(
+            text: TextSpan(style: _oTextStyle, children: [
+              TextSpan(text: 'Inicio: ', style: TextStyle(color: _greyColor)),
+              TextSpan(text: '${data.fechaIniPlan}'),
+            ]),
+          ),
+          SizedBox(
+            height: 7,
+          ),
+          RichText(
+            text: TextSpan(style: _oTextStyle, children: [
+              TextSpan(text: 'Fin: ', style: TextStyle(color: _greyColor)),
+              TextSpan(text: '${data.fechaFinPlan}'),
+            ]),
+          ),
+          SizedBox(
+            height: 7,
+          ),
+          RichText(
+            text: TextSpan(style: _oTextStyle, children: [
+              TextSpan(text: 'Duracion: ', style: TextStyle(color: _greyColor)),
+              TextSpan(text: '${data.duracionReal}'),
+            ]),
+          ),
+          SizedBox(
+            height: 7,
+          ),
+          RichText(
+            text: TextSpan(style: _oTextStyle, children: [
+              TextSpan(text: 'Personal: ', style: TextStyle(color: _greyColor)),
+              TextSpan(text: '${data.numberReal}'),
+            ]),
+          ),
+          SizedBox(
+            height: 7,
+          ),
+          RichText(
+            text: TextSpan(style: _oTextStyle, children: [
+              TextSpan(text: 'Trabajo: ', style: TextStyle(color: _greyColor)),
+              TextSpan(text: '${data.workReal}'),
+            ]),
+          ),
+          SizedBox(
+            height: 15,
+          ),
+          Text(
+            'Equipo de Referencia',
+            style: _styleTitleExpansibleBar,
+          ),
+          SizedBox(
+            height: 15,
+          ),
+          RichText(
+            text: TextSpan(style: _oTextStyle, children: [
+              TextSpan(
+                  text: 'Ubic. Func: ', style: TextStyle(color: _greyColor)),
+              TextSpan(text: '${data.ubiFuncional}'),
+            ]),
+          ),
+          SizedBox(
+            height: 7,
+          ),
+          RichText(
+            text: TextSpan(style: _oTextStyle, children: [
+              TextSpan(
+                  text: 'Descripcion: ', style: TextStyle(color: _greyColor)),
+              TextSpan(text: '${data.descripcionEquipo}'),
+            ]),
+          ),
+          SizedBox(
+            height: 7,
+          ),
+          RichText(
+            text: TextSpan(style: _oTextStyle, children: [
+              TextSpan(
+                  text: 'Sort Field: ', style: TextStyle(color: _greyColor)),
+              TextSpan(text: '${data.sortField}'),
+            ]),
+          ),
+          SizedBox(
+            height: 15,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget futureBuilderMateriales() {
+    return FutureBuilder(
+      future: operacionMaterialProvider.obtenerMaterialesOperacion(
+          widget.idop, widget.token),
+      builder: (context, AsyncSnapshot<List<Materiale>> snapshot) {
+        if (snapshot.hasData) {
+          return ListView.builder(
+            physics: NeverScrollableScrollPhysics(),
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            itemCount: snapshot.data.length,
+            itemBuilder: (context, index) {
+              return itemMat(snapshot.data[index]);
+            },
+          );
+        } else {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
+    );
+  }
+
+  Widget itemMat(Materiale data) {
+    return ListTile(
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 15,
+          ),
+          RichText(
+            text: TextSpan(style: _oTextStyle, children: [
+              TextSpan(text: '${data.descripcion}'),
+            ]),
+          ),
+        ],
+      ),
+      trailing: Container(
+          alignment: Alignment.center,
+          width: 50,
+          height: 25,
+          child: Text('${data.cantidad} EA')),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 6.0,
+          ),
+          RichText(
+            text: TextSpan(style: _oTextStyle, children: [
+              TextSpan(text: 'Material: ', style: TextStyle(color: _greyColor)),
+              TextSpan(text: '${data.numero}'),
+            ]),
+          ),
+          SizedBox(height: 6.0),
+          RichText(
+            text: TextSpan(style: _oTextStyle, children: [
+              TextSpan(text: 'Reserva: ', style: TextStyle(color: _greyColor)),
+              TextSpan(text: '${data.reserva}'),
+            ]),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget futureBuilderNotas() {
+    return FutureBuilder(
+      future: operacionMaterialProvider.obtenerNotasOperacion(
+          widget.idop, widget.token),
+      builder: (context, AsyncSnapshot<List<Nota>> snapshot) {
+        if (snapshot.hasData) {
+          return ListView.builder(
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: snapshot.data.length,
+            shrinkWrap: true,
+            scrollDirection: Axis.vertical,
+            itemBuilder: (context, index) {
+              return itemNota(snapshot.data[index]);
+            },
+          );
+        } else {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
+    );
+  }
+
+  Widget itemNota(Nota data) {
+    return ListTile(
+      title: RichText(
+        text: TextSpan(style: _oTextStyle, children: [
+          TextSpan(
+              text: '${data.nombre} ${data.apellido} : ',
+              style: TextStyle(color: _greyColor)),
+          TextSpan(text: '${data.descripcion}'),
+        ]),
+      ),
+      subtitle: Text('${data.fecha}'),
     );
   }
 }

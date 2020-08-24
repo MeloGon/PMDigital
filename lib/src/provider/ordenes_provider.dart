@@ -43,9 +43,11 @@ class OrdenesProvider {
           '}',
     });
     final decodeResp = json.decode(resp.body);
-    print(decodeResp);
+    //para tecnico
     final peliculas =
         new OrdenesModel.fromJsonList(decodeResp['ots_secundario']);
+    //para admin
+    //final peliculas = new OrdenesModel.fromJsonList(decodeResp['ots_directo']);
     return peliculas.items;
   }
 
@@ -70,7 +72,7 @@ class OrdenesProvider {
 
     OrdenFullModel ordenfull =
         OrdenFullModel.fromJsonMap(json.decode(resp.body)['rpta']);
-    print(ordenfull.id);
+
     return ordenfull;
   }
 }

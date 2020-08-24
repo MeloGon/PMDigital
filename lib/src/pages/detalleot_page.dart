@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pmdigital_app/src/models/OrdenFullModel.dart';
+import 'package:pmdigital_app/src/pages/operation_page.dart';
+import 'package:pmdigital_app/src/provider/operacion_provider.dart';
 import 'package:pmdigital_app/src/provider/ordenes_provider.dart';
 
 class DetallesOtPage extends StatefulWidget {
@@ -41,31 +43,30 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
   TextStyle _styleAppBarTitle = TextStyle(
       fontFamily: 'fuente72', fontSize: 14.0, fontWeight: FontWeight.w400);
 
+  TextStyle _styleTitleExpansibleBar = TextStyle(
+      fontFamily: 'fuente72', fontSize: 14.0, fontWeight: FontWeight.w700);
+
   TextStyle _styleLabelTab =
       TextStyle(fontFamily: 'fuente72', fontSize: 14, color: Color(0xff0854A0));
 
+  TextStyle _oTextStyle =
+      TextStyle(fontFamily: 'fuente72', fontSize: 14.0, color: Colors.black);
   bool opRealizada = false;
   OrdenesProvider ordenesProvider = new OrdenesProvider();
+  OperacionMaterialProvider operacionMaterialProvider =
+      new OperacionMaterialProvider();
   OrdenFullModel resp;
-
-  // @override
-  // void initState() {
-  //   // TODO: implement initState
-  //   //resp = detallesOt();
-  //   ordenesProvider.obtenerOrden(widget.nrot, widget.token).then((value) {
-  //     setState(() {
-  //       resp = value;
-  //     });
-  //   });
-  //   super.initState();
-  // }
+  Color _greyColor = Color(0xff6A6D70);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: _appBarColor,
-        title: Text('Orden ${widget.nrot}'),
+        title: Text(
+          'Orden ${widget.nrot}',
+          style: TextStyle(fontSize: 14.0),
+        ),
       ),
       body: Stack(
         children: [
@@ -75,7 +76,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
             height: double.infinity,
             child: ListView(
               children: [
-                panelCabecera(),
+                cuerpoWid(context),
               ],
             ),
           ),
@@ -95,7 +96,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
     );
   }
 
-  Widget panelCabecera() {
+  Widget cuerpoWid(BuildContext context) {
     var panelExpansibleDetalle = ExpansionPanelList(
       animationDuration: Duration(milliseconds: 300),
       expansionCallback: (int index, bool isExpanded) {
@@ -130,104 +131,13 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
           panelTabs(),
           cuerpoPage(),
           cabecera(),
-          // estos dos containers tendra que cambiarse por un listviewbuilder esto es temporal
-          GestureDetector(
-            onTap: () {
-              Navigator.pushNamed(context, 'operacion');
-            },
-            child: Container(
-              height: 103.0,
-              width: double.infinity,
-              child: listaOperaciones(),
-            ),
-          ),
-          Divider(),
-          GestureDetector(
-            onTap: () {
-              Navigator.pushNamed(context, 'operacion');
-            },
-            child: Container(
-              height: 103.0,
-              width: double.infinity,
-              child: listaOperaciones(),
-            ),
-          ),
-          tituloMateriales(),
-          cuerpoPage1(),
+          listaOperaciones(context),
+          cuerpoPage(),
           cabecera(),
-          GestureDetector(
-            onTap: () {
-              Navigator.pushNamed(context, 'operacion');
-            },
-            child: Container(
-              height: 103.0,
-              width: double.infinity,
-              child: listaOperaciones(),
-            ),
-          ),
-          Divider(),
-          GestureDetector(
-            onTap: () {
-              Navigator.pushNamed(context, 'operacion');
-            },
-            child: Container(
-              height: 103.0,
-              width: double.infinity,
-              child: listaOperaciones(),
-            ),
-          ),
-          // listaOperaciones(),
+          listaMateriales(context),
         ],
       ),
     );
-    // return Container(
-    //   child: Column(
-    //     // mainAxisSize: MainAxisSize.min,
-    //     children: [
-    //       ExpansionPanelList(
-    //         animationDuration: Duration(milliseconds: 300),
-    //         expansionCallback: (int index, bool isExpanded) {
-    //           setState(() {
-    //             _data[index].isExpanded = !isExpanded;
-    //           });
-    //         },
-    //         children: _data.map<ExpansionPanel>((Item item) {
-    //           return ExpansionPanel(
-    //             headerBuilder: (BuildContext context, bool isExpanded) {
-    //               return Padding(
-    //                 padding: const EdgeInsets.all(8.0),
-    //                 child: ListTile(
-    //                   title: Text(
-    //                     '2W Ins Mech Blower Air System',
-    //                     style: TextStyle(fontSize: 20, fontFamily: 'fuente72'),
-    //                   ),
-    //                 ),
-    //               );
-    //             },
-    //             body: contenidoPanelExpansible(),
-    //             isExpanded: item.isExpanded,
-    //           );
-    //         }).toList(),
-    //       ),
-    //       panelTabs(),
-    //       cuerpoPage(),
-    //       cabecera(),
-    //       Container(
-    //         height: 105.0,
-    //         width: double.infinity,
-    //         child: listaOperaciones(),
-    //       ),
-    //       Divider(),
-    //       Container(
-    //         height: 105.0,
-    //         width: double.infinity,
-    //         child: listaOperaciones(),
-    //       ),
-    //       Divider()
-    //       // listaOperaciones(),
-    //     ],
-    //   ),
-    // );
   }
 
   Widget contenidoPanelExpansible() {
@@ -237,14 +147,15 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
             (BuildContext context, AsyncSnapshot<OrdenFullModel> snapshot) {
           if (snapshot.hasData) {
             resp = snapshot.data;
-            return algo(resp);
+            // print(resp.materiales[0]);
+            return contenidoDetalles(resp);
           } else {
             return Center(child: CircularProgressIndicator());
           }
         });
   }
 
-  Widget algo(OrdenFullModel resp) {
+  Widget contenidoDetalles(OrdenFullModel resp) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 25.0),
       width: double.infinity,
@@ -252,55 +163,114 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text('${resp.estado}'),
-          Text('Detalles de la orden'),
+          Text('Detalles de la orden', style: _styleTitleExpansibleBar),
           SizedBox(
             height: 15,
           ),
-          Text('Main Work Ctr.: ${resp.mainWork}'),
+          RichText(
+            text: TextSpan(style: _oTextStyle, children: [
+              TextSpan(
+                  text: 'Main Work Ctr: ', style: TextStyle(color: _greyColor)),
+              TextSpan(text: '${resp.mainWork}'),
+            ]),
+          ),
           SizedBox(
             height: 7,
           ),
-          Text('Tipo de orden: ${resp.tipoOt}'),
+          RichText(
+            text: TextSpan(style: _oTextStyle, children: [
+              TextSpan(
+                  text: 'Tipo de orden: ', style: TextStyle(color: _greyColor)),
+              TextSpan(text: '${resp.tipoOt}'),
+            ]),
+          ),
           SizedBox(
             height: 7,
           ),
-          Text('Tipo actividad: ${resp.tipoActividad}'),
+          RichText(
+            text: TextSpan(style: _oTextStyle, children: [
+              TextSpan(
+                  text: 'Tipo actividad: ',
+                  style: TextStyle(color: _greyColor)),
+              TextSpan(text: '${resp.tipoActividad}'),
+            ]),
+          ),
           SizedBox(
             height: 15,
           ),
-          Text('Programacion'),
+          Text('Programacion', style: _styleTitleExpansibleBar),
           SizedBox(
             height: 15,
           ),
-          Text('Inicio: ${resp.fechaFechaIniPlan}'),
+          RichText(
+            text: TextSpan(style: _oTextStyle, children: [
+              TextSpan(text: 'Inicio: ', style: TextStyle(color: _greyColor)),
+              TextSpan(text: '${resp.fechaFechaIniPlan}'),
+            ]),
+          ),
           SizedBox(
             height: 7,
           ),
-          Text('Fin: ${resp.fechaFinPlan}'),
+          RichText(
+            text: TextSpan(style: _oTextStyle, children: [
+              TextSpan(text: 'Fin: ', style: TextStyle(color: _greyColor)),
+              TextSpan(text: '${resp.fechaFinPlan}'),
+            ]),
+          ),
           SizedBox(
             height: 7,
           ),
-          Text('Prioridad: ${resp.prioridad}'),
+          RichText(
+            text: TextSpan(style: _oTextStyle, children: [
+              TextSpan(
+                  text: 'Prioridad: ', style: TextStyle(color: _greyColor)),
+              TextSpan(text: '${resp.prioridad}'),
+            ]),
+          ),
           SizedBox(
             height: 7,
           ),
-          Text('Revision: ${resp.revision}'),
+          RichText(
+            text: TextSpan(style: _oTextStyle, children: [
+              TextSpan(text: 'Revision: ', style: TextStyle(color: _greyColor)),
+              TextSpan(text: '${resp.revision}'),
+            ]),
+          ),
           SizedBox(
             height: 15,
           ),
-          Text('Equipo de Referencia'),
+          Text('Equipo de Referencia', style: _styleTitleExpansibleBar),
           SizedBox(
             height: 15,
           ),
-          Text('Ubic. func: ${resp.ubiFuncional}'),
+          RichText(
+            text: TextSpan(style: _oTextStyle, children: [
+              TextSpan(
+                  text: 'Ubic. func: ', style: TextStyle(color: _greyColor)),
+              TextSpan(text: '${resp.ubiFuncional}'),
+            ]),
+          ),
           SizedBox(
             height: 7,
           ),
-          Text('Descripcion: Blower Air System 2 Cleaner Cells'),
+          RichText(
+            text: TextSpan(style: _oTextStyle, children: [
+              TextSpan(
+                  text: 'Descripcion: Blower Air System 2 Cleaner Cells ',
+                  style: TextStyle(color: _greyColor)),
+              TextSpan(text: '${resp.ubiFuncional}'),
+            ]),
+          ),
           SizedBox(
             height: 7,
           ),
-          Text('Sort field: ${resp.sortField}'),
+          RichText(
+            text: TextSpan(style: _oTextStyle, children: [
+              TextSpan(
+                  text: 'Sort field: ', style: TextStyle(color: _greyColor)),
+              TextSpan(text: '${resp.sortField}'),
+            ]),
+          ),
           SizedBox(
             height: 15,
           ),
@@ -383,7 +353,10 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
       width: double.infinity,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        child: Text('Operaciones(2)'),
+        child: Text(
+          'Operaciones(2)',
+          style: _oTextStyle,
+        ),
       ),
     );
     return Column(
@@ -400,68 +373,45 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
       height: 50.0,
       child: Row(
         children: [
-          Expanded(child: Text('Descripcion')),
-          Text('Estatus'),
+          Expanded(
+              child: Text(
+            'Descripcion',
+            style: _oTextStyle,
+          )),
+          Text(
+            'Estatus',
+            style: _oTextStyle,
+          ),
         ],
       ),
     );
   }
 
-  Widget listaOperaciones() {
-    return ListView(
-      physics: NeverScrollableScrollPhysics(),
-      children: [
-        ListTile(
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: 15,
-              ),
-              Text('Inspect Blower Air System'),
-            ],
-          ),
-          trailing: Container(
-            width: 72,
-            height: 25,
-            child: Row(
-              children: [
-                Checkbox(
-                  value: opRealizada,
-                  onChanged: (bool value) {
-                    setState(() {
-                      opRealizada = value;
-                    });
-                  },
-                ),
-                Icon(Icons.arrow_forward_ios),
-              ],
-            ),
-          ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: 10.0,
-              ),
-              Text('Operación: 0010'),
-              SizedBox(height: 10.0),
-              Text('Trabajo: 4 HH'),
-            ],
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget tituloMateriales() {
-    return Container(
-      padding: EdgeInsets.all(20.0),
-      color: Color(0xffF2F2F2),
-      width: double.infinity,
-      height: 60.0,
-      child: Text('MATERIALES'),
-    );
+  Widget listaOperaciones(BuildContext context) {
+    return FutureBuilder(
+        future: operacionMaterialProvider.obtenerOperaciones(
+            widget.nrot, widget.token),
+        builder:
+            (BuildContext context, AsyncSnapshot<List<Operacion>> snapshot) {
+          if (snapshot.hasData) {
+            final operaciones = snapshot.data;
+            // print(operaciones[0].descripcion);return Center(child: Text('si hay operaciones'),);
+            if (operaciones.length == 0) {
+              return Center(child: Text('No existen operaciones en la Orden'));
+            }
+            return ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              itemCount: operaciones.length,
+              itemBuilder: (context, i) {
+                return itemOpe(operaciones[i]);
+              },
+            );
+          } else {
+            return Center(child: CircularProgressIndicator());
+          }
+        });
   }
 
   Widget _options(BuildContext context) {
@@ -500,19 +450,142 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
     );
   }
 
-  Widget cuerpoPage1() {
-    Widget panelContador = Container(
-      height: 60,
-      width: double.infinity,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        child: Text('Lineas de Materiales(2)'),
+  Widget itemOpe(Operacion operacion) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return OperacionPage(
+            token: widget.token,
+            idop: operacion.id.toString(),
+            descriop: operacion.descripcion,
+          );
+        }));
+      },
+      child: ListTile(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 15,
+            ),
+            RichText(
+              text: TextSpan(style: _oTextStyle, children: [
+                TextSpan(text: '${operacion.descripcion}'),
+              ]),
+            ),
+          ],
+        ),
+        trailing: Container(
+          width: 72,
+          height: 25,
+          child: Row(
+            children: [
+              Checkbox(
+                value: opRealizada,
+                onChanged: (bool value) {
+                  setState(() {
+                    opRealizada = value;
+                  });
+                },
+              ),
+              Icon(Icons.arrow_forward_ios),
+            ],
+          ),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 6.0,
+            ),
+            RichText(
+              text: TextSpan(style: _oTextStyle, children: [
+                TextSpan(
+                    text: 'Operación: ', style: TextStyle(color: _greyColor)),
+                TextSpan(text: '${operacion.actividad}'),
+              ]),
+            ),
+            SizedBox(height: 6.0),
+            RichText(
+              text: TextSpan(style: _oTextStyle, children: [
+                TextSpan(
+                    text: 'Trabajo: ', style: TextStyle(color: _greyColor)),
+                TextSpan(text: '${operacion.workPlan}'),
+              ]),
+            ),
+          ],
+        ),
       ),
     );
-    return Column(
-      children: [
-        panelContador,
-      ],
+  }
+
+  Widget listaMateriales(BuildContext context) {
+    return FutureBuilder(
+        future: operacionMaterialProvider.obtenerMateriales(
+            widget.nrot, widget.token),
+        builder:
+            (BuildContext context, AsyncSnapshot<List<Materiale>> snapshot) {
+          if (snapshot.hasData) {
+            final materiales = snapshot.data;
+            if (materiales.length == 0) {
+              return Center(child: Text('No existen operaciones en la Orden'));
+            }
+            return ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              itemCount: materiales.length,
+              itemBuilder: (context, i) {
+                return itemMate(materiales[i]);
+              },
+            );
+          } else {
+            return Center(child: CircularProgressIndicator());
+          }
+        });
+  }
+
+  Widget itemMate(Materiale material) {
+    return ListTile(
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 15,
+          ),
+          RichText(
+            text: TextSpan(style: _oTextStyle, children: [
+              TextSpan(text: '${material.descripcion}'),
+            ]),
+          ),
+        ],
+      ),
+      trailing: Container(
+          alignment: Alignment.center,
+          width: 50,
+          height: 25,
+          child: Text('${material.cantidad} EA')),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 6.0,
+          ),
+          RichText(
+            text: TextSpan(style: _oTextStyle, children: [
+              TextSpan(text: 'Material: ', style: TextStyle(color: _greyColor)),
+              TextSpan(text: '${material.numero}'),
+            ]),
+          ),
+          SizedBox(height: 6.0),
+          RichText(
+            text: TextSpan(style: _oTextStyle, children: [
+              TextSpan(text: 'Reserva: ', style: TextStyle(color: _greyColor)),
+              TextSpan(text: '${material.reserva}'),
+            ]),
+          ),
+        ],
+      ),
     );
   }
 }

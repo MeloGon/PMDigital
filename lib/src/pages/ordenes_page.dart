@@ -65,7 +65,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
                     AsyncSnapshot<List<OrdenModel>> snapshot) {
                   //ese signo de interrogacion dice has este foreach si existe data
                   snapshot.data?.forEach((element) {
-                    print(element.descripcion);
+                    //print(element.descripcion);
                   });
                   if (snapshot.hasData) {
                     return ListView.builder(
@@ -252,7 +252,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
           ],
         ),
         trailing: Container(
-          width: 100.0,
+          width: 130.0,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
