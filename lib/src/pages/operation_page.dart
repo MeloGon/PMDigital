@@ -222,15 +222,10 @@ class _OperacionPageState extends State<OperacionPage> {
       ),
     );
 
-    Widget panelContenidoServicios = Container(
-      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
-      child: Text(
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'),
-    );
     return Column(
       children: [
         panelContador,
-        panelContenidoServicios,
+        futureServicios(),
       ],
     );
   }
@@ -539,6 +534,11 @@ class _OperacionPageState extends State<OperacionPage> {
           widget.idop, widget.token),
       builder: (context, AsyncSnapshot<List<Materiale>> snapshot) {
         if (snapshot.hasData) {
+          if (snapshot.data.length == 0) {
+            return Center(
+              child: Text('No existen Materiales en la Operacion'),
+            );
+          }
           return ListView.builder(
             physics: NeverScrollableScrollPhysics(),
             scrollDirection: Axis.vertical,
@@ -607,6 +607,11 @@ class _OperacionPageState extends State<OperacionPage> {
           widget.idop, widget.token),
       builder: (context, AsyncSnapshot<List<Nota>> snapshot) {
         if (snapshot.hasData) {
+          if (snapshot.data.length == 0) {
+            return Center(
+              child: Text('No existen Notas en la Operacion'),
+            );
+          }
           return ListView.builder(
             physics: NeverScrollableScrollPhysics(),
             itemCount: snapshot.data.length,
@@ -636,6 +641,43 @@ class _OperacionPageState extends State<OperacionPage> {
         ]),
       ),
       subtitle: Text('${data.fecha}'),
+    );
+  }
+
+  Widget futureServicios() {
+    return FutureBuilder(
+      future: operacionMaterialProvider.obtenerServiciosOperacion(
+          widget.idop, widget.token),
+      builder: (context, AsyncSnapshot<List<Servicio>> snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data.length == 0) {
+            return Center(
+              child: Text('No existen Servicios en la Operacion'),
+            );
+          }
+          return ListView.builder(
+            itemCount: snapshot.data.length,
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              return itemServicio(snapshot.data[index]);
+            },
+          );
+        } else {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
+    );
+  }
+
+  Widget itemServicio(Servicio data) {
+    return ListTile(
+      title: Text(
+        data.descripcion,
+        style: _oTextStyle,
+      ),
     );
   }
 }

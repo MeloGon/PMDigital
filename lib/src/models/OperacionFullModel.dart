@@ -71,3 +71,15 @@ class Nota {
     apellido = json["apellido"];
   }
 }
+
+class Servicio {
+  Servicio({
+    this.descripcion,
+  });
+
+  String descripcion;
+
+  Servicio.fromJson(Map<String, dynamic> json) {
+    descripcion = json["descripcion"];
+  }
+}

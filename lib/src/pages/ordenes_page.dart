@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pmdigital_app/src/models/OrdenModel.dart';
 import 'package:pmdigital_app/src/pages/detalleot_page.dart';
 import 'package:pmdigital_app/src/provider/ordenes_provider.dart';
+import 'package:hexcolor/hexcolor.dart';
 
 class OrdenesPage extends StatefulWidget {
   final String token;
@@ -259,7 +260,8 @@ class _OrdenesPageState extends State<OrdenesPage> {
               Text(
                 '${data.estado}',
                 style: TextStyle(
-                    fontWeight: FontWeight.w700, color: Color(0xffBB0000)),
+                    fontWeight: FontWeight.w700,
+                    color: Hexcolor('${data.estadoColor}')),
               ),
               Icon(
                 Icons.arrow_forward_ios,

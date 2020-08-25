@@ -419,30 +419,52 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
       elevation: 6.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
-              FlatButton(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(9)),
-                  onPressed: () {},
-                  child: Text(
-                    'Guardar',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: 'fuente72',
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700),
-                  )),
-              FlatButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text(
-                    'Iniciar',
-                    style: TextStyle(fontSize: 15, fontFamily: 'fuente72'),
-                  )),
+              PopupMenuButton<String>(
+                child: Row(
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.only(right: 20.0),
+                      child: Text(
+                        'Iniciar',
+                        style: TextStyle(
+                            fontFamily: 'fuente72',
+                            fontSize: 14.0,
+                            color: Color(0xff0854A1)),
+                      ),
+                    ),
+                  ],
+                ),
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  PopupMenuItem<String>(
+                    value: "Iniciar",
+                    child: Text(
+                      "Iniciar",
+                      style: TextStyle(fontFamily: 'fuente72', fontSize: 13.0),
+                    ),
+                  ),
+                  PopupMenuItem<String>(
+                    value: "Reprogramar",
+                    child: Text(
+                      "Repogramar",
+                      style: TextStyle(fontFamily: 'fuente72', fontSize: 13.0),
+                    ),
+                  ),
+                ],
+                // onSelected: (value) {
+                //   if (value == "iniciar") {
+                //     print('Iniciar');
+                //     print('Reprogramar');
+                //   }
+                // },
+                onSelected: (value) {
+                  cambiarEstado(value);
+                },
+              ),
             ],
           )
         ],
@@ -528,7 +550,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
           if (snapshot.hasData) {
             final materiales = snapshot.data;
             if (materiales.length == 0) {
-              return Center(child: Text('No existen operaciones en la Orden'));
+              return Center(child: Text('No existen materiales en la Orden'));
             }
             return ListView.builder(
               physics: NeverScrollableScrollPhysics(),
@@ -587,5 +609,18 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
         ],
       ),
     );
+  }
+
+  void cambiarEstado(String value) async {
+    if (value == "Iniciar") {
+      var resp =
+          await ordenesProvider.cambiarEstado(widget.nrot, widget.token, value);
+      print(resp);
+    }
+    if (value == "Reprogramar") {
+      var resp =
+          await ordenesProvider.cambiarEstado(widget.nrot, widget.token, value);
+      print(resp);
+    }
   }
 }

@@ -75,4 +75,17 @@ class OrdenesProvider {
 
     return ordenfull;
   }
+
+  Future cambiarEstado(String idot, String token, String nuevoEstado) async {
+    final resp = await http.put(_urlGlobal + idot.toString(), headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": token,
+    }, body: {
+      'json': '{"estado":"' + nuevoEstado.toString() + '"}',
+    });
+
+    var jsonconverted = json.decode(resp.body);
+    return jsonconverted;
+  }
 }

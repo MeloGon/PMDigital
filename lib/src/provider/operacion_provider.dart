@@ -95,4 +95,24 @@ class OperacionMaterialProvider {
     });
     return listaNotas;
   }
+
+  Future<List<Servicio>> obtenerServiciosOperacion(
+      String idop, String token) async {
+    final resp = await http.get(_urlOperacion + idop.toString(), headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": token,
+    });
+
+    final List<Servicio> listaServicios = new List();
+    final decode = json.decode(resp.body);
+    //comentarle que aqui son servicios xd
+    (decode['rpta']['sercicios'] as List)
+        .map((e) => Servicio.fromJson(e))
+        .toList()
+        .forEach((element) {
+      listaServicios.add(element);
+    });
+    return listaServicios;
+  }
 }
