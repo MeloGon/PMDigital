@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pmdigital_app/src/models/OperacionFullModel.dart';
 import 'package:pmdigital_app/src/models/OrdenFullModel.dart';
+import 'package:pmdigital_app/src/pages/nota_page.dart';
 import 'package:pmdigital_app/src/provider/operacion_provider.dart';
 
 class OperacionPage extends StatefulWidget {
@@ -254,30 +256,58 @@ class _OperacionPageState extends State<OperacionPage> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               FlatButton(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(9)),
-                  onPressed: () {},
-                  child: Text(
-                    'Guardar',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: 'fuente72',
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700),
-                  )),
-              FlatButton(
                   onPressed: () {
-                    Navigator.pop(context);
+                    cambiarEstadoOp("Confirmar");
                   },
                   child: Text(
                     'Confirmar',
-                    style: TextStyle(fontSize: 15, fontFamily: 'fuente72'),
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'fuente72',
+                        color: Color(0xff0854A1)),
                   )),
             ],
           )
         ],
       ),
     );
+  }
+
+  void cambiarEstadoOp(String value) async {
+    var num;
+    if (value == "Confirmar") {
+      num = 1;
+      var resp = await operacionMaterialProvider.cambiarEstadoOpe(
+          widget.idop, widget.token, num.toString());
+      print(resp);
+      if (resp['code'] == 200) {
+        toast('La operacion ha sido confirmada');
+      } else {
+        toast('Ha surgido un inconveniente.');
+      }
+    }
+    if (value == "No Confirmar") {
+      num = 0;
+      var resp = await operacionMaterialProvider.cambiarEstadoOpe(
+          widget.idop, widget.token, num.toString());
+      print(resp);
+      if (resp['code'] == 200) {
+        toast('La operacion no ha sido confirmada');
+      } else {
+        toast('Ha surgido un inconveniente.');
+      }
+    }
+  }
+
+  void toast(String msg) {
+    Fluttertoast.showToast(
+        msg: msg,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.TOP,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.white,
+        textColor: Colors.black,
+        fontSize: 14.0);
   }
 
   Widget materialesPanel() {
@@ -321,7 +351,7 @@ class _OperacionPageState extends State<OperacionPage> {
       padding: EdgeInsets.symmetric(horizontal: 20.0),
       height: 50.0,
       child: Row(
-        children: [Expanded(child: Text('Notas(1)')), Icon(Icons.add)],
+        children: [Expanded(child: Text('Notas(1)')), popNota()],
       ),
     );
     return Container(
@@ -679,5 +709,34 @@ class _OperacionPageState extends State<OperacionPage> {
         style: _oTextStyle,
       ),
     );
+  }
+
+  Widget popNota() {
+    return PopupMenuButton<String>(
+      child: Icon(Icons.add),
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+        PopupMenuItem<String>(
+          value: "añadir_nota",
+          child: Text(
+            "Añadir Nota",
+            style: TextStyle(fontFamily: 'fuente72', fontSize: 13.0),
+          ),
+        )
+      ],
+      onSelected: (value) {
+        opcionesNota(value);
+      },
+    );
+  }
+
+  void opcionesNota(String value) {
+    if (value == "añadir_nota") {
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return NotaPage(
+          token: widget.token,
+          idop: widget.idop,
+        );
+      }));
+    }
   }
 }

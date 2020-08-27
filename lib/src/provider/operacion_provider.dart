@@ -115,4 +115,35 @@ class OperacionMaterialProvider {
     });
     return listaServicios;
   }
+
+  Future cambiarEstadoOpe(String idop, String token, String nuevoEstado) async {
+    final resp = await http.put(_urlOperacion + idop.toString(), headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": token,
+    }, body: {
+      'json': '{"estado":"' + nuevoEstado.toString() + '"}',
+    });
+
+    var jsonconverted = json.decode(resp.body);
+    return jsonconverted;
+  }
+
+  Future guardarNota(String token, String idop, String nota) async {
+    final resp = await http
+        .post('https://innovadis.net.pe/apiPMDigital/public/nota', headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": token,
+    }, body: {
+      'json': '{"operaciones_id":"' +
+          idop.toString() +
+          '","texto":"' +
+          nota.toString() +
+          '"}'
+    });
+
+    var jsonconverted = json.decode(resp.body);
+    return jsonconverted;
+  }
 }

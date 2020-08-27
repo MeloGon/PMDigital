@@ -37,6 +37,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
     ordenesProvider.getOrdenes(widget.token);
     return Scaffold(
       body: CustomScrollView(
+        physics: NeverScrollableScrollPhysics(),
         slivers: [
           _appBarOrdenes(),
 

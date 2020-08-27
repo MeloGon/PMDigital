@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pmdigital_app/src/models/OrdenFullModel.dart';
 import 'package:pmdigital_app/src/pages/operation_page.dart';
 import 'package:pmdigital_app/src/provider/operacion_provider.dart';
@@ -504,11 +505,12 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
             children: [
               Checkbox(
                 value: opRealizada,
-                onChanged: (bool value) {
-                  setState(() {
-                    opRealizada = value;
-                  });
-                },
+                // onChanged: (bool value) {
+                //   setState(() {
+                //     opRealizada = value;
+                //   });
+                // },
+                onChanged: null,
               ),
               Icon(Icons.arrow_forward_ios),
             ],
@@ -616,11 +618,32 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
       var resp =
           await ordenesProvider.cambiarEstado(widget.nrot, widget.token, value);
       print(resp);
+      if (resp['code'] == 200) {
+        toast('La orden esta en proceso');
+      } else {
+        toast('Ha surgido un inconveniente.');
+      }
     }
     if (value == "Reprogramar") {
       var resp =
           await ordenesProvider.cambiarEstado(widget.nrot, widget.token, value);
       print(resp);
+      if (resp['code'] == 200) {
+        toast('La orden ha sido reprogramada');
+      } else {
+        toast('Ha surgido un inconveniente.');
+      }
     }
+  }
+
+  void toast(String msg) {
+    Fluttertoast.showToast(
+        msg: msg,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.TOP,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.white,
+        textColor: Colors.black,
+        fontSize: 14.0);
   }
 }
