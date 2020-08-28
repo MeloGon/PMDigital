@@ -1,5 +1,8 @@
+import 'dart:io';
+import 'package:mime_type/mime_type.dart';
 import 'package:http/http.dart' as http;
 import 'package:pmdigital_app/src/models/OperacionFullModel.dart';
+import 'package:http_parser/http_parser.dart';
 import 'dart:convert';
 import 'package:pmdigital_app/src/models/OrdenFullModel.dart';
 
@@ -145,5 +148,61 @@ class OperacionMaterialProvider {
 
     var jsonconverted = json.decode(resp.body);
     return jsonconverted;
+  }
+
+  //solo funciona con admin reviar esto con Joel
+  Future eliminarNota(String token, String idnota) async {
+    final resp = await http.delete(
+        'https://innovadis.net.pe/apiPMDigital/public/nota/' +
+            idnota.toString(),
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Authorization": token,
+        });
+
+    var jsonconverted = json.decode(resp.body);
+    print(jsonconverted);
+    return jsonconverted;
+  }
+
+//solo funciona con admin reviar esto con Joel
+  Future editarNota(String token, String idnota, String contnota) async {
+    final resp = await http.put(
+        'https://innovadis.net.pe/apiPMDigital/public/nota/' +
+            idnota.toString(),
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Authorization": token,
+        },
+        body: {
+          'json': '{"texto":"' + contnota.toString() + '"}'
+        });
+
+    var jsonconverted = json.decode(resp.body);
+    print(jsonconverted);
+    return jsonconverted;
+  }
+
+  Future<String> subirImagen(File imagen) async {
+    final urli = Uri.parse(
+        'https://api.cloudinary.com/v1_1/dtbk6l4qp/image/upload?upload_preset=feqvszg5');
+    final mimeType = mime(imagen.path).split('/'); //image/jpeg
+
+    final imageUploadRequest = http.MultipartRequest('POST', urli);
+    final file = await http.MultipartFile.fromPath('file', imagen.path,
+        contentType: MediaType(mimeType[0], mimeType[1]));
+
+    imageUploadRequest.files.add(file);
+
+    final streamResponse = await imageUploadRequest.send();
+    final resp = await http.Response.fromStream(streamResponse);
+    if (resp.statusCode != 200 && resp.statusCode != 201) {
+      return null;
+    }
+
+    final respData = json.decode(resp.body);
+    return respData['secure_url'];
   }
 }

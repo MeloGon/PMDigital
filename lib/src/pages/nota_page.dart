@@ -5,7 +5,9 @@ import 'package:pmdigital_app/src/provider/operacion_provider.dart';
 class NotaPage extends StatefulWidget {
   String token;
   String idop;
-  NotaPage({this.token, this.idop});
+  String contnota;
+  String tipo;
+  NotaPage({this.token, this.idop, this.contnota, this.tipo});
 
   @override
   _NotaPageState createState() => _NotaPageState();
@@ -16,6 +18,16 @@ class _NotaPageState extends State<NotaPage> {
   final notaController = TextEditingController();
   final OperacionMaterialProvider operacionMaterialProvider =
       new OperacionMaterialProvider();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    if (widget.contnota != null) {
+      notaController.text = widget.contnota;
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,10 +54,18 @@ class _NotaPageState extends State<NotaPage> {
   }
 
   void guardarNota() async {
-    var resp = await operacionMaterialProvider.guardarNota(
-        widget.token, widget.idop, notaController.text);
-    if (resp['code'] == 200) {
-      toast('La nota ha sido guardada exitosamente');
+    if (widget.tipo == "editar") {
+      var resp = await operacionMaterialProvider.editarNota(
+          widget.token, widget.idop, notaController.text);
+      if (resp['code'] == 200) {
+        toast('La nota ha sido editada exitosamente');
+      }
+    } else {
+      var resp = await operacionMaterialProvider.guardarNota(
+          widget.token, widget.idop, notaController.text);
+      if (resp['code'] == 200) {
+        toast('La nota ha sido guardada exitosamente');
+      }
     }
   }
 

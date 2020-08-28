@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:pmdigital_app/src/models/OperacionFullModel.dart';
 import 'package:pmdigital_app/src/models/OrdenFullModel.dart';
+import 'package:pmdigital_app/src/pages/foto_page.dart';
 import 'package:pmdigital_app/src/pages/nota_page.dart';
 import 'package:pmdigital_app/src/provider/operacion_provider.dart';
 
@@ -57,6 +61,8 @@ class _OperacionPageState extends State<OperacionPage> {
 
   final OperacionMaterialProvider operacionMaterialProvider =
       new OperacionMaterialProvider();
+
+  File foto;
 
   @override
   Widget build(BuildContext context) {
@@ -381,7 +387,7 @@ class _OperacionPageState extends State<OperacionPage> {
       padding: EdgeInsets.symmetric(horizontal: 20.0),
       height: 50.0,
       child: Row(
-        children: [Expanded(child: Text('Fotos(3)')), Icon(Icons.add)],
+        children: [Expanded(child: Text('Fotos(3)')), popFoto()],
       ),
     );
     return Container(
@@ -671,7 +677,7 @@ class _OperacionPageState extends State<OperacionPage> {
         ]),
       ),
       subtitle: Text('${data.fecha}'),
-      trailing: popOpcionesNota(),
+      trailing: popEditDelNota(data.id.toString(), data.descripcion.toString()),
     );
   }
 
@@ -741,7 +747,7 @@ class _OperacionPageState extends State<OperacionPage> {
     }
   }
 
-  Widget popOpcionesNota() {
+  Widget popEditDelNota(String idnota, String contnota) {
     return PopupMenuButton<String>(
       child: Icon(Icons.more_horiz),
       itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -761,8 +767,92 @@ class _OperacionPageState extends State<OperacionPage> {
         )
       ],
       onSelected: (value) {
-        opcionesNota(value);
+        editDelNota(value, idnota, contnota);
       },
     );
   }
+
+  void editDelNota(String value, String idnota, String contnota) async {
+    if (value == "eliminar") {
+      var resp =
+          await operacionMaterialProvider.eliminarNota(widget.token, idnota);
+      if (resp['code'] == 200) {
+        toast('La nota ha sido eliminada exitosamente');
+      } else {
+        toast('Ha ocurrido un error inesperado borrando la nota');
+      }
+    }
+    if (value == "editar") {
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return NotaPage(
+          token: widget.token,
+          idop: idnota,
+          contnota: contnota,
+          tipo: value,
+        );
+      }));
+    }
+  }
+
+  Widget popFoto() {
+    return PopupMenuButton<String>(
+      child: Icon(Icons.add),
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+        PopupMenuItem<String>(
+          value: "tomar_foto",
+          child: Text(
+            "Tomar fotografia",
+            style: TextStyle(fontFamily: 'fuente72', fontSize: 13.0),
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: "escoger_foto",
+          child: Text(
+            "Escoger Fotografia",
+            style: TextStyle(fontFamily: 'fuente72', fontSize: 13.0),
+          ),
+        )
+      ],
+      onSelected: (value) {
+        opcionesFoto(value);
+      },
+    );
+  }
+
+  void opcionesFoto(String value) {
+    if (value == "tomar_foto") {
+      tomarFoto();
+    }
+    if (value == "escoger_foto") {
+      seleccionarFoto();
+    }
+  }
+
+  void seleccionarFoto() async {
+    final _picker = ImagePicker();
+    final pickedFile = await _picker.getImage(
+      source: ImageSource.gallery,
+      // imageQuality: 78,
+      // maxHeight: 768,
+      // maxWidth: 1024,
+    );
+    try {
+      foto = File(pickedFile.path);
+    } catch (e) {
+      print('$e');
+    }
+    if (foto != null) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) {
+            // return ImagePage(foto, widget.token, widget.idot);
+          },
+        ),
+      );
+    } else {
+      print('ruta de imagen nula');
+    }
+  }
+
+  void tomarFoto() {}
 }
