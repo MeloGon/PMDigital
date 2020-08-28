@@ -205,4 +205,28 @@ class OperacionMaterialProvider {
     final respData = json.decode(resp.body);
     return respData['secure_url'];
   }
+
+  //{ "operaciones_id":"2", "url":"chfokrd.png", "url2":"hfokrd.png", "nombre":"nom", "extension":"jpg", "ancho":"50", "alto":"100", "peso":"500"}
+
+  Future subirImagenServer(String token, String idop, String urlfoto) async {
+    final resp = await http.post(
+        'https://innovadis.net.pe/apiPMDigital/public/imagen/store2',
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Authorization": token,
+        },
+        body: {
+          'json': '{"operaciones_id":"' +
+              idop.toString() +
+              '","url":"' +
+              urlfoto.toString() +
+              '","url2":"' +
+              urlfoto.toString() +
+              '", "nombre":"nom", "extension":"jpg", "ancho":"50", "alto":"100", "peso":"500"}'
+        });
+    var respData = json.decode(resp.body);
+    print(respData);
+    return respData;
+  }
 }

@@ -832,9 +832,9 @@ class _OperacionPageState extends State<OperacionPage> {
     final _picker = ImagePicker();
     final pickedFile = await _picker.getImage(
       source: ImageSource.gallery,
-      // imageQuality: 78,
-      // maxHeight: 768,
-      // maxWidth: 1024,
+      imageQuality: 78,
+      maxHeight: 768,
+      maxWidth: 1024,
     );
     try {
       foto = File(pickedFile.path);
@@ -845,7 +845,7 @@ class _OperacionPageState extends State<OperacionPage> {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) {
-            // return ImagePage(foto, widget.token, widget.idot);
+            return ImagePage(foto, widget.token, widget.idop);
           },
         ),
       );
@@ -854,5 +854,30 @@ class _OperacionPageState extends State<OperacionPage> {
     }
   }
 
-  void tomarFoto() {}
+  tomarFoto() async {
+    final _picker = ImagePicker();
+    final pickedFile = await _picker.getImage(
+      source: ImageSource.camera,
+      imageQuality: 78,
+      maxHeight: 768,
+      maxWidth: 1024,
+    );
+    try {
+      foto = File(pickedFile.path);
+    } catch (e) {
+      print('$e');
+    }
+
+    if (foto != null) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) {
+            return ImagePage(foto, widget.token, widget.idop);
+          },
+        ),
+      );
+    } else {
+      print('ruta de imagen nula');
+    }
+  }
 }
