@@ -671,6 +671,7 @@ class _OperacionPageState extends State<OperacionPage> {
         ]),
       ),
       subtitle: Text('${data.fecha}'),
+      trailing: popOpcionesNota(),
     );
   }
 
@@ -738,5 +739,30 @@ class _OperacionPageState extends State<OperacionPage> {
         );
       }));
     }
+  }
+
+  Widget popOpcionesNota() {
+    return PopupMenuButton<String>(
+      child: Icon(Icons.more_horiz),
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+        PopupMenuItem<String>(
+          value: "editar",
+          child: Text(
+            "Editar nota",
+            style: TextStyle(fontFamily: 'fuente72', fontSize: 13.0),
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: "eliminar",
+          child: Text(
+            "Eliminar nota",
+            style: TextStyle(fontFamily: 'fuente72', fontSize: 13.0),
+          ),
+        )
+      ],
+      onSelected: (value) {
+        opcionesNota(value);
+      },
+    );
   }
 }
