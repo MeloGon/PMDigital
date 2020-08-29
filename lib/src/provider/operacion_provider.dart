@@ -119,6 +119,25 @@ class OperacionMaterialProvider {
     return listaServicios;
   }
 
+  Future<List<Foto>> obtenerFotosOperacion(String idop, String token) async {
+    final resp = await http.get(_urlOperacion + idop.toString(), headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": token,
+    });
+
+    final List<Foto> listaFotos = new List();
+    final decode = json.decode(resp.body);
+    //comentarle que aqui son servicios xd
+    (decode['rpta']['fotos'] as List)
+        .map((e) => Foto.fromJson(e))
+        .toList()
+        .forEach((element) {
+      listaFotos.add(element);
+    });
+    return listaFotos;
+  }
+
   Future cambiarEstadoOpe(String idop, String token, String nuevoEstado) async {
     final resp = await http.put(_urlOperacion + idop.toString(), headers: {
       "Accept": "application/json",

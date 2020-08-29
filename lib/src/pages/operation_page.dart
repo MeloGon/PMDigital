@@ -64,6 +64,10 @@ class _OperacionPageState extends State<OperacionPage> {
 
   File foto;
 
+  bool loading;
+
+  List<String> ids;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,7 +87,8 @@ class _OperacionPageState extends State<OperacionPage> {
             height: double.infinity,
             child: ListView(
               children: [
-                panelCabecera(),
+                panelCabecera(context),
+                fotosPanel(context),
               ],
             ),
           ),
@@ -103,7 +108,7 @@ class _OperacionPageState extends State<OperacionPage> {
     );
   }
 
-  Widget panelCabecera() {
+  Widget panelCabecera(BuildContext context) {
     var panelExpansibleDetalle = ExpansionPanelList(
       animationDuration: Duration(milliseconds: 300),
       expansionCallback: (int index, bool isExpanded) {
@@ -139,7 +144,6 @@ class _OperacionPageState extends State<OperacionPage> {
           serviciosPanel(),
           materialesPanel(),
           notasPanel(),
-          fotosPanel(),
           // listaOperaciones(),
         ],
       ),
@@ -381,7 +385,7 @@ class _OperacionPageState extends State<OperacionPage> {
     );
   }
 
-  Widget fotosPanel() {
+  Widget fotosPanel(BuildContext context) {
     Widget cabecera = Container(
       color: Color(0xffF2F2F2),
       padding: EdgeInsets.symmetric(horizontal: 20.0),
@@ -403,32 +407,7 @@ class _OperacionPageState extends State<OperacionPage> {
             ),
           ),
           cabecera,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Container(
-                width: 90.0,
-                height: 90.0,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(6.0),
-                    color: Colors.red),
-              ),
-              Container(
-                width: 90.0,
-                height: 90.0,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(6.0),
-                    color: Colors.cyan),
-              ),
-              Container(
-                width: 90.0,
-                height: 90.0,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(6.0),
-                    color: Colors.blue),
-              ),
-            ],
-          )
+          futureBuilderFotos(),
         ],
       ),
     );
@@ -879,5 +858,43 @@ class _OperacionPageState extends State<OperacionPage> {
     } else {
       print('ruta de imagen nula');
     }
+  }
+
+  Widget futureBuilderFotos() {
+    return Container(
+      height: 150.0,
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: 20.0),
+      child: FutureBuilder(
+        future: operacionMaterialProvider.obtenerFotosOperacion(
+            widget.idop, widget.token),
+        builder: (context, AsyncSnapshot<List<Foto>> snapshot) {
+          if (snapshot.hasData) {
+            if (snapshot.data.length == 0) {
+              return Center(
+                child: Text('No existen Fotografias en la Operacion'),
+              );
+            }
+            return ListView.builder(
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              itemCount: snapshot.data.length,
+              itemBuilder: (context, index) {
+                return itemFoto(snapshot.data[index]);
+              },
+            );
+          } else {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  Widget itemFoto(Foto data) {
+    return Container(
+        width: 100.0, height: 100.0, child: Image.network(data.url));
   }
 }
