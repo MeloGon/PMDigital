@@ -9,6 +9,8 @@ import 'package:pmdigital_app/src/pages/foto_page.dart';
 import 'package:pmdigital_app/src/pages/nota_page.dart';
 import 'package:pmdigital_app/src/provider/operacion_provider.dart';
 
+import 'image_network.dart';
+
 class OperacionPage extends StatefulWidget {
   String token;
   String idop;
@@ -897,7 +899,8 @@ class _OperacionPageState extends State<OperacionPage> {
   }
 
   Widget itemFoto(Foto data) {
-    return Container(
+    return GestureDetector(
+      child: Container(
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.0)),
         padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
         child: ClipRRect(
@@ -908,6 +911,17 @@ class _OperacionPageState extends State<OperacionPage> {
             width: 100.0,
             height: 50.0,
           ),
-        ));
+        ),
+      ),
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) {
+              return ImagePageNetwork('${data.url}');
+            },
+          ),
+        );
+      },
+    );
   }
 }

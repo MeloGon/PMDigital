@@ -84,6 +84,7 @@ flutter:
     - family: fuente72
       fonts:
         - asset: assets/fonts/72-Black.ttf
+          weight: 800
         - asset: assets/fonts/72-Bold.ttf
           weight: 700
         - asset: assets/fonts/72-BoldItalic.ttf

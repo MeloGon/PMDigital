@@ -28,8 +28,10 @@ class _OrdenesPageState extends State<OrdenesPage> {
       TextStyle(fontFamily: 'fuente72', fontSize: 14.0, color: Colors.black);
 
   TextStyle _titleOtStyle = TextStyle(
+      fontSize: 14.0,
       fontFamily: 'fuente72',
       color: Color(0xff32363A),
+      letterSpacing: 0.1,
       fontWeight: FontWeight.w700);
 
   TextStyle _headerStyle = TextStyle(
@@ -148,21 +150,19 @@ class _OrdenesPageState extends State<OrdenesPage> {
   }
 
   Widget _spaceSearch() {
-    Widget inputBuscar = Expanded(
-      child: Container(
-        color: Colors.white,
-        height: 37,
-        child: TextField(
-          style: TextStyle(fontFamily: 'fuente72', fontSize: 14.0),
-          decoration: InputDecoration(
-            contentPadding: EdgeInsets.all(10),
-            border:
-                OutlineInputBorder(borderRadius: BorderRadius.circular(2.0)),
-            hintText: 'Buscar',
-            suffixIcon: Icon(
-              Icons.search,
-              color: Color(0xff0854a0),
-            ),
+    Widget inputBuscar = Container(
+      color: Colors.white,
+      width: 200.0,
+      height: 37,
+      child: TextField(
+        style: TextStyle(fontFamily: 'fuente72', fontSize: 14.0),
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.all(10),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(2.0)),
+          hintText: 'Buscar',
+          suffixIcon: Icon(
+            Icons.search,
+            color: Color(0xff0854a0),
           ),
         ),
       ),
@@ -170,15 +170,8 @@ class _OrdenesPageState extends State<OrdenesPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 23.0),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Text(
-            'Ordenes de Trabajo',
-            overflow: TextOverflow.clip,
-            style: _oTextStyle,
-          ),
-          SizedBox(
-            width: 10.0,
-          ),
           inputBuscar,
         ],
       ),
