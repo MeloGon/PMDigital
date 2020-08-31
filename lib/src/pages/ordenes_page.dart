@@ -1,165 +1,121 @@
 import 'package:flutter/material.dart';
-import 'package:pmdigital_app/src/models/OrdenModel.dart';
-import 'package:pmdigital_app/src/pages/detalleot_page.dart';
-import 'package:pmdigital_app/src/provider/ordenes_provider.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:pmdigital_app/src/models/OrdenModel.dart';
+import 'package:pmdigital_app/src/provider/ordenes_provider.dart';
+
+import 'detalleot_page.dart';
 
 class OrdenesPage extends StatefulWidget {
   final String token;
   OrdenesPage({this.token});
-
   @override
   _OrdenesPageState createState() => _OrdenesPageState();
 }
 
 class _OrdenesPageState extends State<OrdenesPage> {
+  //Colores
   Color _appBarColor = Color(0xff354A5F);
   Color _greyColor = Color(0xff6A6D70);
-  TextStyle _appBarStyle = TextStyle(
-    fontFamily: 'fuente72',
-    fontSize: 14.0,
-  );
-  TextStyle _expandedBarStyle = TextStyle(
-    fontFamily: 'fuente72',
-    color: Colors.black,
-    fontSize: 18.0,
-  );
+  //Estilos
+  TextStyle _styleText = TextStyle(fontFamily: 'fuente72', fontSize: 14.0);
+  final ordenesProvider = new OrdenesProvider();
   TextStyle _oTextStyle =
       TextStyle(fontFamily: 'fuente72', fontSize: 14.0, color: Colors.black);
-
   TextStyle _titleOtStyle = TextStyle(
-      fontSize: 14.0,
-      fontFamily: 'fuente72',
-      color: Color(0xff32363A),
-      letterSpacing: 0.1,
-      fontWeight: FontWeight.w700);
+      fontSize: 14.0, color: Color(0xff32363A), fontWeight: FontWeight.w700);
 
-  TextStyle _headerStyle = TextStyle(
-      fontFamily: 'fuente72', fontSize: 14.0, fontWeight: FontWeight.normal);
-
-  final ordenesProvider = new OrdenesProvider();
   @override
   Widget build(BuildContext context) {
     ordenesProvider.getOrdenes(widget.token);
     return Scaffold(
-      body: CustomScrollView(
-        physics: NeverScrollableScrollPhysics(),
-        slivers: [
-          _appBarOrdenes(),
-
-//           SliverList(delegate: SliverChildBuilderDelegate((context, index) {
-//   return Container();
-// })),
-          SliverList(
-              delegate: SliverChildListDelegate([
-            _spaceSearch(),
-            _headerBar(),
-            // StreamBuilder(
-            //   stream: ordenesProvider.ordenesStream,
-            //   builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
-            //     //ese signo de interrogacion dice has este foreach si existe data
-            //     snapshot.data?.forEach((element) {
-            //       print(element.title);
-            //     });
-            //   },
-            // ),
-
-            Container(
-              width: double.infinity,
-              height: 600,
-              child: StreamBuilder(
-                stream: ordenesProvider.ordenesStream,
-                builder: (BuildContext context,
-                    AsyncSnapshot<List<OrdenModel>> snapshot) {
-                  //ese signo de interrogacion dice has este foreach si existe data
-                  snapshot.data?.forEach((element) {
-                    //print(element.descripcion);
-                  });
-                  if (snapshot.hasData) {
-                    return ListView.builder(
-                      itemCount: snapshot.data.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return itemOt(snapshot.data[index]);
-                      },
-                    );
-                  } else {
-                    //el progrssar solo aparece mientras se resuleve el future o cuando nohay datos
-                    return Container(
-                        height: 400,
-                        child: Center(child: CircularProgressIndicator()));
-                  }
-                },
-              ),
-            )
-          ])),
-        ],
-      ),
-    );
-  }
-
-  Widget _appBarOrdenes() {
-    return SliverAppBar(
-        elevation: 2.0,
+      appBar: AppBar(
         backgroundColor: _appBarColor,
-        expandedHeight: 100,
-        centerTitle: false,
+        titleSpacing: 0.0,
+        automaticallyImplyLeading: false,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: Icon(Icons.arrow_back, color: Colors.white),
+            ),
+            Text(
+              'Mis órdenes hoy',
+              style: _styleText,
+            )
+            // Your widgets here
+          ],
+        ),
         actions: [
           CircleAvatar(
-            backgroundColor: Colors.transparent,
-            radius: 20.0,
             child: Icon(
               Icons.supervised_user_circle,
               color: Colors.white,
             ),
-          ),
+            backgroundColor: Colors.transparent,
+          )
         ],
-        title: Text(
-          'Mis órdenes hoy',
-          style: _appBarStyle,
-        ),
-        leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios), onPressed: atrasButton),
-        floating: true,
-        pinned: true,
-        //collapsedHeight: 100.0,
-        flexibleSpace: Stack(
-          children: [
-            Container(
-              margin: EdgeInsets.only(top: 70.0),
-              width: double.infinity,
-              color: Colors.white,
-              height: 60,
-            ),
-            FlexibleSpaceBar(
-              centerTitle: true,
-              title: Container(
-                padding: EdgeInsets.only(left: 20),
-                width: double.infinity,
-                child: Text(
-                  'Órdenes de trabajo ()',
-                  style: _expandedBarStyle,
-                ),
-              ),
-            ),
-          ],
-        ));
+      ),
+      body: Stack(
+        children: [numeroOrdenes(), spaceSearch(), headerBar(), ordenes()],
+      ),
+    );
   }
 
-  void atrasButton() {
-    Navigator.pop(context);
+  void cantidad() async => await ordenesProvider.cantidadOrdenes(widget.token);
+
+  Widget futureCantidad() {
+    return FutureBuilder(
+      future: ordenesProvider.cantidadOrdenes(widget.token),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Text(
+            'Órdenes de trabajo (${snapshot.data.toString() ?? 0})',
+            style: TextStyle(fontFamily: 'fuente72', fontSize: 20.0),
+          );
+        } else {
+          return Text(
+            'Órdenes de trabajo (Estimando ..)',
+            style: TextStyle(fontFamily: 'fuente72', fontSize: 20.0),
+          );
+        }
+      },
+    );
   }
 
-  Widget _spaceSearch() {
+  Widget numeroOrdenes() {
+    return Container(
+      width: double.infinity,
+      height: 48.0,
+      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey,
+            blurRadius: 6.0,
+            spreadRadius: 0.0,
+            offset: Offset(2.0, 0), // shadow direction: bottom right
+          )
+        ],
+      ),
+      child: futureCantidad(),
+    );
+  }
+
+  Widget spaceSearch() {
     Widget inputBuscar = Container(
       color: Colors.white,
       width: 200.0,
-      height: 37,
+      height: 30,
       child: TextField(
         style: TextStyle(fontFamily: 'fuente72', fontSize: 14.0),
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.all(10),
+          contentPadding: EdgeInsets.all(7),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(2.0)),
           hintText: 'Buscar',
+          hintStyle: TextStyle(fontStyle: FontStyle.italic),
           suffixIcon: Icon(
             Icons.search,
             color: Color(0xff0854a0),
@@ -167,7 +123,8 @@ class _OrdenesPageState extends State<OrdenesPage> {
         ),
       ),
     );
-    return Padding(
+    return Container(
+      margin: EdgeInsets.only(top: 40.0),
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 23.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -178,8 +135,9 @@ class _OrdenesPageState extends State<OrdenesPage> {
     );
   }
 
-  Widget _headerBar() {
+  Widget headerBar() {
     return Container(
+      margin: EdgeInsets.only(top: 110.0),
       padding: EdgeInsets.symmetric(horizontal: 20.0),
       width: double.infinity,
       height: 45,
@@ -189,13 +147,47 @@ class _OrdenesPageState extends State<OrdenesPage> {
           Expanded(
               child: Text(
             'Descripción',
-            style: _headerStyle,
+            style: _styleText,
           )),
           Text(
             'Estatus',
-            style: _headerStyle,
+            style: _styleText,
           ),
         ],
+      ),
+    );
+  }
+
+  Widget ordenes() {
+    return Container(
+      margin: EdgeInsets.only(top: 160.0),
+      child: StreamBuilder(
+        stream: ordenesProvider.ordenesStream,
+        builder:
+            (BuildContext context, AsyncSnapshot<List<OrdenModel>> snapshot) {
+          //ese signo de interrogacion dice has este foreach si existe data
+          snapshot.data?.forEach((element) {
+            //print(element.descripcion);
+          });
+          if (snapshot.hasData) {
+            return ListView.separated(
+              separatorBuilder: (context, index) => Padding(
+                padding: EdgeInsets.only(left: 20.0),
+                child: Divider(
+                  color: Colors.grey,
+                ),
+              ),
+              itemCount: snapshot.data.length,
+              itemBuilder: (BuildContext context, int index) {
+                return itemOt(snapshot.data[index]);
+              },
+            );
+          } else {
+            //el progrssar solo aparece mientras se resuleve el future o cuando nohay datos
+            return Container(
+                height: 400, child: Center(child: CircularProgressIndicator()));
+          }
+        },
       ),
     );
   }

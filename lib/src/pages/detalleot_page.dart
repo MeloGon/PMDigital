@@ -44,14 +44,17 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
   TextStyle _styleAppBarTitle = TextStyle(
       fontFamily: 'fuente72', fontSize: 14.0, fontWeight: FontWeight.w400);
 
-  TextStyle _styleTitleExpansibleBar = TextStyle(
-      fontFamily: 'fuente72', fontSize: 14.0, fontWeight: FontWeight.w700);
+  TextStyle _styleTitleExpansibleBar =
+      TextStyle(fontSize: 14.0, fontWeight: FontWeight.w700);
 
   TextStyle _styleLabelTab =
       TextStyle(fontFamily: 'fuente72', fontSize: 14, color: Color(0xff0854A0));
 
   TextStyle _oTextStyle =
       TextStyle(fontFamily: 'fuente72', fontSize: 14.0, color: Colors.black);
+
+  TextStyle _titleOpStyle = TextStyle(
+      fontSize: 14.0, color: Color(0xff32363A), fontWeight: FontWeight.w700);
   bool opRealizada = false;
   OrdenesProvider ordenesProvider = new OrdenesProvider();
   OperacionMaterialProvider operacionMaterialProvider =
@@ -199,7 +202,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
           SizedBox(
             height: 15,
           ),
-          Text('Programacion', style: _styleTitleExpansibleBar),
+          Text('Programación', style: _styleTitleExpansibleBar),
           SizedBox(
             height: 15,
           ),
@@ -257,7 +260,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
           RichText(
             text: TextSpan(style: _oTextStyle, children: [
               TextSpan(
-                  text: 'Descripcion: Blower Air System 2 Cleaner Cells ',
+                  text: 'Descripción: Blower Air System 2 Cleaner Cells ',
                   style: TextStyle(color: _greyColor)),
               TextSpan(text: '${resp.ubiFuncional}'),
             ]),
@@ -282,6 +285,17 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
 
   Widget panelTabs() {
     return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey,
+            blurRadius: 1.0,
+            spreadRadius: 0.0,
+            offset: Offset(0.0, 3), // shadow direction: bottom right
+          )
+        ],
+      ),
       height: 45,
       child: DefaultTabController(
           length: 2,
@@ -376,7 +390,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
         children: [
           Expanded(
               child: Text(
-            'Descripcion',
+            'Descripción',
             style: _oTextStyle,
           )),
           Text(
@@ -492,10 +506,8 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
               height: 15,
             ),
             RichText(
-              text: TextSpan(style: _oTextStyle, children: [
-                TextSpan(
-                    text: '${operacion.descripcion}',
-                    style: _styleTitleExpansibleBar),
+              text: TextSpan(style: _titleOpStyle, children: [
+                TextSpan(text: '${operacion.descripcion}'),
               ]),
             ),
           ],
@@ -580,10 +592,8 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
             height: 15,
           ),
           RichText(
-            text: TextSpan(style: _oTextStyle, children: [
-              TextSpan(
-                  text: '${material.descripcion}',
-                  style: _styleTitleExpansibleBar),
+            text: TextSpan(style: _titleOpStyle, children: [
+              TextSpan(text: '${material.descripcion}'),
             ]),
           ),
         ],

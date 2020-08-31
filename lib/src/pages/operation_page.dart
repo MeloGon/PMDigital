@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:pmdigital_app/src/models/OperacionFullModel.dart';
 import 'package:pmdigital_app/src/models/OrdenFullModel.dart';
 import 'package:pmdigital_app/src/pages/foto_page.dart';
@@ -46,6 +47,7 @@ List<Item> generateItems(int numberOfItems) {
 List<Item> _data = generateItems(1);
 
 class _OperacionPageState extends State<OperacionPage> {
+  var formater = new DateFormat('MMM d, yyyy • hh:mm');
   Color _appBarColor = Color(0xff354A5F);
   TextStyle _styleTitleExpansibleBar = TextStyle(
       fontFamily: 'fuente72', fontSize: 14.0, fontWeight: FontWeight.w700);
@@ -556,7 +558,14 @@ class _OperacionPageState extends State<OperacionPage> {
               child: Text('No existen Materiales en la Operacion'),
             );
           }
-          return ListView.builder(
+          return ListView.separated(
+            separatorBuilder: (context, index) => Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.0),
+              child: Divider(
+                height: 0.1,
+                color: Colors.grey,
+              ),
+            ),
             physics: NeverScrollableScrollPhysics(),
             scrollDirection: Axis.vertical,
             shrinkWrap: true,
@@ -629,7 +638,14 @@ class _OperacionPageState extends State<OperacionPage> {
               child: Text('No existen Notas en la Operacion'),
             );
           }
-          return ListView.builder(
+          return ListView.separated(
+            separatorBuilder: (context, index) => Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.0),
+              child: Divider(
+                height: 0.1,
+                color: Colors.grey,
+              ),
+            ),
             physics: NeverScrollableScrollPhysics(),
             itemCount: snapshot.data.length,
             shrinkWrap: true,
@@ -653,11 +669,14 @@ class _OperacionPageState extends State<OperacionPage> {
         text: TextSpan(style: _oTextStyle, children: [
           TextSpan(
               text: '${data.nombre} ${data.apellido} : ',
-              style: TextStyle(color: _greyColor)),
+              style: TextStyle(fontWeight: FontWeight.w700)),
           TextSpan(text: '${data.descripcion}'),
         ]),
       ),
-      subtitle: Text('${data.fecha}'),
+      subtitle: Text(
+        formater.format(DateTime.parse('${data.fecha}')),
+        style: TextStyle(fontSize: 12.0, fontFamily: 'fuente72'),
+      ),
       trailing: popEditDelNota(data.id.toString(), data.descripcion.toString()),
     );
   }
@@ -673,7 +692,14 @@ class _OperacionPageState extends State<OperacionPage> {
               child: Text('No existen Servicios en la Operacion'),
             );
           }
-          return ListView.builder(
+          return ListView.separated(
+            separatorBuilder: (context, index) => Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.0),
+              child: Divider(
+                height: 0.1,
+                color: Colors.grey,
+              ),
+            ),
             itemCount: snapshot.data.length,
             physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,

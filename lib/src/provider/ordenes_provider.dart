@@ -46,6 +46,7 @@ class OrdenesProvider {
     //para tecnico
     final peliculas =
         new OrdenesModel.fromJsonList(decodeResp['ots_secundario']);
+
     //para admin
     //final peliculas = new OrdenesModel.fromJsonList(decodeResp['ots_directo']);
     return peliculas.items;
@@ -61,6 +62,25 @@ class OrdenesProvider {
     ordenesSink(_ordenes);
     _cargando = false;
     return resp;
+  }
+
+  Future<int> cantidadOrdenes(String token) async {
+    final resp = await http.post(_url, headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": token,
+    }, body: {
+      //{"grupo":1, "cantGrupo":20, "buscar":"", "fecha":"", "prioridad":"", "estatus":""}
+      'json': '{"grupo":' +
+          _grupoPage.toString() +
+          ',"cantGrupo":' +
+          _cantGrupo.toString() +
+          ',"buscar": "","fecha":"","prioridad":"","estatus":""' +
+          '}',
+    });
+    final decodeResp = json.decode(resp.body);
+    final cantidadTotal = decodeResp['cantTotal_indirecto'];
+    return cantidadTotal;
   }
 
   Future<OrdenFullModel> obtenerOrden(String id, String token) async {

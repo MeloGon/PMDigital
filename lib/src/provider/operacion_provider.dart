@@ -96,7 +96,7 @@ class OperacionMaterialProvider {
         .forEach((element) {
       listaNotas.add(element);
     });
-    return listaNotas;
+    return listaNotas.reversed.toList();
   }
 
   Future<List<Servicio>> obtenerServiciosOperacion(
