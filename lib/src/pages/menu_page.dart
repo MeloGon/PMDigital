@@ -29,6 +29,18 @@ class _MenuPageState extends State<MenuPage> {
       color: Color(0xff32363A),
       fontWeight: FontWeight.normal);
 
+  TextStyle _subtitleCardStyle = TextStyle(
+      fontSize: 14.0,
+      fontFamily: 'fuente72',
+      color: Color(0xff6A6D70),
+      fontWeight: FontWeight.normal);
+
+  TextStyle _numberCardStyle = TextStyle(
+      fontSize: 40.0,
+      fontFamily: 'fuente72',
+      color: Color(0xff6A6D70),
+      fontWeight: FontWeight.normal);
+
   TextStyle _labelPercentStyle = TextStyle(
       fontSize: 12.0,
       fontFamily: 'fuente72',
@@ -57,7 +69,7 @@ class _MenuPageState extends State<MenuPage> {
                   PopupMenuItem<String>(
                     value: "perfil",
                     child: Text(
-                      "Estatus de ordenes para hoy",
+                      "Mis órdenes hoy",
                       style: TextStyle(fontFamily: 'fuente72', fontSize: 13.0),
                     ),
                   ),
@@ -103,7 +115,7 @@ class _MenuPageState extends State<MenuPage> {
                 SingleChildScrollView(
                   child: Column(
                     children: <Widget>[
-                      _titulos("Ordenes de Trabajo"),
+                      _titulos("Órdenes de Trabajo"),
                       _botonesRedondeadosOT(),
                       _titulos("Activos"),
                       _botonesRedondeadosAT()
@@ -132,15 +144,6 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   Widget _botonesRedondeadosOT() {
-    // cuando recibamos datos ponerlos como globales y añadir la funcion del color dinamico de acuerdo al progreso
-    var x = 0.11;
-    var y = 0.19;
-    var z = 0.7;
-
-    Widget _linePercent = linearPercent(x, Colors.red);
-    Widget _linePercent1 = linearPercent(y, Colors.deepOrange[300]);
-    Widget _linePercent2 = linearPercent(z, Colors.green);
-
     Widget _valueProgressCircular = Padding(
       padding: EdgeInsets.only(right: 20.0),
       child: CircularPercentIndicator(
@@ -161,10 +164,9 @@ class _MenuPageState extends State<MenuPage> {
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child:
-              Text('Cumplimiento del programa semanal', style: _titleCardStyle),
+          child: Text('Programa Semanal', style: _titleCardStyle),
         ),
-        // Text('2020W31',style: TextStyle(fontFamily: 'fuente72',color: _subtitleColor,),),
+        // Text('2020W31', style: _subtitleCardStyle),
         _valueProgressCircular,
         SizedBox(height: 5.0)
       ],
@@ -176,13 +178,27 @@ class _MenuPageState extends State<MenuPage> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text('Estatus de ordenes para hoy', style: _titleCardStyle),
-            Text('Pendientes         11%', style: _labelPercentStyle),
-            _linePercent,
-            Text('En progreso        19%', style: _labelPercentStyle),
-            _linePercent1,
-            Text('Completadas      70%', style: _labelPercentStyle),
-            _linePercent2,
+            Text('Mis órdenes hoy', style: _titleCardStyle),
+            Text(
+              'Abiertas',
+              style: _subtitleCardStyle,
+            ),
+            Row(
+              children: [
+                Image(
+                  image: AssetImage('assets/images/tool_image3.png'),
+                  width: 30.0,
+                  height: 50.0,
+                ),
+                SizedBox(
+                  width: 20.0,
+                ),
+                Text(
+                  '3',
+                  style: _numberCardStyle,
+                ),
+              ],
+            ),
             SizedBox(height: 5.0)
           ],
         ));
@@ -196,18 +212,6 @@ class _MenuPageState extends State<MenuPage> {
               contentRb: _contentWe, actionRb: 2, token: widget.token),
         ]),
       ],
-    );
-  }
-
-  Widget linearPercent(double percent, Color color) {
-    return LinearPercentIndicator(
-      lineHeight: 8.0,
-      percent: percent,
-      backgroundColor: Colors.grey[200],
-      progressColor: color,
-      linearStrokeCap: LinearStrokeCap.butt,
-      animation: true,
-      animationDuration: 1500,
     );
   }
 
@@ -229,7 +233,7 @@ class _MenuPageState extends State<MenuPage> {
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Text('Ubicaciones Tecnicas', style: _titleCardStyle),
+          child: Text('Ubicaciones Técnicas', style: _titleCardStyle),
         ),
         _iconUt,
         SizedBox(height: 5.0)

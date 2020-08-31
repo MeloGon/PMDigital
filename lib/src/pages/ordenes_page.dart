@@ -31,6 +31,10 @@ class _OrdenesPageState extends State<OrdenesPage> {
       fontFamily: 'fuente72',
       color: Color(0xff32363A),
       fontWeight: FontWeight.w700);
+
+  TextStyle _headerStyle = TextStyle(
+      fontFamily: 'fuente72', fontSize: 14.0, fontWeight: FontWeight.normal);
+
   final ordenesProvider = new OrdenesProvider();
   @override
   Widget build(BuildContext context) {
@@ -108,7 +112,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
           ),
         ],
         title: Text(
-          'Estatus de órdenes',
+          'Mis órdenes hoy',
           style: _appBarStyle,
         ),
         leading: IconButton(
@@ -130,7 +134,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
                 padding: EdgeInsets.only(left: 20),
                 width: double.infinity,
                 child: Text(
-                  'Mis órdenes para hoy',
+                  'Órdenes de trabajo ()',
                   style: _expandedBarStyle,
                 ),
               ),
@@ -189,8 +193,15 @@ class _OrdenesPageState extends State<OrdenesPage> {
       color: Color(0xffF2F2F2),
       child: Row(
         children: [
-          Expanded(child: Text('Descripción')),
-          Text('Estatus'),
+          Expanded(
+              child: Text(
+            'Descripción',
+            style: _headerStyle,
+          )),
+          Text(
+            'Estatus',
+            style: _headerStyle,
+          ),
         ],
       ),
     );

@@ -689,10 +689,13 @@ class _OperacionPageState extends State<OperacionPage> {
   }
 
   Widget itemServicio(Servicio data) {
-    return ListTile(
-      title: Text(
-        data.descripcion,
-        style: _oTextStyle,
+    return Container(
+      color: Colors.white,
+      child: ListTile(
+        title: Text(
+          data.descripcion,
+          style: _oTextStyle,
+        ),
       ),
     );
   }
@@ -895,6 +898,16 @@ class _OperacionPageState extends State<OperacionPage> {
 
   Widget itemFoto(Foto data) {
     return Container(
-        width: 100.0, height: 100.0, child: Image.network(data.url));
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.0)),
+        padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(7.0),
+          child: Image.network(
+            data.url,
+            fit: BoxFit.fill,
+            width: 100.0,
+            height: 50.0,
+          ),
+        ));
   }
 }

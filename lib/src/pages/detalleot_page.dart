@@ -493,7 +493,9 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
             ),
             RichText(
               text: TextSpan(style: _oTextStyle, children: [
-                TextSpan(text: '${operacion.descripcion}'),
+                TextSpan(
+                    text: '${operacion.descripcion}',
+                    style: _styleTitleExpansibleBar),
               ]),
             ),
           ],
@@ -579,7 +581,9 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
           ),
           RichText(
             text: TextSpan(style: _oTextStyle, children: [
-              TextSpan(text: '${material.descripcion}'),
+              TextSpan(
+                  text: '${material.descripcion}',
+                  style: _styleTitleExpansibleBar),
             ]),
           ),
         ],
