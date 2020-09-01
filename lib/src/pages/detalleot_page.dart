@@ -4,6 +4,7 @@ import 'package:pmdigital_app/src/models/OrdenFullModel.dart';
 import 'package:pmdigital_app/src/pages/operation_page.dart';
 import 'package:pmdigital_app/src/provider/operacion_provider.dart';
 import 'package:pmdigital_app/src/provider/ordenes_provider.dart';
+import 'package:pmdigital_app/src/widgets/tituloSeccion_widget.dart';
 
 class DetallesOtPage extends StatefulWidget {
   String nrot;
@@ -134,10 +135,13 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
         children: [
           panelExpansibleDetalle,
           panelTabs(),
-          cuerpoPage(),
+          cuerpoPage(context, 'operaciones'),
           cabecera(),
           listaOperaciones(context),
-          cuerpoPage(),
+          TituloSeccionWidget(
+            value: 'MATERIALES',
+          ),
+          cuerpoPage(context, 'materiales'),
           cabecera(),
           listaMateriales(context),
         ],
@@ -157,7 +161,9 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
             // print(resp.materiales[0]);
             return contenidoDetalles(resp);
           } else {
-            return Center(child: CircularProgressIndicator());
+            return Container(
+                height: 100.0,
+                child: Center(child: CircularProgressIndicator()));
           }
         });
   }
@@ -365,23 +371,68 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
     );
   }
 
-  Widget cuerpoPage() {
-    Widget panelContador = Container(
-      height: 60,
-      width: double.infinity,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        child: Text(
-          'Operaciones(2)',
-          style: _oTextStyle,
-        ),
-      ),
-    );
-    return Column(
-      children: [
-        panelContador,
-      ],
-    );
+  Widget cuerpoPage(BuildContext context, String value) {
+    TextStyle styleContador = TextStyle(fontFamily: 'fuente72', fontSize: 18.0);
+    if (value == 'operaciones') {
+      return FutureBuilder(
+        future: operacionMaterialProvider.obtenerOperaciones(
+            widget.nrot, widget.token),
+        builder: (context, AsyncSnapshot<List<Operacion>> snapshot) {
+          if (snapshot.hasData) {
+            return Container(
+                height: 40.0,
+                padding: EdgeInsets.only(left: 20.0),
+                alignment: Alignment.centerLeft,
+                width: double.infinity,
+                child: Text(
+                  'Operaciones (${snapshot.data.length})',
+                  style: styleContador,
+                ));
+          } else {
+            return Container(
+                height: 40.0,
+                padding: EdgeInsets.only(left: 20.0),
+                alignment: Alignment.centerLeft,
+                width: double.infinity,
+                child: Text(
+                  'Operaciones (Estimando..)',
+                  style: styleContador,
+                ));
+          }
+        },
+      );
+    }
+
+    if (value == 'materiales') {
+      return FutureBuilder(
+        future: operacionMaterialProvider.obtenerMateriales(
+            widget.nrot, widget.token),
+        builder: (context, AsyncSnapshot<List<Materiale>> snapshot) {
+          if (snapshot.hasData) {
+            return Container(
+                height: 40.0,
+                padding: EdgeInsets.only(left: 20.0),
+                alignment: Alignment.centerLeft,
+                width: double.infinity,
+                child: Text(
+                  'Linea de Materiales (${snapshot.data.length})',
+                  style: styleContador,
+                ));
+          } else {
+            return Container(
+                height: 40.0,
+                padding: EdgeInsets.only(left: 20.0),
+                alignment: Alignment.centerLeft,
+                width: double.infinity,
+                child: Text(
+                  'Linea de Materiales (Estimando..)',
+                  style: styleContador,
+                ));
+          }
+        },
+      );
+    }
+    return Text('');
   }
 
   Widget cabecera() {
@@ -427,7 +478,14 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
                 )),
               );
             }
-            return ListView.builder(
+            return ListView.separated(
+              separatorBuilder: (context, index) => Padding(
+                padding: EdgeInsets.only(left: 20.0),
+                child: Divider(
+                  height: 0.1,
+                  color: Colors.grey,
+                ),
+              ),
               physics: NeverScrollableScrollPhysics(),
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
@@ -437,7 +495,8 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
               },
             );
           } else {
-            return Center(child: CircularProgressIndicator());
+            return Container(
+                height: 100, child: Center(child: CircularProgressIndicator()));
           }
         });
   }
@@ -521,7 +580,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: 15,
+              height: 15.0,
             ),
             RichText(
               text: TextSpan(style: _titleOpStyle, children: [
@@ -569,6 +628,9 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
                 TextSpan(text: '${operacion.workPlan}'),
               ]),
             ),
+            SizedBox(
+              height: 15.0,
+            ),
           ],
         ),
       ),
@@ -596,7 +658,14 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
                 )),
               );
             }
-            return ListView.builder(
+            return ListView.separated(
+              separatorBuilder: (context, index) => Padding(
+                padding: EdgeInsets.only(left: 20.0),
+                child: Divider(
+                  height: 0.1,
+                  color: Colors.grey,
+                ),
+              ),
               physics: NeverScrollableScrollPhysics(),
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
@@ -606,7 +675,8 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
               },
             );
           } else {
-            return Center(child: CircularProgressIndicator());
+            return Container(
+                height: 100, child: Center(child: CircularProgressIndicator()));
           }
         });
   }
@@ -617,7 +687,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            height: 15,
+            height: 15.0,
           ),
           RichText(
             text: TextSpan(style: _titleOpStyle, children: [
@@ -649,6 +719,9 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
               TextSpan(text: 'Reserva: ', style: TextStyle(color: _greyColor)),
               TextSpan(text: '${material.reserva}'),
             ]),
+          ),
+          SizedBox(
+            height: 15.0,
           ),
         ],
       ),

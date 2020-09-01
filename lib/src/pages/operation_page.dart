@@ -9,6 +9,7 @@ import 'package:pmdigital_app/src/models/OrdenFullModel.dart';
 import 'package:pmdigital_app/src/pages/foto_page.dart';
 import 'package:pmdigital_app/src/pages/nota_page.dart';
 import 'package:pmdigital_app/src/provider/operacion_provider.dart';
+import 'package:pmdigital_app/src/widgets/tituloSeccion_widget.dart';
 
 import 'image_network.dart';
 
@@ -60,6 +61,8 @@ class _OperacionPageState extends State<OperacionPage> {
 
   TextStyle _oTextStyle =
       TextStyle(fontFamily: 'fuente72', fontSize: 14.0, color: Colors.black);
+
+  TextStyle styleContador = TextStyle(fontFamily: 'fuente72', fontSize: 18.0);
 
   Color _greyColor = Color(0xff6A6D70);
 
@@ -237,14 +240,32 @@ class _OperacionPageState extends State<OperacionPage> {
   }
 
   Widget serviciosPanel() {
-    Widget panelContador = Container(
-      height: 60,
-      width: double.infinity,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        child: Text('Servicios(1)'),
-      ),
-    );
+    Widget panelContador = FutureBuilder(
+        future: operacionMaterialProvider.obtenerServiciosOperacion(
+            widget.idop, widget.token),
+        builder: (context, AsyncSnapshot<List<Servicio>> snapshot) {
+          if (snapshot.hasData) {
+            return Container(
+                height: 40.0,
+                padding: EdgeInsets.only(left: 20.0),
+                alignment: Alignment.centerLeft,
+                width: double.infinity,
+                child: Text(
+                  'Servicios (${snapshot.data.length})',
+                  style: styleContador,
+                ));
+          } else {
+            return Container(
+                height: 40.0,
+                padding: EdgeInsets.only(left: 20.0),
+                alignment: Alignment.centerLeft,
+                width: double.infinity,
+                child: Text(
+                  'Servicios (Estimando..)',
+                  style: styleContador,
+                ));
+          }
+        });
 
     return Column(
       children: [
@@ -333,6 +354,33 @@ class _OperacionPageState extends State<OperacionPage> {
   }
 
   Widget materialesPanel() {
+    Widget panelContador = FutureBuilder(
+        future: operacionMaterialProvider.obtenerMaterialesOperacion(
+            widget.idop, widget.token),
+        builder: (context, AsyncSnapshot<List<Materiale>> snapshot) {
+          if (snapshot.hasData) {
+            return Container(
+                height: 40.0,
+                padding: EdgeInsets.only(left: 20.0),
+                alignment: Alignment.centerLeft,
+                width: double.infinity,
+                child: Text(
+                  'Linea de Materiales (${snapshot.data.length})',
+                  style: styleContador,
+                ));
+          } else {
+            return Container(
+                height: 40.0,
+                padding: EdgeInsets.only(left: 20.0),
+                alignment: Alignment.centerLeft,
+                width: double.infinity,
+                child: Text(
+                  'Linea de Materiales (Estimando..)',
+                  style: styleContador,
+                ));
+          }
+        });
+
     Widget cabecera = Container(
       color: Color(0xffF2F2F2),
       padding: EdgeInsets.symmetric(horizontal: 20.0),
@@ -349,17 +397,8 @@ class _OperacionPageState extends State<OperacionPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Text(
-              'MATERIALES',
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Text('Linea de Materiales(1)'),
-          ),
+          TituloSeccionWidget(value: 'MATERIALES'),
+          panelContador,
           cabecera,
           futureBuilderMateriales(),
         ],
@@ -368,12 +407,39 @@ class _OperacionPageState extends State<OperacionPage> {
   }
 
   Widget notasPanel() {
+    Widget panelContador = FutureBuilder(
+        future: operacionMaterialProvider.obtenerNotasOperacion(
+            widget.idop, widget.token),
+        builder: (context, AsyncSnapshot<List<Nota>> snapshot) {
+          if (snapshot.hasData) {
+            return Container(
+                height: 40.0,
+                padding: EdgeInsets.only(left: 20.0),
+                alignment: Alignment.centerLeft,
+                width: double.infinity,
+                child: Text(
+                  'Notas (${snapshot.data.length})',
+                  style: styleContador,
+                ));
+          } else {
+            return Container(
+                height: 40.0,
+                padding: EdgeInsets.only(left: 20.0),
+                alignment: Alignment.centerLeft,
+                width: double.infinity,
+                child: Text(
+                  'Notas (Estimando..)',
+                  style: styleContador,
+                ));
+          }
+        });
+
     Widget cabecera = Container(
       color: Color(0xffF2F2F2),
-      padding: EdgeInsets.symmetric(horizontal: 20.0),
+      padding: EdgeInsets.only(right: 20.0),
       height: 50.0,
       child: Row(
-        children: [Expanded(child: Text('Notas(1)')), popNota()],
+        children: [Expanded(child: panelContador), popNota()],
       ),
     );
     return Container(
@@ -382,13 +448,7 @@ class _OperacionPageState extends State<OperacionPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Text(
-              'NOTAS',
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
-          ),
+          TituloSeccionWidget(value: 'NOTAS'),
           cabecera,
           futureBuilderNotas(),
           // Text('Jul 28, 2020 * 7:58 PM'),
@@ -398,12 +458,39 @@ class _OperacionPageState extends State<OperacionPage> {
   }
 
   Widget fotosPanel(BuildContext context) {
+    Widget panelContador = FutureBuilder(
+        future: operacionMaterialProvider.obtenerFotosOperacion(
+            widget.idop, widget.token),
+        builder: (context, AsyncSnapshot<List<Foto>> snapshot) {
+          if (snapshot.hasData) {
+            return Container(
+                height: 40.0,
+                padding: EdgeInsets.only(left: 20.0),
+                alignment: Alignment.centerLeft,
+                width: double.infinity,
+                child: Text(
+                  'Fotos (${snapshot.data.length})',
+                  style: styleContador,
+                ));
+          } else {
+            return Container(
+                height: 40.0,
+                padding: EdgeInsets.only(left: 20.0),
+                alignment: Alignment.centerLeft,
+                width: double.infinity,
+                child: Text(
+                  'Fotos (Estimando..)',
+                  style: styleContador,
+                ));
+          }
+        });
+
     Widget cabecera = Container(
       color: Color(0xffF2F2F2),
-      padding: EdgeInsets.symmetric(horizontal: 20.0),
+      padding: EdgeInsets.only(right: 20.0),
       height: 50.0,
       child: Row(
-        children: [Expanded(child: Text('Fotos(3)')), popFoto()],
+        children: [Expanded(child: panelContador), popFoto()],
       ),
     );
     return Container(
@@ -411,13 +498,7 @@ class _OperacionPageState extends State<OperacionPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Text(
-              'FOTOS',
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
-          ),
+          TituloSeccionWidget(value: 'FOTOS'),
           cabecera,
           futureBuilderFotos(),
         ],
