@@ -202,6 +202,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
               nrot: data.numeroOt.toString(),
               descriot: data.descripcion,
               token: widget.token,
+              estado : data.estado,
             );
           }));
         },

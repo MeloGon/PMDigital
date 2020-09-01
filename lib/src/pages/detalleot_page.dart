@@ -9,7 +9,8 @@ class DetallesOtPage extends StatefulWidget {
   String nrot;
   String descriot;
   String token;
-  DetallesOtPage({this.nrot, this.descriot, this.token});
+  String estado;
+  DetallesOtPage({this.nrot, this.descriot, this.token, this.estado});
   @override
   _DetallesOtPageState createState() => _DetallesOtPageState();
 }
@@ -91,7 +92,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
                 alignment: Alignment.bottomCenter,
                 height: 60,
                 width: double.infinity,
-                child: _options(context),
+                child: _options(context, widget.estado),
               ),
             ),
           )
@@ -144,6 +145,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
     );
   }
 
+  //ver lo de actualizar el boton y el estado
   Widget contenidoPanelExpansible() {
     return FutureBuilder(
         future: ordenesProvider.obtenerOrden(widget.nrot, widget.token),
@@ -151,6 +153,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
             (BuildContext context, AsyncSnapshot<OrdenFullModel> snapshot) {
           if (snapshot.hasData) {
             resp = snapshot.data;
+            _options(context, snapshot.data.estado);
             // print(resp.materiales[0]);
             return contenidoDetalles(resp);
           } else {
@@ -412,7 +415,17 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
             final operaciones = snapshot.data;
             // print(operaciones[0].descripcion);return Center(child: Text('si hay operaciones'),);
             if (operaciones.length == 0) {
-              return Center(child: Text('No existen operaciones en la Orden'));
+              return Container(
+                height: 30.0,
+                child: Center(
+                    child: Text(
+                  'No existen operaciones en la Orden',
+                  style: TextStyle(
+                      fontFamily: 'fuente72',
+                      fontSize: 13.0,
+                      color: Colors.grey),
+                )),
+              );
             }
             return ListView.builder(
               physics: NeverScrollableScrollPhysics(),
@@ -429,7 +442,18 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
         });
   }
 
-  Widget _options(BuildContext context) {
+  Widget _options(BuildContext context, String estado) {
+    String estadoBoton = "";
+    print(estado);
+    if (estado == "En proceso") {
+      estadoBoton = "Finalizar";
+    }
+    if (estado == "Pendiente") {
+      estadoBoton = "Iniciar";
+    }
+    if (estado == "Terminado") {
+      estadoBoton = "Iniciar";
+    }
     return Card(
       elevation: 6.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
@@ -445,7 +469,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
                     Container(
                       margin: EdgeInsets.only(right: 20.0),
                       child: Text(
-                        'Iniciar',
+                        estadoBoton,
                         style: TextStyle(
                             fontFamily: 'fuente72',
                             fontSize: 14.0,
@@ -470,12 +494,6 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
                     ),
                   ),
                 ],
-                // onSelected: (value) {
-                //   if (value == "iniciar") {
-                //     print('Iniciar');
-                //     print('Reprogramar');
-                //   }
-                // },
                 onSelected: (value) {
                   cambiarEstado(value);
                 },
@@ -566,7 +584,17 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
           if (snapshot.hasData) {
             final materiales = snapshot.data;
             if (materiales.length == 0) {
-              return Center(child: Text('No existen materiales en la Orden'));
+              return Container(
+                height: 30.0,
+                child: Center(
+                    child: Text(
+                  'No existen materiales en la Orden',
+                  style: TextStyle(
+                      fontFamily: 'fuente72',
+                      fontSize: 13.0,
+                      color: Colors.grey),
+                )),
+              );
             }
             return ListView.builder(
               physics: NeverScrollableScrollPhysics(),

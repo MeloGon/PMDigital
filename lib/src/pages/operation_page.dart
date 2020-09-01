@@ -82,6 +82,14 @@ class _OperacionPageState extends State<OperacionPage> {
           'Operación 0020',
           style: _styleAppBarTitle,
         ),
+        actions: [
+          IconButton(
+              icon: Icon(Icons.sync),
+              onPressed: () {
+                futureBuilderNotas();
+                futureBuilderFotos();
+              })
+        ],
       ),
       body: Stack(
         children: [
