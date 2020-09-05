@@ -1,4 +1,4 @@
-package com.innovadis.pmdigital_app
+package com.innovadis.pmdigitalapp
 
 import io.flutter.embedding.android.FlutterActivity
 

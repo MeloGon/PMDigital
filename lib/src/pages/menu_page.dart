@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'dart:ui';
 
 import 'package:percent_indicator/circular_percent_indicator.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:pmdigital_app/src/provider/menu_provider.dart';
+import 'package:timeago/timeago.dart' as timeago;
 import 'package:pmdigital_app/src/widgets/loginbg_widget.dart';
 import 'package:pmdigital_app/src/widgets/roundbt_widget.dart';
 
@@ -41,12 +45,19 @@ class _MenuPageState extends State<MenuPage> {
       color: Color(0xff6A6D70),
       fontWeight: FontWeight.normal);
 
-  TextStyle _labelPercentStyle = TextStyle(
-      fontSize: 12.0,
-      fontFamily: 'fuente72',
-      color: Color(0xff32363A),
-      fontWeight: FontWeight.normal);
+  TextStyle _changeStyle = TextStyle(
+      fontSize: 14.0, fontFamily: 'fuente72', color: Color(0xff0A6ED1));
+  var formater = new DateFormat('mm');
+  final menuprovider = MenuProvider();
+  final controllerchanges = new StreamController<dynamic>();
 
+  @override
+  void dispose() {
+    controllerchanges.close();
+    super.dispose();
+  }
+
+  //final fifteenAgo = new DateTime.now().subtract(new Duration(minutes: 15));
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -158,19 +169,24 @@ class _MenuPageState extends State<MenuPage> {
       ),
     );
 
-    Widget _contentWe = Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Text('Programa Semanal', style: _titleCardStyle),
-        ),
-        // Text('2020W31', style: _subtitleCardStyle),
-        _valueProgressCircular,
-        SizedBox(height: 5.0)
-      ],
-    );
+    Widget _contentWe = Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text('Programa Semanal', style: _titleCardStyle),
+            Text(
+              '2020W31',
+              style: _subtitleCardStyle,
+            ),
+            // Text('2020W31', style: _subtitleCardStyle),
+            Align(
+                alignment: Alignment.bottomRight,
+                child: _valueProgressCircular),
+            SizedBox(height: 5.0)
+          ],
+        ));
 
     Widget _contentSt = Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
@@ -197,6 +213,50 @@ class _MenuPageState extends State<MenuPage> {
                   '3',
                   style: _numberCardStyle,
                 ),
+              ],
+            ),
+            // Text(timeago.format(fifteenAgo, locale: 'es')),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.refresh,
+                  color: Color(0xff0A6ED1),
+                ),
+                Flexible(
+                  child: StreamBuilder(
+                    stream: menuprovider.ultimosCambios(widget.token),
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      // final fifteenAgo = new DateTime.now().subtract(new Duration(minutes: 15));
+                      if (snapshot.hasError) {
+                        print('el error es: ${snapshot.error}');
+                      }
+                      switch (snapshot.connectionState) {
+                        case ConnectionState.none:
+                          return Text(' ');
+                        case ConnectionState.waiting:
+                          return Text(
+                            'Verificando ..',
+                            style: _changeStyle,
+                          );
+                        case ConnectionState.active:
+                          return Text(
+                            timeago.format(DateTime.parse(snapshot.data),
+                                locale: 'es'),
+                            style: _changeStyle,
+                          );
+                        case ConnectionState.done:
+                          return Text(
+                            timeago.format(DateTime.parse(snapshot.data),
+                                locale: 'es'),
+                            style: _changeStyle,
+                          );
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                //Text(timeago.format(fifteenAgo, locale: 'es')),
               ],
             ),
             SizedBox(height: 5.0)

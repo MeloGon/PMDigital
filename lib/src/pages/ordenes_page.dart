@@ -57,8 +57,13 @@ class _OrdenesPageState extends State<OrdenesPage> {
           )
         ],
       ),
-      body: Stack(
-        children: [numeroOrdenes(), spaceSearch(), headerBar(), ordenes()],
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).requestFocus(new FocusNode());
+        },
+        child: Stack(
+          children: [numeroOrdenes(), spaceSearch(), headerBar(), ordenes()],
+        ),
       ),
     );
   }
@@ -202,7 +207,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
               nrot: data.numeroOt.toString(),
               descriot: data.descripcion,
               token: widget.token,
-              estado : data.estado,
+              estado: data.estado,
             );
           }));
         },

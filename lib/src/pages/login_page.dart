@@ -26,7 +26,7 @@ class _LoginPageState extends State<LoginPage> {
     fontFamily: 'fuente72',
   );
   //var
-  final emailController = TextEditingController(text: 'tecnico@tecnico.com');
+  final emailController = TextEditingController(text: 'tecnico2@tecnico.com');
   final passwordController = TextEditingController(text: '111aaa');
   bool stateCheck = false;
 
@@ -66,7 +66,7 @@ class _LoginPageState extends State<LoginPage> {
         children: [
           sizedBox1,
           Text(
-            'PM Digital',
+            'Bienvenido',
             style: _styleTitle,
           ),
           sizedBox1,
@@ -136,7 +136,7 @@ class _LoginPageState extends State<LoginPage> {
       padding: const EdgeInsets.only(left: 28.0),
       child: CheckboxListTile(
         title: Text(
-          "Recuerdame",
+          "Recuérdame",
           style: _styleLabel,
         ),
         value: stateCheck,
@@ -156,7 +156,7 @@ class _LoginPageState extends State<LoginPage> {
       onPressed: _loguinFuncion,
       color: _colorBlueApp,
       child: Text(
-        'Iniciar Sesion',
+        'Iniciar sesión',
         style: TextStyle(color: Colors.white),
       ),
     );
