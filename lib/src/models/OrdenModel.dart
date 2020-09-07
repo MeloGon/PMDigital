@@ -22,6 +22,7 @@ class OrdenModel {
   dynamic estadoColor;
   String prioridad;
   dynamic prioridadColor;
+  String tipoOt;
 
   OrdenModel({
     this.id,
@@ -32,6 +33,7 @@ class OrdenModel {
     this.estadoColor,
     this.prioridad,
     this.prioridadColor,
+    this.tipoOt,
   });
 
   OrdenModel.fromJsonMap(Map<String, dynamic> json) {
@@ -43,5 +45,6 @@ class OrdenModel {
     estadoColor = json['estado_color'];
     prioridad = json['prioridad'];
     prioridadColor = json['prioridad_color'];
+    tipoOt = json['tipo_ot'];
   }
 }

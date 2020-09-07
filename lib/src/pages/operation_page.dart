@@ -81,9 +81,22 @@ class _OperacionPageState extends State<OperacionPage> {
       appBar: AppBar(
         centerTitle: false,
         backgroundColor: _appBarColor,
-        title: Text(
-          'Operación 0020',
-          style: _styleAppBarTitle,
+        automaticallyImplyLeading: false,
+        titleSpacing: 0.0,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+            ),
+            Text(
+              'Operacion',
+              style: TextStyle(fontSize: 14.0),
+            )
+            // Your widgets here
+          ],
         ),
         actions: [
           IconButton(
@@ -872,6 +885,7 @@ class _OperacionPageState extends State<OperacionPage> {
   }
 
   void editDelNota(String value, String idnota, String contnota) async {
+    toast('Espere un momento porfavor ..');
     if (value == "eliminar") {
       var resp =
           await operacionMaterialProvider.eliminarNota(widget.token, idnota);

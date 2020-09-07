@@ -87,7 +87,7 @@ class _MenuPageState extends State<MenuPage> {
                   PopupMenuItem<String>(
                     value: "cerrar_sesion",
                     child: Text(
-                      "Cumplimiento del programa semanal",
+                      "Programa Semanal",
                       style: TextStyle(fontFamily: 'fuente72', fontSize: 13.0),
                     ),
                   ),

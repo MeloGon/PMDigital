@@ -69,10 +69,28 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: _appBarColor,
-        title: Text(
-          'Orden ${widget.nrot}',
-          style: TextStyle(fontSize: 14.0),
+        centerTitle: false,
+        titleSpacing: 0.0,
+        automaticallyImplyLeading: false,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+            ),
+            Text(
+              'Orden ${widget.nrot}',
+              style: TextStyle(fontSize: 14.0),
+            )
+            // Your widgets here
+          ],
         ),
+        // title: Text(
+        //   'Orden ${widget.nrot}',
+        //   style: TextStyle(fontSize: 14.0),
+        // ),
       ),
       body: Stack(
         children: [

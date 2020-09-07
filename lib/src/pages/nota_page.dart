@@ -34,37 +34,46 @@ class _NotaPageState extends State<NotaPage> {
       appBar: AppBar(
         backgroundColor: _appBarColor,
         title: Text(""),
+        automaticallyImplyLeading: false,
       ),
-      body: Stack(
-        children: [
-          cuerpoNota(),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: SafeArea(
-              child: Container(
-                  alignment: Alignment.bottomCenter,
-                  height: 60,
-                  width: double.infinity,
-                  child: _options(context)),
-            ),
-          )
-        ],
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).requestFocus(new FocusNode());
+        },
+        child: Stack(
+          children: [
+            cuerpoNota(),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: SafeArea(
+                child: Container(
+                    alignment: Alignment.bottomCenter,
+                    height: 60,
+                    width: double.infinity,
+                    child: _options(context)),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
 
-  void guardarNota() async {
+  void guardarNota(BuildContext context) async {
+    toast('Espere un momento porfavor ..');
     if (widget.tipo == "editar") {
       var resp = await operacionMaterialProvider.editarNota(
           widget.token, widget.idop, notaController.text);
       if (resp['code'] == 200) {
         toast('La nota ha sido editada exitosamente');
+        Navigator.pop(context);
       }
     } else {
       var resp = await operacionMaterialProvider.guardarNota(
           widget.token, widget.idop, notaController.text);
       if (resp['code'] == 200) {
         toast('La nota ha sido guardada exitosamente');
+        Navigator.pop(context);
       }
     }
   }
@@ -98,7 +107,7 @@ class _NotaPageState extends State<NotaPage> {
                   ),
                 ),
                 color: Color(0xff0A6ED1),
-                onPressed: guardarNota,
+                onPressed: () => guardarNota(context),
               ),
               FlatButton(
                 child: Text(
@@ -148,17 +157,37 @@ class _NotaPageState extends State<NotaPage> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.0),
             child: Container(
-              height: 48,
-              child: TextFormField(
+              margin: EdgeInsets.all(8.0),
+              // hack textfield height
+              padding: EdgeInsets.only(bottom: 40.0),
+              child: TextField(
                 controller: notaController,
+                style: TextStyle(fontFamily: 'fuente72', fontSize: 14.0),
+                maxLines: 5,
                 decoration: InputDecoration(
-                    fillColor: Colors.white,
-                    filled: true,
-                    hintText: 'Escriba Aquí',
-                    contentPadding: EdgeInsets.all(10),
-                    border: OutlineInputBorder()),
+                  fillColor: Colors.white,
+                  filled: true,
+                  hintText: "Escriba aquí",
+                  hintStyle: TextStyle(
+                      fontFamily: 'fuente72',
+                      fontStyle: FontStyle.italic,
+                      fontSize: 14.0),
+                  border: OutlineInputBorder(),
+                ),
               ),
             ),
+            // child: Container(
+            //   height: 48,
+            //   child: TextFormField(
+            //     controller: notaController,
+            //     decoration: InputDecoration(
+            //         fillColor: Colors.white,
+            //         filled: true,
+            //         hintText: 'Escriba Aquí',
+            //         contentPadding: EdgeInsets.all(10),
+            //         border: OutlineInputBorder()),
+            //   ),
+            // ),
           ),
         ],
       ),

@@ -38,7 +38,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
           children: <Widget>[
             IconButton(
               onPressed: () => Navigator.pop(context),
-              icon: Icon(Icons.arrow_back, color: Colors.white),
+              icon: Icon(Icons.arrow_back_ios, color: Colors.white),
             ),
             Text(
               'Mis órdenes hoy',
@@ -230,7 +230,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
             RichText(
               text: TextSpan(style: _oTextStyle, children: [
                 TextSpan(text: 'Orden: ', style: TextStyle(color: _greyColor)),
-                TextSpan(text: '${data.numeroOt}'),
+                TextSpan(text: '${data.numeroOt ?? ""}'),
               ]),
             ),
             SizedBox(
@@ -240,7 +240,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
               text: TextSpan(style: _oTextStyle, children: [
                 TextSpan(
                     text: 'Tipo Orden: ', style: TextStyle(color: _greyColor)),
-                TextSpan(text: 'PM01'),
+                TextSpan(text: '${data.tipoOt ?? ""}'),
               ]),
             ),
             SizedBox(
@@ -250,7 +250,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
               text: TextSpan(style: _oTextStyle, children: [
                 TextSpan(
                     text: 'Prioridad: ', style: TextStyle(color: _greyColor)),
-                TextSpan(text: '${data.prioridad}'),
+                TextSpan(text: '${data.prioridad ?? ""}'),
               ]),
             ),
           ],
@@ -261,7 +261,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Text(
-                '${data.estado}',
+                '${data.estado ?? ""}',
                 style: TextStyle(
                     fontWeight: FontWeight.w700,
                     color: Hexcolor('${data.estadoColor}')),
