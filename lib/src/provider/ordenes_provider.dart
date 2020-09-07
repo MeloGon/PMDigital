@@ -108,4 +108,42 @@ class OrdenesProvider {
     var jsonconverted = json.decode(resp.body);
     return jsonconverted;
   }
+
+  Future<List<OrdenModel>> buscarOrden(String token, String busqueda) async {
+    print('esto es lo que envio $busqueda');
+    final resp = await http.post(_url, headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": token,
+    }, body: {
+      //{"grupo":1, "cantGrupo":20, "buscar":"", "fecha":"", "prioridad":"", "estatus":""}
+      'json': '{"grupo":' +
+          _grupoPage.toString() +
+          ',"cantGrupo":' +
+          _cantGrupo.toString() +
+          ',"buscar":"' +
+          busqueda.toString() +
+          '","fecha":"","prioridad":"","estatus":""' +
+          '}',
+    });
+    // final decodeResp = json.decode(resp.body);
+    // print(decodeResp);
+    // //para tecnico
+    // final peliculas =
+    //     new OrdenesModel.fromJsonList(decodeResp['ots_secundario']);
+    // //para admin
+    // //final peliculas = new OrdenesModel.fromJsonList(decodeResp['ots_directo']);
+    // return peliculas.items;
+
+    final List<OrdenModel> listaordenes = new List();
+    final decode = json.decode(resp.body);
+    print(decode['ots_secundario']);
+    (decode['ots_secundario'] as List)
+        .map((e) => OrdenModel.fromJsonMap(e))
+        .toList()
+        .forEach((element) {
+      listaordenes.add(element);
+    });
+    return listaordenes;
+  }
 }

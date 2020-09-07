@@ -231,6 +231,9 @@ class _MenuPageState extends State<MenuPage> {
                       if (snapshot.hasError) {
                         print('el error es: ${snapshot.error}');
                       }
+                      if (snapshot.data == null) {
+                        return CircularProgressIndicator();
+                      }
                       switch (snapshot.connectionState) {
                         case ConnectionState.none:
                           return Text(' ');

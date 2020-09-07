@@ -24,6 +24,11 @@ class _OrdenesPageState extends State<OrdenesPage> {
   TextStyle _titleOtStyle = TextStyle(
       fontSize: 14.0, color: Color(0xff32363A), fontWeight: FontWeight.w700);
 
+  final busController = new TextEditingController();
+  List<OrdenModel> listaordenes = new List<OrdenModel>();
+
+  String valuebus = "";
+
   @override
   Widget build(BuildContext context) {
     ordenesProvider.getOrdenes(widget.token);
@@ -115,6 +120,8 @@ class _OrdenesPageState extends State<OrdenesPage> {
       width: 200.0,
       height: 30,
       child: TextField(
+        textInputAction: TextInputAction.go,
+        controller: busController,
         style: TextStyle(fontFamily: 'fuente72', fontSize: 14.0),
         decoration: InputDecoration(
           contentPadding: EdgeInsets.all(7),
@@ -126,6 +133,14 @@ class _OrdenesPageState extends State<OrdenesPage> {
             color: Color(0xff0854a0),
           ),
         ),
+        onEditingComplete: () {
+          setState(() {
+            listaordenes.clear();
+            valuebus = busController.text;
+          });
+        },
+        //onEditingComplete: () => busqueda(busController.text),
+        // onSubmitted: busqueda,
       ),
     );
     return Container(
@@ -164,37 +179,71 @@ class _OrdenesPageState extends State<OrdenesPage> {
   }
 
   Widget ordenes() {
-    return Container(
-      margin: EdgeInsets.only(top: 160.0),
-      child: StreamBuilder(
-        stream: ordenesProvider.ordenesStream,
-        builder:
-            (BuildContext context, AsyncSnapshot<List<OrdenModel>> snapshot) {
-          //ese signo de interrogacion dice has este foreach si existe data
-          snapshot.data?.forEach((element) {
+    setState(() {
+      valuebus;
+    });
+    if (valuebus == "") {
+      return Container(
+        margin: EdgeInsets.only(top: 160.0),
+        child: StreamBuilder(
+          stream: ordenesProvider.ordenesStream,
+          builder:
+              (BuildContext context, AsyncSnapshot<List<OrdenModel>> snapshot) {
+            //ese signo de interrogacion dice has este foreach si existe data
+            //snapshot.data?.forEach((element) {
             //print(element.descripcion);
-          });
-          if (snapshot.hasData) {
-            return ListView.separated(
-              separatorBuilder: (context, index) => Padding(
-                padding: EdgeInsets.only(left: 20.0),
-                child: Divider(
-                  color: Colors.grey,
+            //});
+            if (snapshot.hasData) {
+              listaordenes = snapshot.data;
+              return ListView.separated(
+                separatorBuilder: (context, index) => Padding(
+                  padding: EdgeInsets.only(left: 20.0),
+                  child: Divider(
+                    color: Colors.grey,
+                  ),
                 ),
-              ),
-              itemCount: snapshot.data.length,
-              itemBuilder: (BuildContext context, int index) {
-                return itemOt(snapshot.data[index]);
-              },
-            );
-          } else {
-            //el progrssar solo aparece mientras se resuleve el future o cuando nohay datos
-            return Container(
-                height: 400, child: Center(child: CircularProgressIndicator()));
-          }
-        },
-      ),
-    );
+                itemCount: listaordenes.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return itemOt(listaordenes[index]);
+                },
+              );
+            } else {
+              //el progrssar solo aparece mientras se resuleve el future o cuando nohay datos
+              return Container(
+                  height: 400,
+                  child: Center(child: CircularProgressIndicator()));
+            }
+          },
+        ),
+      );
+    } else {
+      print(valuebus);
+      return Container(
+        margin: EdgeInsets.only(top: 160.0),
+        child: FutureBuilder(
+            future: ordenesProvider.buscarOrden(widget.token, valuebus),
+            builder: (context, AsyncSnapshot<List<OrdenModel>> snapshot) {
+              if (snapshot.hasData) {
+                listaordenes = snapshot.data;
+                print(snapshot.data.length);
+                return ListView.separated(
+                  separatorBuilder: (context, index) => Padding(
+                    padding: EdgeInsets.only(left: 20.0),
+                    child: Divider(
+                      color: Colors.grey,
+                    ),
+                  ),
+                  itemCount: listaordenes.length,
+                  itemBuilder: (BuildContext context, index) {
+                    return itemOt(listaordenes[index]);
+                  },
+                );
+              } else {
+                return CircularProgressIndicator();
+              }
+            }),
+      );
+    }
   }
 
   Widget itemOt(OrdenModel data) {
@@ -275,5 +324,31 @@ class _OrdenesPageState extends State<OrdenesPage> {
         ),
       ),
     );
+  }
+
+  void busqueda(String value) {
+    print('arriba del future');
+    FutureBuilder(
+        future: ordenesProvider.buscarOrden(widget.token, value),
+        builder: (context, AsyncSnapshot<List<OrdenModel>> snapshot) {
+          if (snapshot.hasData) {
+            listaordenes.clear();
+            listaordenes = snapshot.data;
+            return ListView.separated(
+              separatorBuilder: (context, index) => Padding(
+                padding: EdgeInsets.only(left: 20.0),
+                child: Divider(
+                  color: Colors.grey,
+                ),
+              ),
+              itemCount: listaordenes.length,
+              itemBuilder: (BuildContext context, index) {
+                return itemOt(listaordenes[index]);
+              },
+            );
+          } else {
+            return CircularProgressIndicator();
+          }
+        });
   }
 }
