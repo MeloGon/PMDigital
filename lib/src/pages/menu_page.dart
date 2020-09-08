@@ -155,6 +155,14 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   Widget _botonesRedondeadosOT() {
+    Widget conteoAbiertas = FutureBuilder(
+      future: menuprovider.contadorAbiertas(widget.token),
+      builder: (context, snapshot) {
+        print(snapshot.data);
+        return null;
+      },
+    );
+
     Widget _valueProgressCircular = Padding(
       padding: EdgeInsets.only(right: 20.0),
       child: CircularPercentIndicator(

@@ -110,16 +110,13 @@ class OrdenesProvider {
   }
 
   Future<List<OrdenModel>> buscarOrden(String token, String busqueda) async {
-    print('esto es lo que envio $busqueda');
     final resp = await http.post(_url, headers: {
       "Accept": "application/json",
       "Content-Type": "application/x-www-form-urlencoded",
       "Authorization": token,
     }, body: {
       //{"grupo":1, "cantGrupo":20, "buscar":"", "fecha":"", "prioridad":"", "estatus":""}
-      'json': '{"grupo":' +
-          _grupoPage.toString() +
-          ',"cantGrupo":' +
+      'json': '{"grupo": 1,"cantGrupo":' +
           _cantGrupo.toString() +
           ',"buscar":"' +
           busqueda.toString() +

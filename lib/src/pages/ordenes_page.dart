@@ -225,7 +225,6 @@ class _OrdenesPageState extends State<OrdenesPage> {
             builder: (context, AsyncSnapshot<List<OrdenModel>> snapshot) {
               if (snapshot.hasData) {
                 listaordenes = snapshot.data;
-                print(snapshot.data.length);
                 return ListView.separated(
                   separatorBuilder: (context, index) => Padding(
                     padding: EdgeInsets.only(left: 20.0),
