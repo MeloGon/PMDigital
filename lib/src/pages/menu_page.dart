@@ -6,7 +6,9 @@ import 'package:intl/intl.dart';
 import 'dart:ui';
 
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:pmdigital_app/src/pages/login_page.dart';
 import 'package:pmdigital_app/src/provider/menu_provider.dart';
+import 'package:pmdigital_app/src/provider/ordenes_provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:pmdigital_app/src/widgets/loginbg_widget.dart';
 import 'package:pmdigital_app/src/widgets/roundbt_widget.dart';
@@ -110,13 +112,35 @@ class _MenuPageState extends State<MenuPage> {
               backgroundColor: _appBarColor,
               centerTitle: false,
               actions: [
-                CircleAvatar(
-                  backgroundColor: Colors.transparent,
-                  radius: 20.0,
-                  child: Icon(
-                    Icons.supervised_user_circle,
-                    color: Colors.white,
+                PopupMenuButton<String>(
+                  child: Row(
+                    children: <Widget>[
+                      CircleAvatar(
+                        backgroundColor: Colors.transparent,
+                        radius: 20.0,
+                        child: Icon(
+                          Icons.supervised_user_circle,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
+                  itemBuilder: (BuildContext context) =>
+                      <PopupMenuEntry<String>>[
+                    PopupMenuItem<String>(
+                      value: "cerrar_sesion",
+                      child: Text(
+                        "Cerrar Sesión",
+                        style:
+                            TextStyle(fontFamily: 'fuente72', fontSize: 13.0),
+                      ),
+                    ),
+                  ],
+                  onSelected: (value) {
+                    if (value == "cerrar_sesion") {
+                      Navigator.pushNamed(context, '/');
+                    }
+                  },
                 ),
               ],
             ),
@@ -158,8 +182,14 @@ class _MenuPageState extends State<MenuPage> {
     Widget conteoAbiertas = FutureBuilder(
       future: menuprovider.contadorAbiertas(widget.token),
       builder: (context, snapshot) {
-        print(snapshot.data);
-        return null;
+        if (snapshot.hasData) {
+          return Text(
+            snapshot.data.toString(),
+            style: _numberCardStyle,
+          );
+        } else {
+          return CircularProgressIndicator();
+        }
       },
     );
 
@@ -217,10 +247,7 @@ class _MenuPageState extends State<MenuPage> {
                 SizedBox(
                   width: 20.0,
                 ),
-                Text(
-                  '3',
-                  style: _numberCardStyle,
-                ),
+                conteoAbiertas,
               ],
             ),
             // Text(timeago.format(fifteenAgo, locale: 'es')),
@@ -240,7 +267,7 @@ class _MenuPageState extends State<MenuPage> {
                         print('el error es: ${snapshot.error}');
                       }
                       if (snapshot.data == null) {
-                        return CircularProgressIndicator();
+                        return Text('');
                       }
                       switch (snapshot.connectionState) {
                         case ConnectionState.none:

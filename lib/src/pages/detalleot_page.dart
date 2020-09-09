@@ -57,7 +57,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
 
   TextStyle _titleOpStyle = TextStyle(
       fontSize: 14.0, color: Color(0xff32363A), fontWeight: FontWeight.w700);
-  bool opRealizada = false;
+
   OrdenesProvider ordenesProvider = new OrdenesProvider();
   OperacionMaterialProvider operacionMaterialProvider =
       new OperacionMaterialProvider();
@@ -583,6 +583,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
   }
 
   Widget itemOpe(Operacion operacion) {
+    bool opRealizada = false;
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {

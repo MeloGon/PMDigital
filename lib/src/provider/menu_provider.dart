@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:pmdigital_app/src/models/OrdenModel.dart';
 
 class MenuProvider {
+  int _contAbiertas = 0;
+
   Stream ultimosCambios(String token) async* {
     final resp = await http.get(
         'https://innovadis.net.pe/apiPMDigital/public/proyecto/timpoUltimoRegistro',
@@ -17,7 +19,7 @@ class MenuProvider {
     yield jsonresp['semanal'];
   }
 
-  Future<List<OrdenModel>> contadorAbiertas(String token) async {
+  Future<int> contadorAbiertas(String token) async {
     final resp = await http.post(
         'https://innovadis.net.pe/apiPMDigital/public/orden_trabajo/getAllOTs',
         headers: {
@@ -28,18 +30,26 @@ class MenuProvider {
         body: {
           //{"grupo":1, "cantGrupo":20, "buscar":"", "fecha":"", "prioridad":"", "estatus":""}
           'json': '{"grupo": 1,"cantGrupo": 20,"buscar":""' +
-              '","fecha":"","prioridad":"","estatus":""}'
+              ',"fecha":"","prioridad":"","estatus":""}'
         });
 
     final List<OrdenModel> listaordenes = new List();
     final decode = json.decode(resp.body);
-    print(decode['ots_secundario']);
     (decode['ots_secundario'] as List)
         .map((e) => OrdenModel.fromJsonMap(e))
         .toList()
         .forEach((element) {
       listaordenes.add(element);
     });
-    return listaordenes;
+
+    listaordenes.forEach((element) {
+      if (element.estado == "En proceso") {
+        _contAbiertas++;
+      }
+    });
+
+    print(_contAbiertas.toString());
+
+    return _contAbiertas;
   }
 }

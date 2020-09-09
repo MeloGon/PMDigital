@@ -238,7 +238,9 @@ class _OrdenesPageState extends State<OrdenesPage> {
                   },
                 );
               } else {
-                return CircularProgressIndicator();
+                return Container(
+                    height: 400,
+                    child: Center(child: CircularProgressIndicator()));
               }
             }),
       );

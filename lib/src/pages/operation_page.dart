@@ -75,6 +75,26 @@ class _OperacionPageState extends State<OperacionPage> {
 
   List<String> ids;
 
+  var provFotos;
+  var provNotas;
+  var provMats;
+  var provServ;
+
+  List<Nota> listaNotas = new List();
+
+  @override
+  void initState() {
+    provFotos = operacionMaterialProvider.obtenerFotosOperacion(
+        widget.idop, widget.token);
+    provNotas = operacionMaterialProvider.obtenerNotasOperacion(
+        widget.idop, widget.token);
+    provMats = operacionMaterialProvider.obtenerMaterialesOperacion(
+        widget.idop, widget.token);
+    provServ = operacionMaterialProvider.obtenerServiciosOperacion(
+        widget.idop, widget.token);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,8 +122,13 @@ class _OperacionPageState extends State<OperacionPage> {
           IconButton(
               icon: Icon(Icons.sync),
               onPressed: () {
-                futureBuilderNotas();
-                futureBuilderFotos();
+                toast('Actualizando. Un momento porfavor..');
+                setState(() {
+                  provFotos = operacionMaterialProvider.obtenerFotosOperacion(
+                      widget.idop, widget.token);
+                  provNotas = operacionMaterialProvider.obtenerNotasOperacion(
+                      widget.idop, widget.token);
+                });
               })
         ],
       ),
@@ -254,8 +279,7 @@ class _OperacionPageState extends State<OperacionPage> {
 
   Widget serviciosPanel() {
     Widget panelContador = FutureBuilder(
-        future: operacionMaterialProvider.obtenerServiciosOperacion(
-            widget.idop, widget.token),
+        future: provServ,
         builder: (context, AsyncSnapshot<List<Servicio>> snapshot) {
           if (snapshot.hasData) {
             return Container(
@@ -368,8 +392,7 @@ class _OperacionPageState extends State<OperacionPage> {
 
   Widget materialesPanel() {
     Widget panelContador = FutureBuilder(
-        future: operacionMaterialProvider.obtenerMaterialesOperacion(
-            widget.idop, widget.token),
+        future: provMats,
         builder: (context, AsyncSnapshot<List<Materiale>> snapshot) {
           if (snapshot.hasData) {
             return Container(
@@ -421,8 +444,7 @@ class _OperacionPageState extends State<OperacionPage> {
 
   Widget notasPanel() {
     Widget panelContador = FutureBuilder(
-        future: operacionMaterialProvider.obtenerNotasOperacion(
-            widget.idop, widget.token),
+        future: provNotas,
         builder: (context, AsyncSnapshot<List<Nota>> snapshot) {
           if (snapshot.hasData) {
             return Container(
@@ -472,8 +494,7 @@ class _OperacionPageState extends State<OperacionPage> {
 
   Widget fotosPanel(BuildContext context) {
     Widget panelContador = FutureBuilder(
-        future: operacionMaterialProvider.obtenerFotosOperacion(
-            widget.idop, widget.token),
+        future: provFotos,
         builder: (context, AsyncSnapshot<List<Foto>> snapshot) {
           if (snapshot.hasData) {
             return Container(
@@ -651,8 +672,7 @@ class _OperacionPageState extends State<OperacionPage> {
 
   Widget futureBuilderMateriales() {
     return FutureBuilder(
-      future: operacionMaterialProvider.obtenerMaterialesOperacion(
-          widget.idop, widget.token),
+      future: provMats,
       builder: (context, AsyncSnapshot<List<Materiale>> snapshot) {
         if (snapshot.hasData) {
           if (snapshot.data.length == 0) {
@@ -731,10 +751,10 @@ class _OperacionPageState extends State<OperacionPage> {
 
   Widget futureBuilderNotas() {
     return FutureBuilder(
-      future: operacionMaterialProvider.obtenerNotasOperacion(
-          widget.idop, widget.token),
+      future: provNotas,
       builder: (context, AsyncSnapshot<List<Nota>> snapshot) {
         if (snapshot.hasData) {
+          listaNotas = snapshot.data;
           if (snapshot.data.length == 0) {
             return Center(
               child: Text('No existen Notas en la Operacion'),
@@ -749,16 +769,16 @@ class _OperacionPageState extends State<OperacionPage> {
               ),
             ),
             physics: NeverScrollableScrollPhysics(),
-            itemCount: snapshot.data.length,
+            itemCount: listaNotas.length,
             shrinkWrap: true,
             scrollDirection: Axis.vertical,
             itemBuilder: (context, index) {
-              return itemNota(snapshot.data[index]);
+              return itemNota(listaNotas[index]);
             },
           );
         } else {
-          return Center(
-            child: CircularProgressIndicator(),
+          return Container(
+            height: 10.0,
           );
         }
       },
@@ -785,8 +805,7 @@ class _OperacionPageState extends State<OperacionPage> {
 
   Widget futureServicios() {
     return FutureBuilder(
-      future: operacionMaterialProvider.obtenerServiciosOperacion(
-          widget.idop, widget.token),
+      future: provServ,
       builder: (context, AsyncSnapshot<List<Servicio>> snapshot) {
         if (snapshot.hasData) {
           if (snapshot.data.length == 0) {
@@ -810,8 +829,8 @@ class _OperacionPageState extends State<OperacionPage> {
             },
           );
         } else {
-          return Center(
-            child: CircularProgressIndicator(),
+          return Container(
+            height: 10.0,
           );
         }
       },
@@ -1000,8 +1019,7 @@ class _OperacionPageState extends State<OperacionPage> {
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 20.0),
       child: FutureBuilder(
-        future: operacionMaterialProvider.obtenerFotosOperacion(
-            widget.idop, widget.token),
+        future: provFotos,
         builder: (context, AsyncSnapshot<List<Foto>> snapshot) {
           if (snapshot.hasData) {
             if (snapshot.data.length == 0) {

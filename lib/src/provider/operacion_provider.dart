@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:mime_type/mime_type.dart';
 import 'package:http/http.dart' as http;
 import 'package:pmdigital_app/src/models/OperacionFullModel.dart';
@@ -11,6 +12,12 @@ class OperacionMaterialProvider {
   String _urlOperacion =
       'https://innovadis.net.pe/apiPMDigital/public/operacion/';
 
+  List<Servicio> _listaServicios = new List();
+  final List<Nota> _listaNotas = new List();
+  List<Materiale> _listaMateriales = new List();
+
+  final List<Materiale> listaMatsGlobal = new List();
+
   Future<List<Operacion>> obtenerOperaciones(String nroOt, String token) async {
     final resp = await http.get(_url + nroOt.toString(), headers: {
       "Accept": "application/json",
@@ -20,33 +27,42 @@ class OperacionMaterialProvider {
 
     final List<Operacion> listaOperaciones = new List();
     final decode = json.decode(resp.body);
-    //print(decode['rpta']['operaciones']);
+
     (decode['rpta']['operaciones'] as List)
         .map((e) => Operacion.fromJson(e))
         .toList()
         .forEach((element) {
       listaOperaciones.add(element);
     });
-    return listaOperaciones;
-  }
 
-  Future<List<Materiale>> obtenerMateriales(String nroOt, String token) async {
-    final resp = await http.get(_url + nroOt.toString(), headers: {
-      "Accept": "application/json",
-      "Content-Type": "application/x-www-form-urlencoded",
-      "Authorization": token,
-    });
-
-    final List<Materiale> listaMateriales = new List();
-    final decode = json.decode(resp.body);
-    //print(decode['rpta']['materiales']);
     (decode['rpta']['materiales'] as List)
         .map((e) => Materiale.fromJson(e))
         .toList()
         .forEach((element) {
-      listaMateriales.add(element);
+      listaMatsGlobal.add(element);
     });
-    return listaMateriales;
+
+    return listaOperaciones;
+  }
+
+  Future<List<Materiale>> obtenerMateriales(String nroOt, String token) async {
+    // final resp = await http.get(_url + nroOt.toString(), headers: {
+    //   "Accept": "application/json",
+    //   "Content-Type": "application/x-www-form-urlencoded",
+    //   "Authorization": token,
+    // });
+
+    // final List<Materiale> listaMateriales = new List();
+    // final decode = json.decode(resp.body);
+    // //print(decode['rpta']['materiales']);
+    // (decode['rpta']['materiales'] as List)
+    //     .map((e) => Materiale.fromJson(e))
+    //     .toList()
+    //     .forEach((element) {
+    //   listaMateriales.add(element);
+    // });
+
+    return listaMatsGlobal;
   }
 
   Future<OperacionFullModel> obtenerOperacion(String idop, String token) async {
@@ -58,6 +74,7 @@ class OperacionMaterialProvider {
 
     OperacionFullModel operacionfull =
         OperacionFullModel.fromJson(json.decode(resp.body)['rpta']);
+
     return operacionfull;
   }
 
@@ -181,7 +198,6 @@ class OperacionMaterialProvider {
         });
 
     var jsonconverted = json.decode(resp.body);
-    print(jsonconverted);
     return jsonconverted;
   }
 
@@ -200,7 +216,6 @@ class OperacionMaterialProvider {
         });
 
     var jsonconverted = json.decode(resp.body);
-    print(jsonconverted);
     return jsonconverted;
   }
 
@@ -245,7 +260,6 @@ class OperacionMaterialProvider {
               '", "nombre":"nom", "extension":"jpg", "ancho":"50", "alto":"100", "peso":"500"}'
         });
     var respData = json.decode(resp.body);
-    print(respData);
     return respData;
   }
 }

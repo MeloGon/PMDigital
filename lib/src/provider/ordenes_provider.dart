@@ -14,6 +14,7 @@ class OrdenesProvider {
   int _grupoPage = 0;
   int _cantGrupo = 20;
   bool _cargando = false;
+
   List<OrdenModel> _ordenes = new List();
 
   final _ordenesStreamController =
@@ -115,7 +116,6 @@ class OrdenesProvider {
       "Content-Type": "application/x-www-form-urlencoded",
       "Authorization": token,
     }, body: {
-      //{"grupo":1, "cantGrupo":20, "buscar":"", "fecha":"", "prioridad":"", "estatus":""}
       'json': '{"grupo": 1,"cantGrupo":' +
           _cantGrupo.toString() +
           ',"buscar":"' +
@@ -123,8 +123,8 @@ class OrdenesProvider {
           '","fecha":"","prioridad":"","estatus":""' +
           '}',
     });
+    _grupoPage = 0;
     // final decodeResp = json.decode(resp.body);
-    // print(decodeResp);
     // //para tecnico
     // final peliculas =
     //     new OrdenesModel.fromJsonList(decodeResp['ots_secundario']);
@@ -134,7 +134,6 @@ class OrdenesProvider {
 
     final List<OrdenModel> listaordenes = new List();
     final decode = json.decode(resp.body);
-    print(decode['ots_secundario']);
     (decode['ots_secundario'] as List)
         .map((e) => OrdenModel.fromJsonMap(e))
         .toList()
