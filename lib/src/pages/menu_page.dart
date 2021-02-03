@@ -6,9 +6,9 @@ import 'package:intl/intl.dart';
 import 'dart:ui';
 
 import 'package:percent_indicator/circular_percent_indicator.dart';
-import 'package:pmdigital_app/src/pages/login_page.dart';
+
 import 'package:pmdigital_app/src/provider/menu_provider.dart';
-import 'package:pmdigital_app/src/provider/ordenes_provider.dart';
+
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:pmdigital_app/src/widgets/loginbg_widget.dart';
 import 'package:pmdigital_app/src/widgets/roundbt_widget.dart';

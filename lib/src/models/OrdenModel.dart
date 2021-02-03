@@ -47,4 +47,16 @@ class OrdenModel {
     prioridadColor = json['prioridad_color'];
     tipoOt = json['tipo_ot'];
   }
+
+  factory OrdenModel.fromJson(Map<String, dynamic> json) => OrdenModel(
+        id: json["id"],
+        descripcion: json["descripcion"],
+        numeroOt: json["numero_ot"],
+        fechaFinPlan: DateTime.parse(json["fecha_fin_plan"]),
+        estado: json["estado"],
+        estadoColor: json["estado_color"],
+        prioridad: json["prioridad"],
+        prioridadColor: json["prioridad_color"],
+        tipoOt: json["tipo_ot"],
+      );
 }
