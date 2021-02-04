@@ -25,23 +25,23 @@ class _OrdenesPageState extends State<OrdenesPage> {
       fontSize: 14.0, color: Color(0xff32363A), fontWeight: FontWeight.w700);
 
   final busController = new TextEditingController(text: "");
-  List<OrdenModel> listaordenes = new List<OrdenModel>();
+  List<OrdenModel> listaOrdenToda = new List<OrdenModel>();
   List<OrdenModel> listaOrdenTodaFiltrada = new List<OrdenModel>();
 
 //  String valuebus = "";
 
   @override
   void initState() {
+    cargarInOrdenes();
     super.initState();
-    cargarOrdenes();
   }
 
-  cargarOrdenes() async {
+  cargarInOrdenes() async {
     //ordenesProvider.getOrdenes(widget.token);
-    ordenesProvider.getOrdenes(widget.token).then((value) {
+    ordenesProvider.cargarOrdenes(widget.token).then((value) {
       setState(() {
-        listaordenes = value;
-        listaOrdenTodaFiltrada = listaordenes;
+        listaOrdenToda = value;
+        listaOrdenTodaFiltrada = listaOrdenToda;
       });
     });
   }
@@ -84,7 +84,12 @@ class _OrdenesPageState extends State<OrdenesPage> {
           FocusScope.of(context).requestFocus(new FocusNode());
         },
         child: Stack(
-          children: [numeroOrdenes(), spaceSearch(), headerBar(), ordenes()],
+          children: [
+            numeroOrdenes(),
+            spaceSearch(context),
+            headerBar(),
+            ordenes()
+          ],
         ),
       ),
     );
@@ -131,7 +136,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
     );
   }
 
-  Widget spaceSearch() {
+  Widget spaceSearch(BuildContext context) {
     Widget inputBuscar = Container(
       color: Colors.white,
       width: 200.0,
@@ -151,9 +156,8 @@ class _OrdenesPageState extends State<OrdenesPage> {
           ),
         ),
         onChanged: (value) {
-          print(value);
           setState(() {
-            listaOrdenTodaFiltrada = listaordenes
+            listaOrdenTodaFiltrada = listaOrdenToda
                 .where((u) => (u.numeroOt
                         .toLowerCase()
                         .contains(value.toLowerCase()) ||
@@ -161,16 +165,10 @@ class _OrdenesPageState extends State<OrdenesPage> {
                     u.tipoOt.toLowerCase().contains(value.toLowerCase()) ||
                     u.prioridad.toLowerCase().contains(value.toLowerCase())))
                 .toList();
+
+            print(listaOrdenTodaFiltrada[0]);
           });
         },
-        // onEditingComplete: () {
-        //   setState(() {
-        //     listaordenes.clear();
-        //     valuebus = busController.text;
-        //   });
-        // },
-        //onEditingComplete: () => busqueda(busController.text),
-        // onSubmitted: busqueda,
       ),
     );
     return Container(
@@ -179,7 +177,43 @@ class _OrdenesPageState extends State<OrdenesPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          inputBuscar,
+          Container(
+            color: Colors.white,
+            width: 200.0,
+            height: 30,
+            child: TextField(
+              style: TextStyle(fontFamily: 'fuente72', fontSize: 14.0),
+              decoration: InputDecoration(
+                contentPadding: EdgeInsets.all(7),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(2.0)),
+                hintText: 'Buscar',
+                hintStyle: TextStyle(fontStyle: FontStyle.italic),
+                suffixIcon: Icon(
+                  Icons.search,
+                  color: Color(0xff0854a0),
+                ),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  listaOrdenTodaFiltrada = listaOrdenToda
+                      .where((u) => (u.numeroOt
+                              .toLowerCase()
+                              .contains(value.toLowerCase()) ||
+                          u.descripcion
+                              .toLowerCase()
+                              .contains(value.toLowerCase()) ||
+                          u.tipoOt
+                              .toLowerCase()
+                              .contains(value.toLowerCase()) ||
+                          u.prioridad
+                              .toLowerCase()
+                              .contains(value.toLowerCase())))
+                      .toList();
+                });
+              },
+            ),
+          )
         ],
       ),
     );
@@ -211,16 +245,13 @@ class _OrdenesPageState extends State<OrdenesPage> {
   Widget ordenes() {
     return Container(
       margin: EdgeInsets.only(top: 160.0),
-      child: StreamBuilder(
-        stream: ordenesProvider.ordenesStream,
+      child: FutureBuilder(
+        future: ordenesProvider.cargarOrdenes(widget.token),
         builder:
             (BuildContext context, AsyncSnapshot<List<OrdenModel>> snapshot) {
-          //ese signo de interrogacion dice has este foreach si existe data
-          //snapshot.data?.forEach((element) {
-          //print(element.descripcion);
-          //});
-          if (snapshot.hasData) {
-            return ListView.separated(
+          return RefreshIndicator(
+            onRefresh: refrescarLista,
+            child: ListView.separated(
               separatorBuilder: (context, index) => Padding(
                 padding: EdgeInsets.only(left: 20.0),
                 child: Divider(
@@ -231,82 +262,17 @@ class _OrdenesPageState extends State<OrdenesPage> {
               itemBuilder: (BuildContext context, int index) {
                 return itemOt(listaOrdenTodaFiltrada[index]);
               },
-            );
-          } else {
-            //el progrssar solo aparece mientras se resuleve el future o cuando nohay datos
-            return Container(
-                height: 400, child: Center(child: CircularProgressIndicator()));
-          }
+            ),
+          );
         },
       ),
     );
+  }
 
-    // setState(() {
-    //   valuebus;
-    // });
-    // if (valuebus == "") {
-    //   return Container(
-    //     margin: EdgeInsets.only(top: 160.0),
-    //     child: StreamBuilder(
-    //       stream: ordenesProvider.ordenesStream,
-    //       builder:
-    //           (BuildContext context, AsyncSnapshot<List<OrdenModel>> snapshot) {
-    //         //ese signo de interrogacion dice has este foreach si existe data
-    //         //snapshot.data?.forEach((element) {
-    //         //print(element.descripcion);
-    //         //});
-    //         if (snapshot.hasData) {
-    //           listaordenes = snapshot.data;
-    //           return ListView.separated(
-    //             separatorBuilder: (context, index) => Padding(
-    //               padding: EdgeInsets.only(left: 20.0),
-    //               child: Divider(
-    //                 color: Colors.grey,
-    //               ),
-    //             ),
-    //             itemCount: listaOrdenTodaFiltrada.length,
-    //             itemBuilder: (BuildContext context, int index) {
-    //               return itemOt(listaOrdenTodaFiltrada[index]);
-    //             },
-    //           );
-    //         } else {
-    //           //el progrssar solo aparece mientras se resuleve el future o cuando nohay datos
-    //           return Container(
-    //               height: 400,
-    //               child: Center(child: CircularProgressIndicator()));
-    //         }
-    //       },
-    //     ),
-    //   );
-    // } else {
-    //   print(valuebus);
-    //   return Container(
-    //     margin: EdgeInsets.only(top: 160.0),
-    //     child: FutureBuilder(
-    //         future: ordenesProvider.buscarOrden(widget.token, valuebus),
-    //         builder: (context, AsyncSnapshot<List<OrdenModel>> snapshot) {
-    //           if (snapshot.hasData) {
-    //             listaordenes = snapshot.data;
-    //             return ListView.separated(
-    //               separatorBuilder: (context, index) => Padding(
-    //                 padding: EdgeInsets.only(left: 20.0),
-    //                 child: Divider(
-    //                   color: Colors.grey,
-    //                 ),
-    //               ),
-    //               itemCount: listaordenes.length,
-    //               itemBuilder: (BuildContext context, index) {
-    //                 return itemOt(listaordenes[index]);
-    //               },
-    //             );
-    //           } else {
-    //             return Container(
-    //                 height: 400,
-    //                 child: Center(child: CircularProgressIndicator()));
-    //           }
-    //         }),
-    //   );
-    // }
+  Future refrescarLista() async {
+    setState(() {
+      cargarInOrdenes();
+    });
   }
 
   Widget itemOt(OrdenModel data) {
@@ -387,31 +353,5 @@ class _OrdenesPageState extends State<OrdenesPage> {
         ),
       ),
     );
-  }
-
-  void busqueda(String value) {
-    print('arriba del future');
-    FutureBuilder(
-        future: ordenesProvider.buscarOrden(widget.token, value),
-        builder: (context, AsyncSnapshot<List<OrdenModel>> snapshot) {
-          if (snapshot.hasData) {
-            listaordenes.clear();
-            listaordenes = snapshot.data;
-            return ListView.separated(
-              separatorBuilder: (context, index) => Padding(
-                padding: EdgeInsets.only(left: 20.0),
-                child: Divider(
-                  color: Colors.grey,
-                ),
-              ),
-              itemCount: listaordenes.length,
-              itemBuilder: (BuildContext context, index) {
-                return itemOt(listaordenes[index]);
-              },
-            );
-          } else {
-            return CircularProgressIndicator();
-          }
-        });
   }
 }

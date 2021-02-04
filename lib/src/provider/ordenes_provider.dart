@@ -65,6 +65,35 @@ class OrdenesProvider {
     return resp;
   }
 
+  Future<List<OrdenModel>> cargarOrdenes(String token) async {
+    final response = await http.post(_url, headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": token,
+    }, body: {
+      //{"grupo":1, "cantGrupo":20, "buscar":"", "fecha":"", "prioridad":"", "estatus":""}
+      'json': '{"grupo":' +
+          "1" +
+          ',"cantGrupo":' +
+          "200000" +
+          ',"buscar": "","fecha":"","prioridad":"","estatus":""' +
+          '}',
+    });
+
+    final List<OrdenModel> ordenes = new List();
+    if (response.body.isNotEmpty) {
+      var receivedJson = json.decode(response.body.toString());
+      (receivedJson['ots_secundario'] as List)
+          .map((p) => OrdenModel.fromJson(p))
+          .toList()
+          .forEach((element) {
+        ordenes.add(element);
+      });
+    }
+
+    return ordenes;
+  }
+
   Future<int> cantidadOrdenes(String token) async {
     final resp = await http.post(_url, headers: {
       "Accept": "application/json",
@@ -73,9 +102,9 @@ class OrdenesProvider {
     }, body: {
       //{"grupo":1, "cantGrupo":20, "buscar":"", "fecha":"", "prioridad":"", "estatus":""}
       'json': '{"grupo":' +
-          _grupoPage.toString() +
+          "1" +
           ',"cantGrupo":' +
-          _cantGrupo.toString() +
+          "200000" +
           ',"buscar": "","fecha":"","prioridad":"","estatus":""' +
           '}',
     });
