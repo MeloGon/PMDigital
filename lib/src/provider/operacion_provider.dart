@@ -201,6 +201,21 @@ class OperacionMaterialProvider {
     return jsonconverted;
   }
 
+  Future eliminarFoto(String token, String idfoto) async {
+    final resp = await http.delete(
+        'https://innovadis.net.pe/apiPMDigital/public/imagen/destroy2/' +
+            idfoto.toString(),
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Authorization": token,
+        });
+
+    var jsonconverted = json.decode(resp.body);
+    print(jsonconverted);
+    return jsonconverted;
+  }
+
 //solo funciona con admin reviar esto con Joel
   Future editarNota(String token, String idnota, String contnota) async {
     final resp = await http.put(

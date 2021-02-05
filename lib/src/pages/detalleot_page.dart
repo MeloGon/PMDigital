@@ -11,7 +11,15 @@ class DetallesOtPage extends StatefulWidget {
   String descriot;
   String token;
   String estado;
-  DetallesOtPage({this.nrot, this.descriot, this.token, this.estado});
+  String cantOp;
+  String cantMat;
+  DetallesOtPage(
+      {this.nrot,
+      this.descriot,
+      this.token,
+      this.estado,
+      this.cantOp,
+      this.cantMat});
   @override
   _DetallesOtPageState createState() => _DetallesOtPageState();
 }
@@ -153,13 +161,11 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
         children: [
           panelExpansibleDetalle,
           panelTabs(),
-          cuerpoPage(context, 'operaciones'),
           cabecera(),
           listaOperaciones(context),
           TituloSeccionWidget(
             value: 'MATERIALES',
           ),
-          cuerpoPage(context, 'materiales'),
           cabecera(),
           listaMateriales(context),
         ],
@@ -202,7 +208,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
             text: TextSpan(style: _oTextStyle, children: [
               TextSpan(
                   text: 'Main Work Ctr: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${resp.mainWork}'),
+              TextSpan(text: '${resp.mainWork ?? ""}'),
             ]),
           ),
           SizedBox(
@@ -212,7 +218,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
             text: TextSpan(style: _oTextStyle, children: [
               TextSpan(
                   text: 'Tipo de orden: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${resp.tipoOt}'),
+              TextSpan(text: '${resp.tipoOt ?? ""}'),
             ]),
           ),
           SizedBox(
@@ -223,7 +229,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
               TextSpan(
                   text: 'Tipo actividad: ',
                   style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${resp.tipoActividad}'),
+              TextSpan(text: '${resp.tipoActividad ?? ""}'),
             ]),
           ),
           SizedBox(
@@ -236,7 +242,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
           RichText(
             text: TextSpan(style: _oTextStyle, children: [
               TextSpan(text: 'Inicio: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${resp.fechaFechaIniPlan}'),
+              TextSpan(text: '${resp.fechaFechaIniPlan ?? ""}'),
             ]),
           ),
           SizedBox(
@@ -245,7 +251,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
           RichText(
             text: TextSpan(style: _oTextStyle, children: [
               TextSpan(text: 'Fin: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${resp.fechaFinPlan}'),
+              TextSpan(text: '${resp.fechaFinPlan ?? ""}'),
             ]),
           ),
           SizedBox(
@@ -255,7 +261,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
             text: TextSpan(style: _oTextStyle, children: [
               TextSpan(
                   text: 'Prioridad: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${resp.prioridad}'),
+              TextSpan(text: '${resp.prioridad ?? ""}'),
             ]),
           ),
           SizedBox(
@@ -264,7 +270,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
           RichText(
             text: TextSpan(style: _oTextStyle, children: [
               TextSpan(text: 'Revision: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${resp.revision}'),
+              TextSpan(text: '${resp.revision ?? ""}'),
             ]),
           ),
           SizedBox(
@@ -278,7 +284,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
             text: TextSpan(style: _oTextStyle, children: [
               TextSpan(
                   text: 'Ubic. func: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${resp.ubiFuncional}'),
+              TextSpan(text: '${resp.ubiFuncional ?? ""}'),
             ]),
           ),
           SizedBox(
@@ -289,7 +295,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
               TextSpan(
                   text: 'Descripción: Blower Air System 2 Cleaner Cells ',
                   style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${resp.ubiFuncional}'),
+              TextSpan(text: '${resp.ubiFuncional ?? ""}'),
             ]),
           ),
           SizedBox(
@@ -299,7 +305,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
             text: TextSpan(style: _oTextStyle, children: [
               TextSpan(
                   text: 'Sort field: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${resp.sortField}'),
+              TextSpan(text: '${resp.sortField ?? ""}'),
             ]),
           ),
           SizedBox(
@@ -331,10 +337,10 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
               labelStyle: _styleLabelTab,
               tabs: [
                 Tab(
-                  text: 'OPERACIONES',
+                  text: 'OPERACIONES (${widget.cantOp})',
                 ),
                 Tab(
-                  text: 'MATERIALES',
+                  text: 'MATERIALES (${widget.cantMat})',
                 ),
               ])),
 //             child: DefaultTabController(
@@ -387,70 +393,6 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
 //                   ]),
 //                 )),
     );
-  }
-
-  Widget cuerpoPage(BuildContext context, String value) {
-    TextStyle styleContador = TextStyle(fontFamily: 'fuente72', fontSize: 18.0);
-    if (value == 'operaciones') {
-      return FutureBuilder(
-        future: operacionMaterialProvider.obtenerOperaciones(
-            widget.nrot, widget.token),
-        builder: (context, AsyncSnapshot<List<Operacion>> snapshot) {
-          if (snapshot.hasData) {
-            return Container(
-                height: 40.0,
-                padding: EdgeInsets.only(left: 20.0),
-                alignment: Alignment.centerLeft,
-                width: double.infinity,
-                child: Text(
-                  'Operaciones (${snapshot.data.length})',
-                  style: styleContador,
-                ));
-          } else {
-            return Container(
-                height: 40.0,
-                padding: EdgeInsets.only(left: 20.0),
-                alignment: Alignment.centerLeft,
-                width: double.infinity,
-                child: Text(
-                  'Operaciones (Estimando..)',
-                  style: styleContador,
-                ));
-          }
-        },
-      );
-    }
-
-    if (value == 'materiales') {
-      return FutureBuilder(
-        future: operacionMaterialProvider.obtenerMateriales(
-            widget.nrot, widget.token),
-        builder: (context, AsyncSnapshot<List<Materiale>> snapshot) {
-          if (snapshot.hasData) {
-            return Container(
-                height: 40.0,
-                padding: EdgeInsets.only(left: 20.0),
-                alignment: Alignment.centerLeft,
-                width: double.infinity,
-                child: Text(
-                  'Linea de Materiales (${snapshot.data.length})',
-                  style: styleContador,
-                ));
-          } else {
-            return Container(
-                height: 40.0,
-                padding: EdgeInsets.only(left: 20.0),
-                alignment: Alignment.centerLeft,
-                width: double.infinity,
-                child: Text(
-                  'Linea de Materiales (Estimando..)',
-                  style: styleContador,
-                ));
-          }
-        },
-      );
-    }
-    return Text('');
   }
 
   Widget cabecera() {

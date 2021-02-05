@@ -5,6 +5,7 @@ import 'package:pmdigital_app/src/pages/menu_page.dart';
 import 'package:pmdigital_app/src/provider/loguin_provider.dart';
 import 'package:pmdigital_app/src/widgets/loginbg_widget.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -25,10 +26,24 @@ class _LoginPageState extends State<LoginPage> {
     fontSize: 14.0,
     fontFamily: 'fuente72',
   );
-  //var
-  final emailController = TextEditingController(text: 'tecnico2@tecnico.com');
-  final passwordController = TextEditingController(text: '111aaa');
+  //email tecnico2@tecnico.com  contra   111aaa
+  TextEditingController emailController = TextEditingController(text: '');
+  TextEditingController passwordController = TextEditingController(text: '');
   bool stateCheck = false;
+
+  @override
+  void initState() {
+    cargarPref();
+    super.initState();
+  }
+
+  cargarPref() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    emailController = TextEditingController(text: prefs.get('correo'));
+    passwordController = TextEditingController(text: prefs.get('pwd'));
+    stateCheck = prefs.get('remem') ?? false;
+    setState(() {});
+  }
 
   @override
   void dispose() {
@@ -143,6 +158,7 @@ class _LoginPageState extends State<LoginPage> {
         onChanged: (newValue) {
           setState(() {
             stateCheck = newValue;
+            print('estado es $stateCheck');
           });
         },
         controlAffinity:
@@ -191,6 +207,17 @@ class _LoginPageState extends State<LoginPage> {
           Colors.black, Colors.white);
     } else {
       toast("Validando credenciales..", Colors.black, Colors.white);
+      if (stateCheck) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('correo', emailController.text);
+        prefs.setString('pwd', passwordController.text);
+        prefs.setBool('remem', stateCheck);
+      } else {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('correo', "");
+        prefs.setString('pwd', "");
+        prefs.setBool('remem', stateCheck);
+      }
       var rsp = await loguinProvider.loguinUser(
           emailController.text, passwordController.text);
       // print(rsp);

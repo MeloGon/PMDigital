@@ -209,6 +209,7 @@ class _OperacionPageState extends State<OperacionPage> {
       child: DefaultTabController(
           length: 4,
           child: TabBar(
+              isScrollable: true,
               labelColor: Color(0xff0854A0),
               labelStyle: _styleLabelTab,
               tabs: [
@@ -560,7 +561,7 @@ class _OperacionPageState extends State<OperacionPage> {
               TextSpan(
                   text: 'Oper. Work Ctr.: ',
                   style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${data.operationWorkCenter}'),
+              TextSpan(text: '${data.operationWorkCenter ?? ""}'),
             ]),
           ),
           SizedBox(
@@ -586,7 +587,7 @@ class _OperacionPageState extends State<OperacionPage> {
           RichText(
             text: TextSpan(style: _oTextStyle, children: [
               TextSpan(text: 'Inicio: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${data.fechaIniPlan}'),
+              TextSpan(text: '${data.fechaIniPlan ?? ""}'),
             ]),
           ),
           SizedBox(
@@ -595,7 +596,7 @@ class _OperacionPageState extends State<OperacionPage> {
           RichText(
             text: TextSpan(style: _oTextStyle, children: [
               TextSpan(text: 'Fin: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${data.fechaFinPlan}'),
+              TextSpan(text: '${data.fechaFinPlan ?? ""}'),
             ]),
           ),
           SizedBox(
@@ -604,7 +605,7 @@ class _OperacionPageState extends State<OperacionPage> {
           RichText(
             text: TextSpan(style: _oTextStyle, children: [
               TextSpan(text: 'Duracion: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${data.duracionReal}'),
+              TextSpan(text: '${data.duracionReal ?? ""}'),
             ]),
           ),
           SizedBox(
@@ -613,7 +614,7 @@ class _OperacionPageState extends State<OperacionPage> {
           RichText(
             text: TextSpan(style: _oTextStyle, children: [
               TextSpan(text: 'Personal: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${data.numberReal}'),
+              TextSpan(text: '${data.numberReal ?? ""}'),
             ]),
           ),
           SizedBox(
@@ -622,7 +623,7 @@ class _OperacionPageState extends State<OperacionPage> {
           RichText(
             text: TextSpan(style: _oTextStyle, children: [
               TextSpan(text: 'Trabajo: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${data.workReal}'),
+              TextSpan(text: '${data.workReal ?? ""}'),
             ]),
           ),
           SizedBox(
@@ -639,7 +640,7 @@ class _OperacionPageState extends State<OperacionPage> {
             text: TextSpan(style: _oTextStyle, children: [
               TextSpan(
                   text: 'Ubic. Func: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${data.ubiFuncional}'),
+              TextSpan(text: '${data.ubiFuncional ?? ""}'),
             ]),
           ),
           SizedBox(
@@ -649,7 +650,7 @@ class _OperacionPageState extends State<OperacionPage> {
             text: TextSpan(style: _oTextStyle, children: [
               TextSpan(
                   text: 'Descripcion: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${data.descripcionEquipo}'),
+              TextSpan(text: '${data.descripcionEquipo ?? ""}'),
             ]),
           ),
           SizedBox(
@@ -659,7 +660,7 @@ class _OperacionPageState extends State<OperacionPage> {
             text: TextSpan(style: _oTextStyle, children: [
               TextSpan(
                   text: 'Sort Field: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${data.sortField}'),
+              TextSpan(text: '${data.sortField ?? ""}'),
             ]),
           ),
           SizedBox(
@@ -1064,7 +1065,8 @@ class _OperacionPageState extends State<OperacionPage> {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) {
-              return ImagePageNetwork('${data.url}');
+              return ImagePageNetwork(
+                  '${data.url}', '${widget.token}', '${data.id.toString()}');
             },
           ),
         );

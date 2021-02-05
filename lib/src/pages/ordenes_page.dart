@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hexcolor/hexcolor.dart';
 
 import 'package:pmdigital_app/src/models/OrdenModel.dart';
 import 'package:pmdigital_app/src/provider/ordenes_provider.dart';
@@ -24,10 +26,20 @@ class _OrdenesPageState extends State<OrdenesPage> {
   TextStyle _titleOtStyle = TextStyle(
       fontSize: 14.0, color: Color(0xff32363A), fontWeight: FontWeight.w700);
 
+  TextStyle _estiloItemNro = TextStyle(
+      fontSize: 16,
+      fontFamily: 'fuente72',
+      fontWeight: FontWeight.w700,
+      color: Color(0xff0A6ED1));
+
+  TextStyle _estiloItemDescr = TextStyle(
+      fontSize: 14, fontFamily: 'fuente72', fontWeight: FontWeight.w700);
+
   final busController = new TextEditingController(text: "");
   OrdenesProvider ordenesProvider = new OrdenesProvider();
   List<OrdenModel> listaOrdenToda = new List<OrdenModel>();
   List<OrdenModel> listaOrdenTodaFiltrada = new List<OrdenModel>();
+  List<String> cantOpyMat = [];
 
 //  String valuebus = "";
 
@@ -53,7 +65,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: _appBarColor,
-        title: Text('Avances'),
+        title: Text('Mis órdenes de hoy'),
         centerTitle: false,
         actions: <Widget>[
           //_perfilCircle(context),
@@ -112,7 +124,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
     return Container(
       width: double.infinity,
       child: Text(
-        'Órdenes de trabajo',
+        'Órdenes de trabajo (34)',
         style: TextStyle(fontFamily: 'fuente72', fontSize: 18),
       ),
       padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
@@ -122,6 +134,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
   Widget _panelCabecera() {
     return Container(
       width: double.infinity,
+      color: Color(0xffF2F2F2),
       padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
       child: Row(
         children: <Widget>[
@@ -130,7 +143,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
             'No. Orden',
           )),
           Text(
-            'Cumplimiento',
+            'Estatus',
           ),
         ],
       ),
@@ -165,7 +178,22 @@ class _OrdenesPageState extends State<OrdenesPage> {
     return Padding(
       padding: EdgeInsets.only(left: 5),
       child: ListTile(
-        onTap: () async {},
+        onTap: () async {
+          toast("Cargando Orden", Colors.black, Colors.grey[200]);
+          cantOpyMat = await ordenesProvider.cantidadOpyMats(
+              orden.numeroOt, widget.token);
+
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return DetallesOtPage(
+              nrot: orden.numeroOt.toString(),
+              descriot: orden.descripcion,
+              token: widget.token,
+              estado: orden.estado,
+              cantOp: cantOpyMat[0],
+              cantMat: cantOpyMat[1],
+            );
+          }));
+        },
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -174,12 +202,14 @@ class _OrdenesPageState extends State<OrdenesPage> {
             ),
             Text(
               '${orden.numeroOt}',
+              style: _estiloItemNro,
             ),
             SizedBox(
               height: 5,
             ),
             Text(
               '${orden.descripcion}',
+              style: _estiloItemDescr,
             ),
             SizedBox(
               height: 5,
@@ -190,16 +220,13 @@ class _OrdenesPageState extends State<OrdenesPage> {
           children: <Widget>[
             Row(
               children: <Widget>[
-                Text(
-                  'Criticidad: ',
-                  style: TextStyle(fontFamily: 'fuente72'),
-                ),
-                Text(
-                  '${orden.prioridad}',
-                  style: TextStyle(
-                    fontFamily: 'fuente72',
-                    fontSize: 14,
-                  ),
+                RichText(
+                  text: TextSpan(style: _oTextStyle, children: [
+                    TextSpan(
+                        text: 'Tipo Orden: ',
+                        style: TextStyle(color: _greyColor)),
+                    TextSpan(text: '${orden.tipoOt ?? ""}'),
+                  ]),
                 ),
               ],
             ),
@@ -208,8 +235,14 @@ class _OrdenesPageState extends State<OrdenesPage> {
             ),
             Row(
               children: <Widget>[
-                Text('Área: ', style: TextStyle(fontFamily: 'fuente72')),
-                Text('${orden.tipoOt}'),
+                RichText(
+                  text: TextSpan(style: _oTextStyle, children: [
+                    TextSpan(
+                        text: 'Prioridad: ',
+                        style: TextStyle(color: _greyColor)),
+                    TextSpan(text: '${orden.prioridad ?? ""}'),
+                  ]),
+                ),
               ],
             ),
             SizedBox(
@@ -222,6 +255,24 @@ class _OrdenesPageState extends State<OrdenesPage> {
               height: 5,
             ),
           ],
+        ),
+        trailing: Container(
+          width: 130.0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                '${orden.estado ?? ""}',
+                style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    color: Hexcolor('${orden.estadoColor}')),
+              ),
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 15.0,
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -239,41 +290,49 @@ class _OrdenesPageState extends State<OrdenesPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: <Widget>[
-          TextField(
-            onChanged: (value) {
-              setState(() {
-                listaOrdenTodaFiltrada = listaOrdenToda
-                    .where((u) => (u.numeroOt
-                            .toLowerCase()
-                            .contains(value.toLowerCase()) ||
-                        u.descripcion
-                            .toLowerCase()
-                            .contains(value.toLowerCase()) ||
-                        u.tipoOt.toLowerCase().contains(value.toLowerCase()) ||
-                        u.prioridad
-                            .toLowerCase()
-                            .contains(value.toLowerCase()) ||
-                        u.prioridad
-                            .toLowerCase()
-                            .contains(value.toLowerCase())))
-                    .toList();
-              });
-            },
-            style: TextStyle(
-              fontFamily: 'fuente72',
-              fontSize: 14,
+          Container(
+            color: Colors.white,
+            width: 200.0,
+            height: 30,
+            child: TextField(
+              onChanged: (value) {
+                print('Numero elemns ${listaOrdenTodaFiltrada.length}');
+                setState(() {
+                  listaOrdenTodaFiltrada = listaOrdenToda
+                      .where((u) => (u.numeroOt
+                              .toLowerCase()
+                              .contains(value.toLowerCase()) ||
+                          u.descripcion
+                              .toLowerCase()
+                              .contains(value.toLowerCase()) ||
+                          u.tipoOt
+                              .toLowerCase()
+                              .contains(value.toLowerCase()) ||
+                          u.prioridad
+                              .toLowerCase()
+                              .contains(value.toLowerCase()) ||
+                          u.prioridad
+                              .toLowerCase()
+                              .contains(value.toLowerCase())))
+                      .toList();
+                });
+              },
+              style: TextStyle(
+                fontFamily: 'fuente72',
+                fontSize: 14,
+              ),
+              decoration: InputDecoration(
+                  contentPadding: EdgeInsets.all(7),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(2.0)),
+                  hintText: 'Buscar',
+                  suffixIcon: Icon(
+                    Icons.search,
+                    color: Color(0xff0854a0),
+                  )),
             ),
-            decoration: InputDecoration(
-                contentPadding: EdgeInsets.all(10),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(2.0)),
-                hintText: 'Buscar',
-                suffixIcon: Icon(
-                  Icons.search,
-                  color: Color(0xff0854a0),
-                )),
           ),
           SizedBox(
             height: 10,
@@ -281,5 +340,16 @@ class _OrdenesPageState extends State<OrdenesPage> {
         ],
       ),
     );
+  }
+
+  void toast(String msg, Color colorTexto, Color colorbg) {
+    Fluttertoast.showToast(
+        msg: msg,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: colorbg,
+        textColor: colorTexto,
+        fontSize: 14.0);
   }
 }

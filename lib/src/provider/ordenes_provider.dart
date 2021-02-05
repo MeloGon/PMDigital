@@ -126,6 +126,26 @@ class OrdenesProvider {
     return ordenfull;
   }
 
+  Future cantidadOpyMats(String id, String token) async {
+    final response = await http.get(_urlGlobal + id.toString(), headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": token,
+    });
+
+    List<String> cantOpMat = new List<String>();
+
+    var receivedJson = json.decode(response.body.toString());
+    List operaciones = (receivedJson['rpta']['operaciones'] as List);
+    List materiales = (receivedJson['rpta']['materiales'] as List);
+
+    cantOpMat.add(operaciones.length.toString());
+    cantOpMat.add(materiales.length.toString());
+    print(cantOpMat);
+
+    return cantOpMat;
+  }
+
   Future cambiarEstado(String idot, String token, String nuevoEstado) async {
     final resp = await http.put(_urlGlobal + idot.toString(), headers: {
       "Accept": "application/json",

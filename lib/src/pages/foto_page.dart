@@ -28,8 +28,17 @@ class _ImagePageState extends State<ImagePage> {
                 style: TextStyle(
                     fontFamily: 'fuente72', color: Colors.white, fontSize: 15),
               ),
-              onPressed: () =>
-                  guardarFoto(widget.foto, widget.token, widget.idop, context))
+              onPressed: () {
+                Fluttertoast.showToast(
+                    msg: "Guardando fotografia ...",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.TOP,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.white,
+                    textColor: Colors.black,
+                    fontSize: 14.0);
+                guardarFoto(widget.foto, widget.token, widget.idop, context);
+              })
         ],
       ),
       body: Center(
@@ -44,16 +53,9 @@ class _ImagePageState extends State<ImagePage> {
 
   guardarFoto(
       File foto, String token, String idop, BuildContext context) async {
-    Fluttertoast.showToast(
-        msg: "Guardando fotografia ...",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.TOP,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.white,
-        textColor: Colors.black,
-        fontSize: 14.0);
     var rsp = await operacionMaterialProvider.subirImagen(foto);
     var rsp1 =
         await operacionMaterialProvider.subirImagenServer(token, idop, rsp);
+    Navigator.pop(context);
   }
 }

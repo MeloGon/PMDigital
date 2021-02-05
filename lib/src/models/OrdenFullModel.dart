@@ -58,6 +58,30 @@ class OrdenFullModel {
     materiales = List<Materiale>.from(
         json["materiales"].map((x) => Materiale.fromJson(x)));
   }
+
+  factory OrdenFullModel.fromJson(Map<String, dynamic> json) => OrdenFullModel(
+        id: json["id"],
+        descripcion: json["descripcion"],
+        numeroOt: json["numero_ot"],
+        tipoOt: json["tipo_ot"],
+        estado: json["estado"],
+        estadoColor: json["estado_color"],
+        prioridad: json["prioridad"],
+        prioridadColor: json["prioridad_color"],
+        mainWork: json["main_work"],
+        tipoActividad: json["tipo_actividad"],
+        fechaFechaIniPlan: json["fecha_ini_plan"],
+        fechaFinPlan: json["fecha_fin_plan"],
+        revision: json["revision"],
+        ubiFuncional: json["ubi_funcional"],
+        sortField: json["sort_field"],
+        operaciones: List<Operacion>.from(json["operaciones"] == null
+            ? []
+            : json["operionaces"].map((x) => Operacion.fromJson(x))),
+        materiales: List<Materiale>.from(json["materiales"] == null
+            ? []
+            : json["materiales"].map((x) => Materiale.fromJson(x))),
+      );
 }
 
 class Materiale {
