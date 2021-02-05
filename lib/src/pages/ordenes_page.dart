@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hexcolor/hexcolor.dart';
+
 import 'package:pmdigital_app/src/models/OrdenModel.dart';
 import 'package:pmdigital_app/src/provider/ordenes_provider.dart';
 
@@ -18,13 +18,14 @@ class _OrdenesPageState extends State<OrdenesPage> {
   Color _greyColor = Color(0xff6A6D70);
   //Estilos
   TextStyle _styleText = TextStyle(fontFamily: 'fuente72', fontSize: 14.0);
-  final ordenesProvider = new OrdenesProvider();
+
   TextStyle _oTextStyle =
       TextStyle(fontFamily: 'fuente72', fontSize: 14.0, color: Colors.black);
   TextStyle _titleOtStyle = TextStyle(
       fontSize: 14.0, color: Color(0xff32363A), fontWeight: FontWeight.w700);
 
   final busController = new TextEditingController(text: "");
+  OrdenesProvider ordenesProvider = new OrdenesProvider();
   List<OrdenModel> listaOrdenToda = new List<OrdenModel>();
   List<OrdenModel> listaOrdenTodaFiltrada = new List<OrdenModel>();
 
@@ -46,36 +47,34 @@ class _OrdenesPageState extends State<OrdenesPage> {
     });
   }
 
-  @override
   Widget build(BuildContext context) {
-    // ordenesProvider.getOrdenes(widget.token);
+    // print(widget.token); receive data works
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: _appBarColor,
-        titleSpacing: 0.0,
-        automaticallyImplyLeading: false,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: Icon(Icons.arrow_back_ios, color: Colors.white),
-            ),
-            Text(
-              'Mis órdenes hoy',
-              style: _styleText,
-            )
-            // Your widgets here
-          ],
-        ),
-        actions: [
-          CircleAvatar(
-            child: Icon(
+        title: Text('Avances'),
+        centerTitle: false,
+        actions: <Widget>[
+          //_perfilCircle(context),
+          PopupMenuButton<String>(
+            icon: Icon(
               Icons.supervised_user_circle,
-              color: Colors.white,
             ),
-            backgroundColor: Colors.transparent,
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              PopupMenuItem<String>(
+                value: "cerrar_sesion",
+                child: Text(
+                  "Cerrar Sesion",
+                  style: TextStyle(fontFamily: 'fuente72'),
+                ),
+              ),
+            ],
+            onSelected: (value) {
+              //     if (value == "tomar_foto") {
+              // print('Nothing');
+              if (value == "cerrar_sesion") {}
+            },
           )
         ],
       ),
@@ -83,274 +82,203 @@ class _OrdenesPageState extends State<OrdenesPage> {
         onTap: () {
           FocusScope.of(context).requestFocus(new FocusNode());
         },
-        child: Stack(
-          children: [
-            numeroOrdenes(),
-            spaceSearch(context),
-            headerBar(),
-            ordenes()
-          ],
-        ),
-      ),
-    );
-  }
-
-  void cantidad() async => await ordenesProvider.cantidadOrdenes(widget.token);
-
-  Widget futureCantidad() {
-    return FutureBuilder(
-      future: ordenesProvider.cantidadOrdenes(widget.token),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return Text(
-            'Órdenes de trabajo (${snapshot.data.toString() ?? 0})',
-            style: TextStyle(fontFamily: 'fuente72', fontSize: 20.0),
-          );
-        } else {
-          return Text(
-            'Órdenes de trabajo (Estimando ..)',
-            style: TextStyle(fontFamily: 'fuente72', fontSize: 20.0),
-          );
-        }
-      },
-    );
-  }
-
-  Widget numeroOrdenes() {
-    return Container(
-      width: double.infinity,
-      height: 48.0,
-      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey,
-            blurRadius: 6.0,
-            spreadRadius: 0.0,
-            offset: Offset(2.0, 0), // shadow direction: bottom right
-          )
-        ],
-      ),
-      child: futureCantidad(),
-    );
-  }
-
-  Widget spaceSearch(BuildContext context) {
-    Widget inputBuscar = Container(
-      color: Colors.white,
-      width: 200.0,
-      height: 30,
-      child: TextField(
-        // textInputAction: TextInputAction.go,
-        // controller: busController,
-        style: TextStyle(fontFamily: 'fuente72', fontSize: 14.0),
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.all(7),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(2.0)),
-          hintText: 'Buscar',
-          hintStyle: TextStyle(fontStyle: FontStyle.italic),
-          suffixIcon: Icon(
-            Icons.search,
-            color: Color(0xff0854a0),
+        child: Container(
+          height: double.infinity,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              _panelFiltros(context),
+              _panelContador(),
+              _panelCabecera(),
+              Expanded(child: _panelLista(context)),
+            ],
           ),
         ),
-        onChanged: (value) {
-          setState(() {
-            listaOrdenTodaFiltrada = listaOrdenToda
-                .where((u) => (u.numeroOt
-                        .toLowerCase()
-                        .contains(value.toLowerCase()) ||
-                    u.descripcion.toLowerCase().contains(value.toLowerCase()) ||
-                    u.tipoOt.toLowerCase().contains(value.toLowerCase()) ||
-                    u.prioridad.toLowerCase().contains(value.toLowerCase())))
-                .toList();
-
-            print(listaOrdenTodaFiltrada[0]);
-          });
-        },
-      ),
-    );
-    return Container(
-      margin: EdgeInsets.only(top: 40.0),
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 23.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Container(
-            color: Colors.white,
-            width: 200.0,
-            height: 30,
-            child: TextField(
-              style: TextStyle(fontFamily: 'fuente72', fontSize: 14.0),
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.all(7),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(2.0)),
-                hintText: 'Buscar',
-                hintStyle: TextStyle(fontStyle: FontStyle.italic),
-                suffixIcon: Icon(
-                  Icons.search,
-                  color: Color(0xff0854a0),
-                ),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  listaOrdenTodaFiltrada = listaOrdenToda
-                      .where((u) => (u.numeroOt
-                              .toLowerCase()
-                              .contains(value.toLowerCase()) ||
-                          u.descripcion
-                              .toLowerCase()
-                              .contains(value.toLowerCase()) ||
-                          u.tipoOt
-                              .toLowerCase()
-                              .contains(value.toLowerCase()) ||
-                          u.prioridad
-                              .toLowerCase()
-                              .contains(value.toLowerCase())))
-                      .toList();
-                });
-              },
-            ),
-          )
-        ],
       ),
     );
   }
 
-  Widget headerBar() {
+  Widget _panelFiltros(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 5),
+      child: Container(
+        width: double.infinity,
+        child: creandoFiltros(context),
+      ),
+    );
+  }
+
+  Widget _panelContador() {
     return Container(
-      margin: EdgeInsets.only(top: 110.0),
-      padding: EdgeInsets.symmetric(horizontal: 20.0),
       width: double.infinity,
-      height: 45,
-      color: Color(0xffF2F2F2),
+      child: Text(
+        'Órdenes de trabajo',
+        style: TextStyle(fontFamily: 'fuente72', fontSize: 18),
+      ),
+      padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+    );
+  }
+
+  Widget _panelCabecera() {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
       child: Row(
-        children: [
+        children: <Widget>[
           Expanded(
               child: Text(
-            'Descripción',
-            style: _styleText,
+            'No. Orden',
           )),
           Text(
-            'Estatus',
-            style: _styleText,
+            'Cumplimiento',
           ),
         ],
       ),
     );
   }
 
-  Widget ordenes() {
-    return Container(
-      margin: EdgeInsets.only(top: 160.0),
-      child: FutureBuilder(
+  Widget _panelLista(BuildContext context) {
+    return FutureBuilder(
         future: ordenesProvider.cargarOrdenes(widget.token),
         builder:
             (BuildContext context, AsyncSnapshot<List<OrdenModel>> snapshot) {
-          return RefreshIndicator(
-            onRefresh: refrescarLista,
-            child: ListView.separated(
-              separatorBuilder: (context, index) => Padding(
-                padding: EdgeInsets.only(left: 20.0),
-                child: Divider(
-                  color: Colors.grey,
-                ),
+          if (snapshot.hasData) {
+            final ordenes = snapshot.data;
+            return RefreshIndicator(
+              onRefresh: refrescarLista,
+              child: ListView.builder(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                itemCount: listaOrdenTodaFiltrada.length,
+                itemBuilder: (context, i) {
+                  return itemOt(listaOrdenTodaFiltrada[i]);
+                },
               ),
-              itemCount: listaOrdenTodaFiltrada.length,
-              itemBuilder: (BuildContext context, int index) {
-                return itemOt(listaOrdenTodaFiltrada[index]);
-              },
-            ),
-          );
-        },
-      ),
-    );
+            );
+          } else {
+            return Center(child: CircularProgressIndicator());
+          }
+        });
   }
 
-  Future refrescarLista() async {
-    setState(() {
-      cargarInOrdenes();
-    });
-  }
-
-  Widget itemOt(OrdenModel data) {
+  Widget itemOt(OrdenModel orden) {
     return Padding(
       padding: EdgeInsets.only(left: 5),
       child: ListTile(
-        onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return DetallesOtPage(
-              nrot: data.numeroOt.toString(),
-              descriot: data.descripcion,
-              token: widget.token,
-              estado: data.estado,
-            );
-          }));
-        },
+        onTap: () async {},
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 10.0),
+          children: <Widget>[
+            SizedBox(
+              height: 9,
+            ),
             Text(
-              '${data.descripcion}',
-              style: _titleOtStyle,
+              '${orden.numeroOt}',
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            Text(
+              '${orden.descripcion}',
+            ),
+            SizedBox(
+              height: 5,
             ),
           ],
         ),
         subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: 5.0,
-            ),
-            RichText(
-              text: TextSpan(style: _oTextStyle, children: [
-                TextSpan(text: 'Orden: ', style: TextStyle(color: _greyColor)),
-                TextSpan(text: '${data.numeroOt ?? ""}'),
-              ]),
-            ),
-            SizedBox(
-              height: 5.0,
-            ),
-            RichText(
-              text: TextSpan(style: _oTextStyle, children: [
-                TextSpan(
-                    text: 'Tipo Orden: ', style: TextStyle(color: _greyColor)),
-                TextSpan(text: '${data.tipoOt ?? ""}'),
-              ]),
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Text(
+                  'Criticidad: ',
+                  style: TextStyle(fontFamily: 'fuente72'),
+                ),
+                Text(
+                  '${orden.prioridad}',
+                  style: TextStyle(
+                    fontFamily: 'fuente72',
+                    fontSize: 14,
+                  ),
+                ),
+              ],
             ),
             SizedBox(
-              height: 5.0,
+              height: 5,
             ),
-            RichText(
-              text: TextSpan(style: _oTextStyle, children: [
-                TextSpan(
-                    text: 'Prioridad: ', style: TextStyle(color: _greyColor)),
-                TextSpan(text: '${data.prioridad ?? ""}'),
-              ]),
+            Row(
+              children: <Widget>[
+                Text('Área: ', style: TextStyle(fontFamily: 'fuente72')),
+                Text('${orden.tipoOt}'),
+              ],
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            SizedBox(
+              height: 5,
             ),
           ],
         ),
-        trailing: Container(
-          width: 130.0,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Text(
-                '${data.estado ?? ""}',
-                style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    color: Hexcolor('${data.estadoColor}')),
-              ),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 15.0,
-              ),
-            ],
+      ),
+    );
+  }
+
+  Future<Null> refrescarLista() async {
+    setState(() {
+      ordenesProvider.cargarOrdenes(widget.token);
+    });
+  }
+
+  Widget creandoFiltros(BuildContext context) {
+    // print(_inputFieldDateController.text);
+    //2020-07-24 00:00:00.000
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          TextField(
+            onChanged: (value) {
+              setState(() {
+                listaOrdenTodaFiltrada = listaOrdenToda
+                    .where((u) => (u.numeroOt
+                            .toLowerCase()
+                            .contains(value.toLowerCase()) ||
+                        u.descripcion
+                            .toLowerCase()
+                            .contains(value.toLowerCase()) ||
+                        u.tipoOt.toLowerCase().contains(value.toLowerCase()) ||
+                        u.prioridad
+                            .toLowerCase()
+                            .contains(value.toLowerCase()) ||
+                        u.prioridad
+                            .toLowerCase()
+                            .contains(value.toLowerCase())))
+                    .toList();
+              });
+            },
+            style: TextStyle(
+              fontFamily: 'fuente72',
+              fontSize: 14,
+            ),
+            decoration: InputDecoration(
+                contentPadding: EdgeInsets.all(10),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(2.0)),
+                hintText: 'Buscar',
+                suffixIcon: Icon(
+                  Icons.search,
+                  color: Color(0xff0854a0),
+                )),
           ),
-        ),
+          SizedBox(
+            height: 10,
+          ),
+        ],
       ),
     );
   }
