@@ -80,19 +80,36 @@ class _OperacionPageState extends State<OperacionPage> {
   var provMats;
   var provServ;
 
-  List<Nota> listaNotas = new List();
+  List<Nota> listaNotas = new List<Nota>();
+  List<Foto> listaFotos = new List<Foto>();
 
   @override
   void initState() {
     iniciarProviders();
-    // cargarNotas();
+    cargarNotas();
+    cargarFotos();
     super.initState();
   }
 
-  // cargarNotas() async {
-  //   await operacionMaterialProvider.obtenerNotasOperacion(
-  //       widget.idop, widget.token);
-  // }
+  cargarNotas() async {
+    await operacionMaterialProvider
+        .obtenerNotasOperacion(widget.idop, widget.token)
+        .then((value) {
+      setState(() {
+        listaNotas = value;
+      });
+    });
+  }
+
+  cargarFotos() async {
+    await operacionMaterialProvider
+        .obtenerFotosOperacion(widget.idop, widget.token)
+        .then((value) {
+      setState(() {
+        listaFotos = value;
+      });
+    });
+  }
 
   iniciarProviders() async {
     setState(() {
@@ -466,7 +483,7 @@ class _OperacionPageState extends State<OperacionPage> {
                 alignment: Alignment.centerLeft,
                 width: double.infinity,
                 child: Text(
-                  'Notas (${snapshot.data.length})',
+                  'Notas (${listaNotas.length})',
                   style: styleContador,
                 ));
           } else {
@@ -516,7 +533,7 @@ class _OperacionPageState extends State<OperacionPage> {
                 alignment: Alignment.centerLeft,
                 width: double.infinity,
                 child: Text(
-                  'Fotos (${snapshot.data.length})',
+                  'Fotos (${listaFotos.length})',
                   style: styleContador,
                 ));
           } else {
@@ -767,7 +784,6 @@ class _OperacionPageState extends State<OperacionPage> {
       future: provNotas,
       builder: (context, AsyncSnapshot<List<Nota>> snapshot) {
         if (snapshot.hasData) {
-          listaNotas = snapshot.data;
           if (snapshot.data.length == 0) {
             return Center(
               child: Text('No existen Notas en la Operacion'),
@@ -887,7 +903,9 @@ class _OperacionPageState extends State<OperacionPage> {
           token: widget.token,
           idop: widget.idop,
         );
-      }));
+      })).then((value) {
+        cargarNotas();
+      });
     }
   }
 
@@ -923,6 +941,9 @@ class _OperacionPageState extends State<OperacionPage> {
           await operacionMaterialProvider.eliminarNota(widget.token, idnota);
       if (resp['code'] == 200) {
         toast('La nota ha sido eliminada exitosamente');
+        setState(() {
+          cargarNotas();
+        });
       } else {
         toast('Ha ocurrido un error inesperado borrando la nota');
       }
@@ -993,7 +1014,7 @@ class _OperacionPageState extends State<OperacionPage> {
             return ImagePage(foto, widget.token, widget.idop);
           },
         ),
-      );
+      ).then((value) => cargarFotos());
     } else {
       print('ruta de imagen nula');
     }
@@ -1020,7 +1041,7 @@ class _OperacionPageState extends State<OperacionPage> {
             return ImagePage(foto, widget.token, widget.idop);
           },
         ),
-      );
+      ).then((value) => cargarFotos());
     } else {
       print('ruta de imagen nula');
     }
@@ -1043,9 +1064,9 @@ class _OperacionPageState extends State<OperacionPage> {
             return ListView.builder(
               scrollDirection: Axis.horizontal,
               shrinkWrap: true,
-              itemCount: snapshot.data.length,
+              itemCount: listaFotos.length,
               itemBuilder: (context, index) {
-                return itemFoto(snapshot.data[index]);
+                return itemFoto(listaFotos[index]);
               },
             );
           } else {
@@ -1081,7 +1102,7 @@ class _OperacionPageState extends State<OperacionPage> {
                   '${data.url}', '${widget.token}', '${data.id.toString()}');
             },
           ),
-        );
+        ).then((value) => cargarFotos());
       },
     );
   }

@@ -66,14 +66,14 @@ class _NotaPageState extends State<NotaPage> {
           widget.token, widget.idop, notaController.text);
       if (resp['code'] == 200) {
         toast('La nota ha sido editada exitosamente');
-        Navigator.pop(context);
+        Navigator.pop(context, true);
       }
     } else {
       var resp = await operacionMaterialProvider.guardarNota(
           widget.token, widget.idop, notaController.text);
       if (resp['code'] == 200) {
         toast('La nota ha sido guardada exitosamente');
-        Navigator.pop(context);
+        Navigator.pop(context, true);
       }
     }
   }
@@ -115,7 +115,7 @@ class _NotaPageState extends State<NotaPage> {
                   style: TextStyle(color: Color(0xff0A6ED1)),
                 ),
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.pop(context, true);
                 },
               ),
             ],
