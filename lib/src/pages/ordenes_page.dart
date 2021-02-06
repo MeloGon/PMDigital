@@ -40,6 +40,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
   List<OrdenModel> listaOrdenToda = new List<OrdenModel>();
   List<OrdenModel> listaOrdenTodaFiltrada = new List<OrdenModel>();
   List<String> cantOpyMat = [];
+  TextEditingController editingController = TextEditingController();
 
 //  String valuebus = "";
 
@@ -54,9 +55,15 @@ class _OrdenesPageState extends State<OrdenesPage> {
     ordenesProvider.cargarOrdenes(widget.token).then((value) {
       setState(() {
         listaOrdenToda = value;
-        listaOrdenTodaFiltrada = listaOrdenToda;
+        listaOrdenTodaFiltrada.addAll(listaOrdenToda);
       });
     });
+  }
+
+  @override
+  void dispose() {
+    editingController.dispose();
+    super.dispose();
   }
 
   Widget build(BuildContext context) {
@@ -156,7 +163,6 @@ class _OrdenesPageState extends State<OrdenesPage> {
         builder:
             (BuildContext context, AsyncSnapshot<List<OrdenModel>> snapshot) {
           if (snapshot.hasData) {
-            final ordenes = snapshot.data;
             return RefreshIndicator(
               onRefresh: refrescarLista,
               child: ListView.builder(
@@ -284,6 +290,31 @@ class _OrdenesPageState extends State<OrdenesPage> {
     });
   }
 
+  void filterSearchResults(String query) {
+    List<OrdenModel> dummySearchList = List<OrdenModel>();
+    dummySearchList.addAll(listaOrdenToda);
+    if (query.isNotEmpty) {
+      List<OrdenModel> dummyListData = List<OrdenModel>();
+      dummySearchList.forEach((item) {
+        if (item.numeroOt.toLowerCase().contains(query) ||
+            item.descripcion.toLowerCase().contains(query) ||
+            item.tipoOt.toLowerCase().contains(query)) {
+          dummyListData.add(item);
+        }
+      });
+      setState(() {
+        listaOrdenTodaFiltrada.clear();
+        listaOrdenTodaFiltrada.addAll(dummyListData);
+      });
+      return;
+    } else {
+      setState(() {
+        listaOrdenTodaFiltrada.clear();
+        listaOrdenTodaFiltrada.addAll(listaOrdenToda);
+      });
+    }
+  }
+
   Widget creandoFiltros(BuildContext context) {
     // print(_inputFieldDateController.text);
     //2020-07-24 00:00:00.000
@@ -297,27 +328,9 @@ class _OrdenesPageState extends State<OrdenesPage> {
             width: 200.0,
             height: 30,
             child: TextField(
+              controller: editingController,
               onChanged: (value) {
-                print('Numero elemns ${listaOrdenTodaFiltrada.length}');
-                setState(() {
-                  listaOrdenTodaFiltrada = listaOrdenToda
-                      .where((u) => (u.numeroOt
-                              .toLowerCase()
-                              .contains(value.toLowerCase()) ||
-                          u.descripcion
-                              .toLowerCase()
-                              .contains(value.toLowerCase()) ||
-                          u.tipoOt
-                              .toLowerCase()
-                              .contains(value.toLowerCase()) ||
-                          u.prioridad
-                              .toLowerCase()
-                              .contains(value.toLowerCase()) ||
-                          u.prioridad
-                              .toLowerCase()
-                              .contains(value.toLowerCase())))
-                      .toList();
-                });
+                filterSearchResults(value);
               },
               style: TextStyle(
                 fontFamily: 'fuente72',

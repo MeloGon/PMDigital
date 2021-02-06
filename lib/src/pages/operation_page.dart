@@ -84,15 +84,27 @@ class _OperacionPageState extends State<OperacionPage> {
 
   @override
   void initState() {
-    provFotos = operacionMaterialProvider.obtenerFotosOperacion(
-        widget.idop, widget.token);
-    provNotas = operacionMaterialProvider.obtenerNotasOperacion(
-        widget.idop, widget.token);
-    provMats = operacionMaterialProvider.obtenerMaterialesOperacion(
-        widget.idop, widget.token);
-    provServ = operacionMaterialProvider.obtenerServiciosOperacion(
-        widget.idop, widget.token);
+    iniciarProviders();
+    // cargarNotas();
     super.initState();
+  }
+
+  // cargarNotas() async {
+  //   await operacionMaterialProvider.obtenerNotasOperacion(
+  //       widget.idop, widget.token);
+  // }
+
+  iniciarProviders() async {
+    setState(() {
+      provFotos = operacionMaterialProvider.obtenerFotosOperacion(
+          widget.idop, widget.token);
+      provNotas = operacionMaterialProvider.obtenerNotasOperacion(
+          widget.idop, widget.token);
+      provMats = operacionMaterialProvider.obtenerMaterialesOperacion(
+          widget.idop, widget.token);
+      provServ = operacionMaterialProvider.obtenerServiciosOperacion(
+          widget.idop, widget.token);
+    });
   }
 
   @override
