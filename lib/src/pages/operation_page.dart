@@ -82,12 +82,16 @@ class _OperacionPageState extends State<OperacionPage> {
 
   List<Nota> listaNotas = new List<Nota>();
   List<Foto> listaFotos = new List<Foto>();
+  List<Servicio> listaServ = new List<Servicio>();
+  List<Materiale> listaMats = new List<Materiale>();
 
   @override
   void initState() {
     iniciarProviders();
     cargarNotas();
     cargarFotos();
+    cargarServicios();
+    cargarMateriale();
     super.initState();
   }
 
@@ -107,6 +111,26 @@ class _OperacionPageState extends State<OperacionPage> {
         .then((value) {
       setState(() {
         listaFotos = value;
+      });
+    });
+  }
+
+  cargarServicios() async {
+    await operacionMaterialProvider
+        .obtenerServiciosOperacion(widget.idop, widget.token)
+        .then((value) {
+      setState(() {
+        listaServ = value;
+      });
+    });
+  }
+
+  cargarMateriale() async {
+    await operacionMaterialProvider
+        .obtenerMaterialesOperacion(widget.idop, widget.token)
+        .then((value) {
+      setState(() {
+        listaMats = value;
       });
     });
   }
@@ -243,16 +267,16 @@ class _OperacionPageState extends State<OperacionPage> {
               labelStyle: _styleLabelTab,
               tabs: [
                 Tab(
-                  text: 'SERVICIOS',
+                  text: 'SERVICIOS(${listaServ.length}) ',
                 ),
                 Tab(
-                  text: 'MATERIALES',
+                  text: 'MATERIALES(${listaMats.length})',
                 ),
                 Tab(
-                  text: 'NOTAS',
+                  text: 'NOTAS(${listaNotas.length})',
                 ),
                 Tab(
-                  text: 'FOTOS',
+                  text: 'FOTOS(${listaFotos.length})',
                 ),
               ])),
 //             child: DefaultTabController(
@@ -721,9 +745,9 @@ class _OperacionPageState extends State<OperacionPage> {
             physics: NeverScrollableScrollPhysics(),
             scrollDirection: Axis.vertical,
             shrinkWrap: true,
-            itemCount: snapshot.data.length,
+            itemCount: listaMats.length,
             itemBuilder: (context, index) {
-              return itemMat(snapshot.data[index]);
+              return itemMat(listaMats[index]);
             },
           );
         } else {
@@ -850,11 +874,11 @@ class _OperacionPageState extends State<OperacionPage> {
                 color: Colors.grey,
               ),
             ),
-            itemCount: snapshot.data.length,
+            itemCount: listaServ.length,
             physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemBuilder: (context, index) {
-              return itemServicio(snapshot.data[index]);
+              return itemServicio(listaServ[index]);
             },
           );
         } else {
