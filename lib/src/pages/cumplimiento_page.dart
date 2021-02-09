@@ -159,6 +159,7 @@ class _CumplimientoPageState extends State<CumplimientoPage> {
         decoration: InputDecoration(
             suffixIcon: Icon(Icons.search),
             hintText: 'Buscar',
+            hintStyle: TextStyle(fontFamily: 'fuente72', fontSize: 14.0),
             contentPadding: EdgeInsets.all(10),
             border: OutlineInputBorder()),
       ),
@@ -166,6 +167,19 @@ class _CumplimientoPageState extends State<CumplimientoPage> {
 
     _selectDate(BuildContext context) async {
       DateTime picked = await showDatePicker(
+          builder: (BuildContext context, Widget child) {
+            return Theme(
+              data: ThemeData.light().copyWith(
+                primaryColor: const Color(0xff354A5F),
+                accentColor: const Color(0xff354A5F),
+                colorScheme:
+                    ColorScheme.light(primary: const Color(0xff354A5F)),
+                buttonTheme:
+                    ButtonThemeData(textTheme: ButtonTextTheme.primary),
+              ),
+              child: child,
+            );
+          },
           context: context,
           initialDate: new DateTime.now(),
           firstDate: new DateTime(2000),
@@ -194,6 +208,8 @@ class _CumplimientoPageState extends State<CumplimientoPage> {
         enableInteractiveSelection: false,
         controller: _inputFieldDateController,
         decoration: InputDecoration(
+            hintText: 'Seleccione la fecha',
+            hintStyle: TextStyle(fontFamily: 'fuente72', fontSize: 14.0),
             suffixIcon: Icon(Icons.date_range),
             contentPadding: EdgeInsets.all(10),
             border: OutlineInputBorder()),
@@ -303,7 +319,6 @@ class _CumplimientoPageState extends State<CumplimientoPage> {
           onChanged: (opt) {
             setState(() {
               opcionSeleccionada = opt;
-              print('Opcion seleccionada ${opcionSeleccionada}');
               statusSeleccionado(opcionSeleccionada);
             });
           },
@@ -324,6 +339,17 @@ class _CumplimientoPageState extends State<CumplimientoPage> {
           containerPrioridad,
           Text('Estatus'),
           containerStatus,
+          RaisedButton(
+              color: Colors.blue,
+              textColor: Colors.white,
+              child: Text('Limpiar Filtros'),
+              onPressed: () {
+                _inputFieldDateController.text = "";
+                editingController.text = "";
+                opcionSeleccionada = 'Seleccione';
+                statusSeleccionado(opcionSeleccionada);
+                cargarInOrdenes();
+              }),
           SizedBox(
             height: 20.0,
           )

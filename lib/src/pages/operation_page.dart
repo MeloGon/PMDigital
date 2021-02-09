@@ -47,7 +47,8 @@ List<Item> generateItems(int numberOfItems) {
 
 List<Item> _data = generateItems(1);
 
-class _OperacionPageState extends State<OperacionPage> {
+class _OperacionPageState extends State<OperacionPage>
+    with SingleTickerProviderStateMixin {
   var formater = new DateFormat('MMM d, yyyy • hh:mm');
   Color _appBarColor = Color(0xff354A5F);
   TextStyle _styleTitleExpansibleBar = TextStyle(
@@ -85,8 +86,19 @@ class _OperacionPageState extends State<OperacionPage> {
   List<Servicio> listaServ = new List<Servicio>();
   List<Materiale> listaMats = new List<Materiale>();
 
+  var keyNotas = new GlobalKey();
+
+  TabController _tabController;
+
+  int currentIndex = 0;
+
   @override
   void initState() {
+    _tabController = TabController(length: 4, vsync: this);
+    _tabController.animation.addListener(() {
+      print(
+          'indexIsChanging: ${_tabController.indexIsChanging} ${_tabController.animation.value}');
+    });
     iniciarProviders();
     cargarNotas();
     cargarFotos();
@@ -241,27 +253,28 @@ class _OperacionPageState extends State<OperacionPage> {
       }).toList(),
     );
 
-    return Container(
+    return SingleChildScrollView(
       child: Column(
         // mainAxisSize: MainAxisSize.min,
         children: [
           panelExpansibleDetalle,
-          panelTabs(),
+          panelTabs(context),
           serviciosPanel(),
           materialesPanel(),
-          notasPanel(),
+          notasPanel(context),
           // listaOperaciones(),
         ],
       ),
     );
   }
 
-  Widget panelTabs() {
+  Widget panelTabs(BuildContext context) {
     return Container(
       height: 45,
       child: DefaultTabController(
           length: 4,
           child: TabBar(
+              controller: _tabController,
               isScrollable: true,
               labelColor: Color(0xff0854A0),
               labelStyle: _styleLabelTab,
@@ -496,7 +509,7 @@ class _OperacionPageState extends State<OperacionPage> {
     );
   }
 
-  Widget notasPanel() {
+  Widget notasPanel(BuildContext context) {
     Widget panelContador = FutureBuilder(
         future: provNotas,
         builder: (context, AsyncSnapshot<List<Nota>> snapshot) {
@@ -1107,7 +1120,7 @@ class _OperacionPageState extends State<OperacionPage> {
     return GestureDetector(
       child: Container(
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.0)),
-        padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
+        padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 5.0),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(7.0),
           child: Image.network(

@@ -155,7 +155,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
       }).toList(),
     );
 
-    return Container(
+    return SingleChildScrollView(
       child: Column(
         // mainAxisSize: MainAxisSize.min,
         children: [
