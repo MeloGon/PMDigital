@@ -103,7 +103,6 @@ class _OperacionPageState extends State<OperacionPage>
     _tabController = TabController(length: 4, vsync: this);
     _tabController.addListener(() {
       currentIndex = _tabController.index;
-      print('indice' + currentIndex.toString());
     });
     iniciarProviders();
     cargarNotas();

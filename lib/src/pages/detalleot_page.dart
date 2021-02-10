@@ -49,7 +49,8 @@ List<Item> generateItems(int numberOfItems) {
 
 List<Item> _data = generateItems(1);
 
-class _DetallesOtPageState extends State<DetallesOtPage> {
+class _DetallesOtPageState extends State<DetallesOtPage>
+    with SingleTickerProviderStateMixin {
   Color _appBarColor = Color(0xff354A5F);
   TextStyle _styleAppBarTitle = TextStyle(
       fontFamily: 'fuente72', fontSize: 14.0, fontWeight: FontWeight.w400);
@@ -71,6 +72,46 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
       new OperacionMaterialProvider();
   OrdenFullModel resp;
   Color _greyColor = Color(0xff6A6D70);
+
+  final keyOps = new GlobalKey();
+  final keyMats = new GlobalKey();
+
+  TabController _tabController;
+  ScrollController _scrollController =
+      new ScrollController(initialScrollOffset: 0.0, keepScrollOffset: false);
+
+  int currentIndex = 0;
+
+  @override
+  void initState() {
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      currentIndex = _tabController.index;
+    });
+    super.initState();
+  }
+
+  positionScroll() {
+    setState(() {
+      if (currentIndex == 0) {
+        RenderBox box = keyOps.currentContext.findRenderObject();
+        //this is global position
+        double y = 0.0;
+        print(y);
+        _scrollController.animateTo(y,
+            duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+      }
+      if (currentIndex == 1) {
+        RenderBox box = keyMats.currentContext.findRenderObject();
+        Offset position =
+            box.localToGlobal(Offset.zero); //this is global position
+        double y = position.dy - 16;
+        print(y);
+        _scrollController.animateTo(y,
+            duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -166,7 +207,7 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
           TituloSeccionWidget(
             value: 'MATERIALES',
           ),
-          cabecera(),
+          cabeceraMats(),
           listaMateriales(context),
         ],
       ),
@@ -335,6 +376,9 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
           child: TabBar(
               labelColor: Color(0xff0854A0),
               labelStyle: _styleLabelTab,
+              onTap: (value) {
+                positionScroll();
+              },
               tabs: [
                 Tab(
                   text: 'OPERACIONES (${widget.cantOp})',
@@ -397,6 +441,28 @@ class _DetallesOtPageState extends State<DetallesOtPage> {
 
   Widget cabecera() {
     return Container(
+      color: Color(0xffF2F2F2),
+      padding: EdgeInsets.symmetric(horizontal: 20.0),
+      height: 50.0,
+      child: Row(
+        children: [
+          Expanded(
+              child: Text(
+            'Descripción',
+            style: _oTextStyle,
+          )),
+          Text(
+            'Estatus',
+            style: _oTextStyle,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget cabeceraMats() {
+    return Container(
+      key: keyMats,
       color: Color(0xffF2F2F2),
       padding: EdgeInsets.symmetric(horizontal: 20.0),
       height: 50.0,
