@@ -17,6 +17,7 @@ class OperacionPage extends StatefulWidget {
   String token;
   String idop;
   String descriop;
+
   OperacionPage({this.token, this.idop, this.descriop});
   @override
   _OperacionPageState createState() => _OperacionPageState();
@@ -86,18 +87,23 @@ class _OperacionPageState extends State<OperacionPage>
   List<Servicio> listaServ = new List<Servicio>();
   List<Materiale> listaMats = new List<Materiale>();
 
-  var keyNotas = new GlobalKey();
-
   TabController _tabController;
+  ScrollController _scrollController =
+      new ScrollController(initialScrollOffset: 0.0, keepScrollOffset: false);
 
   int currentIndex = 0;
+
+  final keyNotas = new GlobalKey();
+  final keyFotos = new GlobalKey();
+  final keyMats = new GlobalKey();
+  final keyServicios = new GlobalKey();
 
   @override
   void initState() {
     _tabController = TabController(length: 4, vsync: this);
-    _tabController.animation.addListener(() {
-      print(
-          'indexIsChanging: ${_tabController.indexIsChanging} ${_tabController.animation.value}');
+    _tabController.addListener(() {
+      currentIndex = _tabController.index;
+      print('indice' + currentIndex.toString());
     });
     iniciarProviders();
     cargarNotas();
@@ -105,6 +111,46 @@ class _OperacionPageState extends State<OperacionPage>
     cargarServicios();
     cargarMateriale();
     super.initState();
+  }
+
+  positionScroll() {
+    setState(() {
+      if (currentIndex == 0) {
+        RenderBox box = keyServicios.currentContext.findRenderObject();
+        //this is global position
+        double y = 0.0;
+        print(y);
+        _scrollController.animateTo(y,
+            duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+      }
+      if (currentIndex == 1) {
+        RenderBox box = keyMats.currentContext.findRenderObject();
+        Offset position =
+            box.localToGlobal(Offset.zero); //this is global position
+        double y = position.dy - 16;
+        print(y);
+        _scrollController.animateTo(y,
+            duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+      }
+      if (currentIndex == 2) {
+        RenderBox box = keyNotas.currentContext.findRenderObject();
+        Offset position =
+            box.localToGlobal(Offset.zero); //this is global position
+        double y = position.dy;
+        print(y);
+        _scrollController.animateTo(y,
+            duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+      }
+      if (currentIndex == 3) {
+        RenderBox box = keyFotos.currentContext.findRenderObject();
+        Offset position =
+            box.localToGlobal(Offset.zero); //this is global position
+        double y = position.dy;
+        print(y);
+        _scrollController.animateTo(y,
+            duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+      }
+    });
   }
 
   cargarNotas() async {
@@ -204,6 +250,8 @@ class _OperacionPageState extends State<OperacionPage>
             width: double.infinity,
             height: double.infinity,
             child: ListView(
+              controller: _scrollController,
+              shrinkWrap: true,
               children: [
                 panelCabecera(context),
                 fotosPanel(context),
@@ -278,6 +326,9 @@ class _OperacionPageState extends State<OperacionPage>
               isScrollable: true,
               labelColor: Color(0xff0854A0),
               labelStyle: _styleLabelTab,
+              onTap: (value) {
+                positionScroll();
+              },
               tabs: [
                 Tab(
                   text: 'SERVICIOS(${listaServ.length}) ',
@@ -496,6 +547,7 @@ class _OperacionPageState extends State<OperacionPage>
       ),
     );
     return Container(
+      key: keyMats,
       width: double.infinity,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -545,6 +597,7 @@ class _OperacionPageState extends State<OperacionPage>
       ),
     );
     return Container(
+      key: keyNotas,
       margin: EdgeInsets.only(top: 20.0),
       width: double.infinity,
       child: Column(
@@ -595,6 +648,7 @@ class _OperacionPageState extends State<OperacionPage>
       ),
     );
     return Container(
+      key: keyFotos,
       width: double.infinity,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
