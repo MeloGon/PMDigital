@@ -64,6 +64,8 @@ class _DetallesOtPageState extends State<DetallesOtPage>
   TextStyle _oTextStyle =
       TextStyle(fontFamily: 'fuente72', fontSize: 14.0, color: Colors.black);
 
+  TextStyle estiloMore = TextStyle(fontSize: 14, fontFamily: 'fuente72');
+
   TextStyle _titleOpStyle = TextStyle(
       fontSize: 14.0, color: Color(0xff32363A), fontWeight: FontWeight.w700);
 
@@ -72,14 +74,17 @@ class _DetallesOtPageState extends State<DetallesOtPage>
       new OperacionMaterialProvider();
   OrdenFullModel resp;
   Color _greyColor = Color(0xff6A6D70);
+  Color colorLabelTab = Color(0xff0854A0);
 
   final keyOps = new GlobalKey();
   final keyMats = new GlobalKey();
 
+  bool open = false;
+
   TabController _tabController;
   ScrollController _scrollController =
       new ScrollController(initialScrollOffset: 0.0, keepScrollOffset: false);
-
+  ScrollController _scrollControllerHeader = new ScrollController();
   int currentIndex = 0;
 
   @override
@@ -87,6 +92,10 @@ class _DetallesOtPageState extends State<DetallesOtPage>
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
       currentIndex = _tabController.index;
+    });
+    _scrollControllerHeader = new ScrollController(initialScrollOffset: 0);
+    _scrollControllerHeader.addListener(() {
+      print(_scrollControllerHeader.position.pixels.toString());
     });
     super.initState();
   }
@@ -116,57 +125,74 @@ class _DetallesOtPageState extends State<DetallesOtPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: _appBarColor,
-        centerTitle: false,
-        titleSpacing: 0.0,
-        automaticallyImplyLeading: false,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: Icon(Icons.arrow_back_ios, color: Colors.white),
-            ),
-            Text(
-              'Orden ${widget.nrot}',
-              style: TextStyle(fontSize: 14.0),
-            )
-            // Your widgets here
-          ],
-        ),
-        // title: Text(
-        //   'Orden ${widget.nrot}',
-        //   style: TextStyle(fontSize: 14.0),
-        // ),
+        body: Stack(children: [
+      DefaultTabController(
+        length: 2,
+        child: NestedScrollView(
+            controller: _scrollControllerHeader,
+            headerSliverBuilder:
+                (BuildContext context, bool innerBoxIsScrolled) {
+              return <Widget>[
+                SliverAppBar(
+                  backgroundColor: Colors.white,
+                  centerTitle: false,
+                  title: Text('Orden ${widget.nrot}'),
+                  expandedHeight: open == false ? 100.0 : 520.0,
+                  floating: false,
+                  pinned: true,
+                  bottom: PreferredSize(
+                    preferredSize: Size(56.0, 56.0),
+                    child: Icon(
+                      Icons.arrow_drop_down,
+                      size: 0,
+                    ),
+                  ),
+                  flexibleSpace: panelCabecera(context),
+                ),
+                SliverPersistentHeader(
+                  delegate: _SliverAppBarDelegate(
+                    TabBar(
+                        labelColor: colorLabelTab,
+                        indicatorColor: colorLabelTab,
+                        labelStyle: estiloMore,
+                        unselectedLabelColor: Colors.grey,
+                        tabs: tabs()),
+                  ),
+                  pinned: true,
+                ),
+              ];
+            },
+            body: new Container(
+                padding: new EdgeInsets.all(10.0),
+                child: new TabBarView(children: <Widget>[
+                  listaOperaciones(context),
+                  listaMateriales(context),
+                ]))),
       ),
-      body: Stack(
-        children: [
-          Container(
-            padding: EdgeInsets.only(bottom: 60.0),
-            width: double.infinity,
-            height: double.infinity,
-            child: ListView(
-              children: [
-                cuerpoWid(context),
-              ],
-            ),
-          ),
-          Align(
+      Align(
+        alignment: Alignment.bottomCenter,
+        child: SafeArea(
+          child: Container(
             alignment: Alignment.bottomCenter,
-            child: SafeArea(
-              child: Container(
-                alignment: Alignment.bottomCenter,
-                height: 60,
-                width: double.infinity,
-                child: _options(context, widget.estado),
-              ),
-            ),
-          )
-        ],
+            height: 60,
+            width: double.infinity,
+            child: _options(context, widget.estado),
+          ),
+        ),
+      )
+    ]));
+  }
+
+  List<Tab> tabs() {
+    List<Tab> tabsList = [
+      Tab(
+        text: 'OPERACIONES',
       ),
-    );
+      Tab(
+        text: 'MATERIALES',
+      ),
+    ];
+    return tabsList;
   }
 
   Widget cuerpoWid(BuildContext context) {
@@ -201,14 +227,75 @@ class _DetallesOtPageState extends State<DetallesOtPage>
         // mainAxisSize: MainAxisSize.min,
         children: [
           panelExpansibleDetalle,
-          panelTabs(),
-          cabecera(),
-          listaOperaciones(context),
-          TituloSeccionWidget(
-            value: 'MATERIALES',
+          // panelTabs(),
+          // contenido(),
+          // cabecera(),
+          // listaOperaciones(context),
+          // TituloSeccionWidget(
+          //   value: 'MATERIALES',
+          // ),
+          // cabeceraMats(),
+          // listaMateriales(context),
+        ],
+      ),
+    );
+  }
+
+  contenido() {
+    return TabBarView(controller: _tabController, children: [
+//             any widget can work very well here <3
+      listaOperaciones(context),
+      listaMateriales(context),
+    ]);
+  }
+
+  Widget panelCabecera(BuildContext context) {
+    return SingleChildScrollView(
+      physics: NeverScrollableScrollPhysics(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            color: _appBarColor,
+            height: 70,
           ),
-          cabeceraMats(),
-          listaMateriales(context),
+          Container(
+            height: 50,
+            padding: EdgeInsets.only(left: 25),
+            margin: EdgeInsets.only(top: 12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '${widget.descriot}',
+                    style: TextStyle(fontSize: 20, fontFamily: 'fuente72'),
+                  ),
+                ),
+                FlatButton(
+                    onPressed: () {
+                      setState(() {});
+                      print(open);
+                      if (!open) {
+                        _scrollControllerHeader.animateTo(0,
+                            duration: Duration(milliseconds: 600),
+                            curve: Curves.fastOutSlowIn);
+                        open = true;
+                      } else {
+                        _scrollControllerHeader.animateTo(10,
+                            duration: Duration(milliseconds: 600),
+                            curve: Curves.linear);
+                        open = false;
+                      }
+                    },
+                    child: open == false
+                        ? Icon(Icons.keyboard_arrow_down_rounded)
+                        : Icon(Icons.keyboard_arrow_up_rounded))
+              ],
+            ),
+          ),
+          contenidoPanelExpansible(),
+          // listaOperaciones(),
         ],
       ),
     );
@@ -374,6 +461,7 @@ class _DetallesOtPageState extends State<DetallesOtPage>
       child: DefaultTabController(
           length: 2,
           child: TabBar(
+              controller: _tabController,
               labelColor: Color(0xff0854A0),
               labelStyle: _styleLabelTab,
               onTap: (value) {
@@ -787,5 +875,30 @@ class _DetallesOtPageState extends State<DetallesOtPage>
         backgroundColor: Colors.white,
         textColor: Colors.black,
         fontSize: 14.0);
+  }
+}
+
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  _SliverAppBarDelegate(this._tabBar);
+
+  final TabBar _tabBar;
+
+  @override
+  double get minExtent => _tabBar.preferredSize.height;
+  @override
+  double get maxExtent => _tabBar.preferredSize.height;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return new Container(
+      color: Colors.white,
+      child: _tabBar,
+    );
+  }
+
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
+    return false;
   }
 }

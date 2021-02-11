@@ -131,7 +131,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
     return Container(
       width: double.infinity,
       child: Text(
-        'Órdenes de trabajo (34)',
+        'Órdenes de trabajo ${listaOrdenTodaFiltrada.length}',
         style: TextStyle(fontFamily: 'fuente72', fontSize: 18),
       ),
       padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),

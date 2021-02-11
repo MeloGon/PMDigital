@@ -51,7 +51,7 @@ List<Item> _data = generateItems(1);
 class _OperacionPageState extends State<OperacionPage>
     with SingleTickerProviderStateMixin {
   var formater = new DateFormat('MMM d, yyyy • hh:mm');
-  Color _appBarColor = Color(0xff354A5F);
+
   TextStyle _styleTitleExpansibleBar = TextStyle(
       fontFamily: 'fuente72', fontSize: 14.0, fontWeight: FontWeight.w700);
 
@@ -64,9 +64,13 @@ class _OperacionPageState extends State<OperacionPage>
   TextStyle _oTextStyle =
       TextStyle(fontFamily: 'fuente72', fontSize: 14.0, color: Colors.black);
 
+  TextStyle estiloMore = TextStyle(fontSize: 14, fontFamily: 'fuente72');
+
   TextStyle styleContador = TextStyle(fontFamily: 'fuente72', fontSize: 18.0);
 
   Color _greyColor = Color(0xff6A6D70);
+  Color colorLabelTab = Color(0xff0854A0);
+  Color _appBarColor = Color(0xff354A5F);
 
   final OperacionMaterialProvider operacionMaterialProvider =
       new OperacionMaterialProvider();
@@ -74,6 +78,7 @@ class _OperacionPageState extends State<OperacionPage>
   File foto;
 
   bool loading;
+  bool open = false;
 
   List<String> ids;
 
@@ -87,9 +92,7 @@ class _OperacionPageState extends State<OperacionPage>
   List<Servicio> listaServ = new List<Servicio>();
   List<Materiale> listaMats = new List<Materiale>();
 
-  TabController _tabController;
-  ScrollController _scrollController =
-      new ScrollController(initialScrollOffset: 0.0, keepScrollOffset: false);
+  ScrollController _scrollControllerHeader = new ScrollController();
 
   int currentIndex = 0;
 
@@ -100,9 +103,9 @@ class _OperacionPageState extends State<OperacionPage>
 
   @override
   void initState() {
-    _tabController = TabController(length: 4, vsync: this);
-    _tabController.addListener(() {
-      currentIndex = _tabController.index;
+    _scrollControllerHeader = new ScrollController(initialScrollOffset: 0);
+    _scrollControllerHeader.addListener(() {
+      print(_scrollControllerHeader.position.pixels.toString());
     });
     iniciarProviders();
     cargarNotas();
@@ -110,46 +113,6 @@ class _OperacionPageState extends State<OperacionPage>
     cargarServicios();
     cargarMateriale();
     super.initState();
-  }
-
-  positionScroll() {
-    setState(() {
-      if (currentIndex == 0) {
-        RenderBox box = keyServicios.currentContext.findRenderObject();
-        //this is global position
-        double y = 0.0;
-        print(y);
-        _scrollController.animateTo(y,
-            duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
-      }
-      if (currentIndex == 1) {
-        RenderBox box = keyMats.currentContext.findRenderObject();
-        Offset position =
-            box.localToGlobal(Offset.zero); //this is global position
-        double y = position.dy - 16;
-        print(y);
-        _scrollController.animateTo(y,
-            duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
-      }
-      if (currentIndex == 2) {
-        RenderBox box = keyNotas.currentContext.findRenderObject();
-        Offset position =
-            box.localToGlobal(Offset.zero); //this is global position
-        double y = position.dy;
-        print(y);
-        _scrollController.animateTo(y,
-            duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
-      }
-      if (currentIndex == 3) {
-        RenderBox box = keyFotos.currentContext.findRenderObject();
-        Offset position =
-            box.localToGlobal(Offset.zero); //this is global position
-        double y = position.dy;
-        print(y);
-        _scrollController.animateTo(y,
-            duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
-      }
-    });
   }
 
   cargarNotas() async {
@@ -206,191 +169,144 @@ class _OperacionPageState extends State<OperacionPage>
   }
 
   @override
+  void dispose() {
+    _scrollControllerHeader.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        backgroundColor: _appBarColor,
-        automaticallyImplyLeading: false,
-        titleSpacing: 0.0,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: Icon(Icons.arrow_back_ios, color: Colors.white),
-            ),
-            Text(
-              'Operacion',
-              style: TextStyle(fontSize: 14.0),
-            )
-            // Your widgets here
-          ],
+      body: Stack(children: [
+        DefaultTabController(
+          length: 4,
+          child: NestedScrollView(
+              controller: _scrollControllerHeader,
+              headerSliverBuilder:
+                  (BuildContext context, bool innerBoxIsScrolled) {
+                return <Widget>[
+                  SliverAppBar(
+                    backgroundColor: Colors.white,
+                    centerTitle: false,
+                    title: Text('Operacion'),
+                    expandedHeight: open == false ? 100.0 : 520.0,
+                    floating: false,
+                    pinned: true,
+                    bottom: PreferredSize(
+                      preferredSize: Size(52.0, 52.0),
+                      child: Icon(
+                        Icons.arrow_drop_down,
+                        size: 0,
+                      ),
+                    ),
+                    flexibleSpace: panelCabecera(context),
+                  ),
+                  SliverPersistentHeader(
+                    delegate: _SliverAppBarDelegate(
+                      TabBar(
+                          isScrollable: true,
+                          labelColor: colorLabelTab,
+                          indicatorColor: colorLabelTab,
+                          labelStyle: estiloMore,
+                          unselectedLabelColor: Colors.grey,
+                          tabs: tabs()),
+                    ),
+                    pinned: true,
+                  ),
+                ];
+              },
+              body: new Container(
+                  padding: new EdgeInsets.all(10.0),
+                  child: new TabBarView(children: <Widget>[
+                    futureServicios(),
+                    futureBuilderMateriales(),
+                    notasPanel(context),
+                    fotosPanel(context),
+                  ]))),
         ),
-        actions: [
-          IconButton(
-              icon: Icon(Icons.sync),
-              onPressed: () {
-                toast('Actualizando. Un momento porfavor..');
-                setState(() {
-                  provFotos = operacionMaterialProvider.obtenerFotosOperacion(
-                      widget.idop, widget.token);
-                  provNotas = operacionMaterialProvider.obtenerNotasOperacion(
-                      widget.idop, widget.token);
-                });
-              })
-        ],
-      ),
-      body: Stack(
-        children: [
-          Container(
-            padding: EdgeInsets.only(bottom: 60.0),
-            width: double.infinity,
-            height: double.infinity,
-            child: ListView(
-              controller: _scrollController,
-              shrinkWrap: true,
-              children: [
-                panelCabecera(context),
-                fotosPanel(context),
-              ],
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: SafeArea(
+            child: Container(
+              alignment: Alignment.bottomCenter,
+              height: 60,
+              width: double.infinity,
+              child: _options(context),
             ),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: SafeArea(
-              child: Container(
-                alignment: Alignment.bottomCenter,
-                height: 60,
-                width: double.infinity,
-                child: _options(context),
-              ),
-            ),
-          )
-        ],
-      ),
+        )
+      ]),
     );
+  }
+
+  List<Tab> tabs() {
+    List<Tab> tabsList = [
+      Tab(
+        text: 'SERVICIOS',
+      ),
+      Tab(
+        text: 'MATERIALES',
+      ),
+      Tab(
+        text: 'NOTAS',
+      ),
+      Tab(
+        //text: 'FOTOS (${listaFotos.length})',
+        text: 'FOTOS',
+      ),
+    ];
+    return tabsList;
   }
 
   Widget panelCabecera(BuildContext context) {
-    var panelExpansibleDetalle = ExpansionPanelList(
-      animationDuration: Duration(milliseconds: 300),
-      expansionCallback: (int index, bool isExpanded) {
-        setState(() {
-          _data[index].isExpanded = !isExpanded;
-        });
-      },
-      children: _data.map<ExpansionPanel>((Item item) {
-        return ExpansionPanel(
-          headerBuilder: (BuildContext context, bool isExpanded) {
-            return Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: ListTile(
-                title: Text(
-                  '${widget.descriop}',
-                  style: TextStyle(fontSize: 20, fontFamily: 'fuente72'),
-                ),
-              ),
-            );
-          },
-          body: panelExpansibleFuture(),
-          isExpanded: item.isExpanded,
-        );
-      }).toList(),
-    );
-
     return SingleChildScrollView(
+      physics: NeverScrollableScrollPhysics(),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         // mainAxisSize: MainAxisSize.min,
         children: [
-          panelExpansibleDetalle,
-          panelTabs(context),
-          serviciosPanel(),
-          materialesPanel(),
-          notasPanel(context),
+          Container(
+            color: _appBarColor,
+            height: 70,
+          ),
+          Container(
+            height: 50,
+            padding: EdgeInsets.only(left: 25),
+            margin: EdgeInsets.only(top: 12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '${widget.descriop}',
+                    style: TextStyle(fontSize: 20, fontFamily: 'fuente72'),
+                  ),
+                ),
+                FlatButton(
+                    onPressed: () {
+                      setState(() {});
+                      print(open);
+                      if (!open) {
+                        _scrollControllerHeader.animateTo(0,
+                            duration: Duration(milliseconds: 600),
+                            curve: Curves.fastOutSlowIn);
+                        open = true;
+                      } else {
+                        _scrollControllerHeader.animateTo(10,
+                            duration: Duration(milliseconds: 600),
+                            curve: Curves.linear);
+                        open = false;
+                      }
+                    },
+                    child: open == false
+                        ? Icon(Icons.keyboard_arrow_down_rounded)
+                        : Icon(Icons.keyboard_arrow_up_rounded))
+              ],
+            ),
+          ),
+          panelExpansibleFuture(),
           // listaOperaciones(),
         ],
       ),
-    );
-  }
-
-  Widget panelTabs(BuildContext context) {
-    return Container(
-      height: 45,
-      child: DefaultTabController(
-          length: 4,
-          child: TabBar(
-              controller: _tabController,
-              isScrollable: true,
-              labelColor: Color(0xff0854A0),
-              labelStyle: _styleLabelTab,
-              onTap: (value) {
-                positionScroll();
-              },
-              tabs: [
-                Tab(
-                  text: 'SERVICIOS(${listaServ.length}) ',
-                ),
-                Tab(
-                  text: 'MATERIALES(${listaMats.length})',
-                ),
-                Tab(
-                  text: 'NOTAS(${listaNotas.length})',
-                ),
-                Tab(
-                  text: 'FOTOS(${listaFotos.length})',
-                ),
-              ])),
-//             child: DefaultTabController(
-//                 length: 3,
-//                 child: new Scaffold(
-//                   appBar: AppBar(
-//                     title: Text('Tabs Example'),
-//                     bottom: TabBar(tabs: [
-//                       Tab(
-//                         icon: Icon(Icons.school),
-//                       ),
-//                       Tab(
-//                         icon: Icon(Icons.home),
-//                       ),
-//                       Tab(
-//                         icon: Icon(Icons.local_hospital),
-//                       ),
-//                     ]),
-//                   ),
-//                   body: TabBarView(children: [
-// //             any widget can work very well here <3
-
-//                     new Container(
-//                       color: Colors.redAccent,
-//                       child: Center(
-//                         child: Text(
-//                           'Hi from School',
-//                           style: TextStyle(color: Colors.white),
-//                         ),
-//                       ),
-//                     ),
-//                     new Container(
-//                       color: Colors.greenAccent,
-//                       child: Center(
-//                         child: Text(
-//                           'Hi from home',
-//                           style: TextStyle(color: Colors.white),
-//                         ),
-//                       ),
-//                     ),
-//                     new Container(
-//                       color: Colors.blueAccent,
-//                       child: Center(
-//                         child: Text(
-//                           'Hi from Hospital',
-//                           style: TextStyle(color: Colors.white),
-//                         ),
-//                       ),
-//                     ),
-//                   ]),
-//                 )),
     );
   }
 
@@ -597,16 +513,17 @@ class _OperacionPageState extends State<OperacionPage>
     );
     return Container(
       key: keyNotas,
-      margin: EdgeInsets.only(top: 20.0),
+      height: double.infinity * 0.7,
       width: double.infinity,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TituloSeccionWidget(value: 'NOTAS'),
-          cabecera,
-          futureBuilderNotas(),
-          // Text('Jul 28, 2020 * 7:58 PM'),
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            cabecera,
+            futureBuilderNotas(),
+            // Text('Jul 28, 2020 * 7:58 PM'),
+          ],
+        ),
       ),
     );
   }
@@ -649,143 +566,149 @@ class _OperacionPageState extends State<OperacionPage>
     return Container(
       key: keyFotos,
       width: double.infinity,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TituloSeccionWidget(value: 'FOTOS'),
-          cabecera,
-          futureBuilderFotos(),
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            cabecera,
+            futureBuilderFotos(),
+          ],
+        ),
       ),
     );
   }
 
   Widget contenidoPanelExpansible(OperacionFullModel data) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 25.0),
-      width: double.infinity,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text('${data.estadoOp}'),
-          Text(
-            'Detalles de la operación',
-            style: _styleTitleExpansibleBar,
-          ),
-          SizedBox(
-            height: 15,
-          ),
-          RichText(
-            text: TextSpan(style: _oTextStyle, children: [
-              TextSpan(
-                  text: 'Oper. Work Ctr.: ',
-                  style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${data.operationWorkCenter ?? ""}'),
-            ]),
-          ),
-          SizedBox(
-            height: 7,
-          ),
-          RichText(
-            text: TextSpan(style: _oTextStyle, children: [
-              TextSpan(
-                  text: 'Cond. Sist.: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: 'ver condicion sistema'),
-            ]),
-          ),
-          SizedBox(
-            height: 15,
-          ),
-          Text(
-            'Programacion',
-            style: _styleTitleExpansibleBar,
-          ),
-          SizedBox(
-            height: 15,
-          ),
-          RichText(
-            text: TextSpan(style: _oTextStyle, children: [
-              TextSpan(text: 'Inicio: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${data.fechaIniPlan ?? ""}'),
-            ]),
-          ),
-          SizedBox(
-            height: 7,
-          ),
-          RichText(
-            text: TextSpan(style: _oTextStyle, children: [
-              TextSpan(text: 'Fin: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${data.fechaFinPlan ?? ""}'),
-            ]),
-          ),
-          SizedBox(
-            height: 7,
-          ),
-          RichText(
-            text: TextSpan(style: _oTextStyle, children: [
-              TextSpan(text: 'Duracion: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${data.duracionReal ?? ""}'),
-            ]),
-          ),
-          SizedBox(
-            height: 7,
-          ),
-          RichText(
-            text: TextSpan(style: _oTextStyle, children: [
-              TextSpan(text: 'Personal: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${data.numberReal ?? ""}'),
-            ]),
-          ),
-          SizedBox(
-            height: 7,
-          ),
-          RichText(
-            text: TextSpan(style: _oTextStyle, children: [
-              TextSpan(text: 'Trabajo: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${data.workReal ?? ""}'),
-            ]),
-          ),
-          SizedBox(
-            height: 15,
-          ),
-          Text(
-            'Equipo de Referencia',
-            style: _styleTitleExpansibleBar,
-          ),
-          SizedBox(
-            height: 15,
-          ),
-          RichText(
-            text: TextSpan(style: _oTextStyle, children: [
-              TextSpan(
-                  text: 'Ubic. Func: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${data.ubiFuncional ?? ""}'),
-            ]),
-          ),
-          SizedBox(
-            height: 7,
-          ),
-          RichText(
-            text: TextSpan(style: _oTextStyle, children: [
-              TextSpan(
-                  text: 'Descripcion: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${data.descripcionEquipo ?? ""}'),
-            ]),
-          ),
-          SizedBox(
-            height: 7,
-          ),
-          RichText(
-            text: TextSpan(style: _oTextStyle, children: [
-              TextSpan(
-                  text: 'Sort Field: ', style: TextStyle(color: _greyColor)),
-              TextSpan(text: '${data.sortField ?? ""}'),
-            ]),
-          ),
-          SizedBox(
-            height: 15,
-          ),
-        ],
+    return SafeArea(
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 25.0),
+        width: double.infinity,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text('${data.estadoOp}'),
+            Text(
+              'Detalles de la operación',
+              style: _styleTitleExpansibleBar,
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            RichText(
+              text: TextSpan(style: _oTextStyle, children: [
+                TextSpan(
+                    text: 'Oper. Work Ctr.: ',
+                    style: TextStyle(color: _greyColor)),
+                TextSpan(text: '${data.operationWorkCenter ?? ""}'),
+              ]),
+            ),
+            SizedBox(
+              height: 7,
+            ),
+            RichText(
+              text: TextSpan(style: _oTextStyle, children: [
+                TextSpan(
+                    text: 'Cond. Sist.: ', style: TextStyle(color: _greyColor)),
+                TextSpan(text: 'ver condicion sistema'),
+              ]),
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            Text(
+              'Programacion',
+              style: _styleTitleExpansibleBar,
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            RichText(
+              text: TextSpan(style: _oTextStyle, children: [
+                TextSpan(text: 'Inicio: ', style: TextStyle(color: _greyColor)),
+                TextSpan(text: '${data.fechaIniPlan ?? ""}'),
+              ]),
+            ),
+            SizedBox(
+              height: 7,
+            ),
+            RichText(
+              text: TextSpan(style: _oTextStyle, children: [
+                TextSpan(text: 'Fin: ', style: TextStyle(color: _greyColor)),
+                TextSpan(text: '${data.fechaFinPlan ?? ""}'),
+              ]),
+            ),
+            SizedBox(
+              height: 7,
+            ),
+            RichText(
+              text: TextSpan(style: _oTextStyle, children: [
+                TextSpan(
+                    text: 'Duracion: ', style: TextStyle(color: _greyColor)),
+                TextSpan(text: '${data.duracionReal ?? ""}'),
+              ]),
+            ),
+            SizedBox(
+              height: 7,
+            ),
+            RichText(
+              text: TextSpan(style: _oTextStyle, children: [
+                TextSpan(
+                    text: 'Personal: ', style: TextStyle(color: _greyColor)),
+                TextSpan(text: '${data.numberReal ?? ""}'),
+              ]),
+            ),
+            SizedBox(
+              height: 7,
+            ),
+            RichText(
+              text: TextSpan(style: _oTextStyle, children: [
+                TextSpan(
+                    text: 'Trabajo: ', style: TextStyle(color: _greyColor)),
+                TextSpan(text: '${data.workReal ?? ""}'),
+              ]),
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            Text(
+              'Equipo de Referencia',
+              style: _styleTitleExpansibleBar,
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            RichText(
+              text: TextSpan(style: _oTextStyle, children: [
+                TextSpan(
+                    text: 'Ubic. Func: ', style: TextStyle(color: _greyColor)),
+                TextSpan(text: '${data.ubiFuncional ?? ""}'),
+              ]),
+            ),
+            SizedBox(
+              height: 7,
+            ),
+            RichText(
+              text: TextSpan(style: _oTextStyle, children: [
+                TextSpan(
+                    text: 'Descripcion: ', style: TextStyle(color: _greyColor)),
+                TextSpan(text: '${data.descripcionEquipo ?? ""}'),
+              ]),
+            ),
+            SizedBox(
+              height: 7,
+            ),
+            RichText(
+              text: TextSpan(style: _oTextStyle, children: [
+                TextSpan(
+                    text: 'Sort Field: ', style: TextStyle(color: _greyColor)),
+                TextSpan(text: '${data.sortField ?? ""}'),
+              ]),
+            ),
+            SizedBox(
+              height: 15,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -870,37 +793,40 @@ class _OperacionPageState extends State<OperacionPage>
   }
 
   Widget futureBuilderNotas() {
-    return FutureBuilder(
-      future: provNotas,
-      builder: (context, AsyncSnapshot<List<Nota>> snapshot) {
-        if (snapshot.hasData) {
-          if (snapshot.data.length == 0) {
-            return Center(
-              child: Text('No existen Notas en la Operacion'),
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: 20.0),
+      child: FutureBuilder(
+        future: provNotas,
+        builder: (context, AsyncSnapshot<List<Nota>> snapshot) {
+          if (snapshot.hasData) {
+            if (snapshot.data.length == 0) {
+              return Center(
+                child: Text('No existen Notas en la Operacion'),
+              );
+            }
+            return ListView.separated(
+              separatorBuilder: (context, index) => Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                child: Divider(
+                  height: 0.1,
+                  color: Colors.grey,
+                ),
+              ),
+              itemCount: listaNotas.length,
+              shrinkWrap: true,
+              scrollDirection: Axis.vertical,
+              itemBuilder: (context, index) {
+                return itemNota(listaNotas[index]);
+              },
+            );
+          } else {
+            return Container(
+              height: 10.0,
             );
           }
-          return ListView.separated(
-            separatorBuilder: (context, index) => Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.0),
-              child: Divider(
-                height: 0.1,
-                color: Colors.grey,
-              ),
-            ),
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: listaNotas.length,
-            shrinkWrap: true,
-            scrollDirection: Axis.vertical,
-            itemBuilder: (context, index) {
-              return itemNota(listaNotas[index]);
-            },
-          );
-        } else {
-          return Container(
-            height: 10.0,
-          );
-        }
-      },
+        },
+      ),
     );
   }
 
@@ -1139,9 +1065,9 @@ class _OperacionPageState extends State<OperacionPage>
 
   Widget futureBuilderFotos() {
     return Container(
-      height: 150.0,
+      height: 500,
       width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 20.0),
+      padding: EdgeInsets.symmetric(horizontal: 15.0),
       child: FutureBuilder(
         future: provFotos,
         builder: (context, AsyncSnapshot<List<Foto>> snapshot) {
@@ -1151,14 +1077,21 @@ class _OperacionPageState extends State<OperacionPage>
                 child: Text('No existen Fotografias en la Operacion'),
               );
             }
-            return ListView.builder(
-              scrollDirection: Axis.horizontal,
-              shrinkWrap: true,
-              itemCount: listaFotos.length,
-              itemBuilder: (context, index) {
-                return itemFoto(listaFotos[index]);
-              },
-            );
+            return GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3),
+                itemCount: listaFotos.length,
+                itemBuilder: (context, index) {
+                  return itemFoto(listaFotos[index]);
+                });
+            // return ListView.builder(
+            //   scrollDirection: Axis.horizontal,
+            //   shrinkWrap: true,
+            //   itemCount: listaFotos.length,
+            //   itemBuilder: (context, index) {
+            //     return itemFoto(listaFotos[index]);
+            //   },
+            // );
           } else {
             return Center(
               child: CircularProgressIndicator(),
@@ -1173,7 +1106,7 @@ class _OperacionPageState extends State<OperacionPage>
     return GestureDetector(
       child: Container(
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.0)),
-        padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 5.0),
+        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5.0),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(7.0),
           child: Image.network(
@@ -1195,5 +1128,30 @@ class _OperacionPageState extends State<OperacionPage>
         ).then((value) => cargarFotos());
       },
     );
+  }
+}
+
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  _SliverAppBarDelegate(this._tabBar);
+
+  final TabBar _tabBar;
+
+  @override
+  double get minExtent => _tabBar.preferredSize.height;
+  @override
+  double get maxExtent => _tabBar.preferredSize.height;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return new Container(
+      color: Colors.white,
+      child: _tabBar,
+    );
+  }
+
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
+    return false;
   }
 }
