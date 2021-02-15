@@ -68,49 +68,35 @@ class _OrdenesPageState extends State<OrdenesPage> {
 
   Widget build(BuildContext context) {
     // print(widget.token); receive data works
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        backgroundColor: _appBarColor,
-        title: Text('Mis órdenes de hoy'),
-        centerTitle: false,
-        actions: <Widget>[
-          //_perfilCircle(context),
-          PopupMenuButton<String>(
-            icon: Icon(
-              Icons.supervised_user_circle,
+    return SafeArea(
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          leading: FlatButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Icon(Icons.arrow_back_ios, color: Colors.white)),
+          backgroundColor: _appBarColor,
+          title: Text('Mis órdenes de hoy'),
+          centerTitle: false,
+        ),
+        body: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).requestFocus(new FocusNode());
+          },
+          child: Container(
+            height: double.infinity,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                _panelContador(),
+                _panelFiltros(context),
+                _panelCabecera(),
+                Expanded(child: _panelLista(context)),
+              ],
             ),
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-              PopupMenuItem<String>(
-                value: "cerrar_sesion",
-                child: Text(
-                  "Cerrar Sesion",
-                  style: TextStyle(fontFamily: 'fuente72'),
-                ),
-              ),
-            ],
-            onSelected: (value) {
-              //     if (value == "tomar_foto") {
-              // print('Nothing');
-              if (value == "cerrar_sesion") {}
-            },
-          )
-        ],
-      ),
-      body: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).requestFocus(new FocusNode());
-        },
-        child: Container(
-          height: double.infinity,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              _panelFiltros(context),
-              _panelContador(),
-              _panelCabecera(),
-              Expanded(child: _panelLista(context)),
-            ],
           ),
         ),
       ),
@@ -129,9 +115,20 @@ class _OrdenesPageState extends State<OrdenesPage> {
 
   Widget _panelContador() {
     return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5.0),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+              color: Colors.grey,
+              offset: Offset(0.0, 2.0), //(x,y)
+              blurRadius: 2.0,
+              spreadRadius: 1),
+        ],
+      ),
       width: double.infinity,
       child: Text(
-        'Órdenes de trabajo ${listaOrdenTodaFiltrada.length}',
+        'Órdenes de trabajo (${listaOrdenTodaFiltrada.length})',
         style: TextStyle(fontFamily: 'fuente72', fontSize: 18),
       ),
       padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
@@ -147,7 +144,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
         children: <Widget>[
           Expanded(
               child: Text(
-            'No. Orden',
+            'Descripción',
           )),
           Text(
             'Estatus',
@@ -326,7 +323,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
           Container(
             color: Colors.white,
             width: 200.0,
-            height: 30,
+            height: 40,
             child: TextField(
               controller: editingController,
               onChanged: (value) {
@@ -337,14 +334,28 @@ class _OrdenesPageState extends State<OrdenesPage> {
                 fontSize: 14,
               ),
               decoration: InputDecoration(
-                  contentPadding: EdgeInsets.all(7),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(2.0)),
-                  hintText: 'Buscar',
-                  suffixIcon: Icon(
-                    Icons.search,
-                    color: Color(0xff0854a0),
-                  )),
+                contentPadding:
+                    EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 7),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(2.0)),
+                hintText: 'Buscar',
+                suffixIcon: editingController.text == ""
+                    ? Icon(
+                        Icons.search,
+                        color: Color(0xff0854a0),
+                      )
+                    : IconButton(
+                        onPressed: () {
+                          editingController.clear();
+                          setState(() {
+                            filterSearchResults("");
+                          });
+                        },
+                        icon: Icon(
+                          Icons.clear,
+                        ),
+                      ),
+              ),
             ),
           ),
           SizedBox(

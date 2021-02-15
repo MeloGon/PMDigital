@@ -176,66 +176,68 @@ class _OperacionPageState extends State<OperacionPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(children: [
-        DefaultTabController(
-          length: 4,
-          child: NestedScrollView(
-              controller: _scrollControllerHeader,
-              headerSliverBuilder:
-                  (BuildContext context, bool innerBoxIsScrolled) {
-                return <Widget>[
-                  SliverAppBar(
-                    backgroundColor: Colors.white,
-                    centerTitle: false,
-                    title: Text('Operacion'),
-                    expandedHeight: open == false ? 100.0 : 520.0,
-                    floating: false,
-                    pinned: true,
-                    bottom: PreferredSize(
-                      preferredSize: Size(52.0, 52.0),
-                      child: Icon(
-                        Icons.arrow_drop_down,
-                        size: 0,
+    return SafeArea(
+      child: Scaffold(
+        body: Stack(children: [
+          DefaultTabController(
+            length: 4,
+            child: NestedScrollView(
+                controller: _scrollControllerHeader,
+                headerSliverBuilder:
+                    (BuildContext context, bool innerBoxIsScrolled) {
+                  return <Widget>[
+                    SliverAppBar(
+                      backgroundColor: Colors.white,
+                      centerTitle: false,
+                      title: Text('Operacion'),
+                      expandedHeight: open == false ? 100.0 : 520.0,
+                      floating: false,
+                      pinned: true,
+                      bottom: PreferredSize(
+                        preferredSize: Size(52.0, 52.0),
+                        child: Icon(
+                          Icons.arrow_drop_down,
+                          size: 0,
+                        ),
                       ),
+                      flexibleSpace: panelCabecera(context),
                     ),
-                    flexibleSpace: panelCabecera(context),
-                  ),
-                  SliverPersistentHeader(
-                    delegate: _SliverAppBarDelegate(
-                      TabBar(
-                          isScrollable: true,
-                          labelColor: colorLabelTab,
-                          indicatorColor: colorLabelTab,
-                          labelStyle: estiloMore,
-                          unselectedLabelColor: Colors.grey,
-                          tabs: tabs()),
+                    SliverPersistentHeader(
+                      delegate: _SliverAppBarDelegate(
+                        TabBar(
+                            isScrollable: true,
+                            labelColor: colorLabelTab,
+                            indicatorColor: colorLabelTab,
+                            labelStyle: estiloMore,
+                            unselectedLabelColor: Colors.grey,
+                            tabs: tabs()),
+                      ),
+                      pinned: true,
                     ),
-                    pinned: true,
-                  ),
-                ];
-              },
-              body: new Container(
-                  padding: new EdgeInsets.all(10.0),
-                  child: new TabBarView(children: <Widget>[
-                    futureServicios(),
-                    futureBuilderMateriales(),
-                    notasPanel(context),
-                    fotosPanel(context),
-                  ]))),
-        ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: SafeArea(
-            child: Container(
-              alignment: Alignment.bottomCenter,
-              height: 60,
-              width: double.infinity,
-              child: _options(context),
-            ),
+                  ];
+                },
+                body: new Container(
+                    padding: new EdgeInsets.all(10.0),
+                    child: new TabBarView(children: <Widget>[
+                      futureServicios(),
+                      futureBuilderMateriales(),
+                      notasPanel(context),
+                      fotosPanel(context),
+                    ]))),
           ),
-        )
-      ]),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: SafeArea(
+              child: Container(
+                alignment: Alignment.bottomCenter,
+                height: 60,
+                width: double.infinity,
+                child: _options(context),
+              ),
+            ),
+          )
+        ]),
+      ),
     );
   }
 
