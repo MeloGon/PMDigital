@@ -34,7 +34,7 @@ class _DetallesOtPageState extends State<DetallesOtPage>
       fontFamily: 'fuente72', fontSize: 14.0, fontWeight: FontWeight.w700);
 
   TextStyle _styleTitleExpansibleBar =
-      TextStyle(fontSize: 20.0, fontWeight: FontWeight.w700);
+      TextStyle(fontSize: 18.0, fontWeight: FontWeight.w700);
 
   TextStyle _styleLabelTab =
       TextStyle(fontFamily: 'fuente72', fontSize: 14, color: Color(0xff0854A0));
@@ -58,7 +58,7 @@ class _DetallesOtPageState extends State<DetallesOtPage>
 
   ScrollController _scrollController = new ScrollController();
 
-  var estadoDetalles;
+  String estadoDetalles = "";
 
   @override
   void initState() {
@@ -92,6 +92,7 @@ class _DetallesOtPageState extends State<DetallesOtPage>
                     (BuildContext context, bool innerBoxIsScrolled) {
                   return <Widget>[
                     SliverAppBar(
+                      centerTitle: false,
                       leading: FlatButton(
                           onPressed: () {
                             Navigator.pop(context);
@@ -101,7 +102,10 @@ class _DetallesOtPageState extends State<DetallesOtPage>
                             color: Colors.white,
                           )),
                       backgroundColor: _appBarColor,
-                      title: Text('Orden ${widget.nrot}'),
+                      title: Text(
+                        'Orden ${widget.nrot}',
+                        style: TextStyle(fontFamily: 'fuente72', fontSize: 17),
+                      ),
                       expandedHeight: 550.0,
                       floating: false,
                       pinned: true,
@@ -411,7 +415,7 @@ class _DetallesOtPageState extends State<DetallesOtPage>
   }
 
   Widget itemOpe(Operacion operacion) {
-    bool opRealizada = false;
+    estadoDetalles = operacion.estadoOp;
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -419,8 +423,9 @@ class _DetallesOtPageState extends State<DetallesOtPage>
             token: widget.token,
             idop: operacion.id.toString(),
             descriop: operacion.descripcion,
+            estadop: operacion.estadoOp,
           );
-        }));
+        })).then((value) => listaOperaciones(context));
       },
       child: ListTile(
         title: Column(
@@ -442,13 +447,16 @@ class _DetallesOtPageState extends State<DetallesOtPage>
           child: Row(
             children: [
               Checkbox(
-                value: opRealizada,
-                // onChanged: (bool value) {
-                //   setState(() {
-                //     opRealizada = value;
-                //   });
-                // },
-                onChanged: null,
+                value: estadoDetalles == "Terminado" ? true : false,
+                onChanged: (bool value) {
+                  setState(() {
+                    if (value) {
+                      estadoDetalles = "Pendiente";
+                    } else {
+                      estadoDetalles = "Terminado";
+                    }
+                  });
+                },
               ),
               Icon(Icons.arrow_forward_ios),
             ],
@@ -611,13 +619,17 @@ class _DetallesOtPageState extends State<DetallesOtPage>
                         child: Row(
                           children: <Widget>[
                             Container(
+                              height: 50,
+                              width: 80,
                               margin: EdgeInsets.only(right: 20.0),
-                              child: Text(
-                                estadoBoton,
-                                style: TextStyle(
-                                    fontFamily: 'fuente72',
-                                    fontSize: 14.0,
-                                    color: Color(0xff0854A1)),
+                              child: Center(
+                                child: Text(
+                                  estadoBoton,
+                                  style: TextStyle(
+                                      fontFamily: 'fuente72',
+                                      fontSize: 14.0,
+                                      color: Color(0xff0854A1)),
+                                ),
                               ),
                             ),
                           ],

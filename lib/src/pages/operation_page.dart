@@ -17,8 +17,9 @@ class OperacionPage extends StatefulWidget {
   String token;
   String idop;
   String descriop;
+  String estadop;
 
-  OperacionPage({this.token, this.idop, this.descriop});
+  OperacionPage({this.token, this.idop, this.descriop, this.estadop});
   @override
   _OperacionPageState createState() => _OperacionPageState();
 }
@@ -92,21 +93,18 @@ class _OperacionPageState extends State<OperacionPage>
   List<Servicio> listaServ = new List<Servicio>();
   List<Materiale> listaMats = new List<Materiale>();
 
-  ScrollController _scrollControllerHeader = new ScrollController();
+  ScrollController _scrollController = new ScrollController();
 
   int currentIndex = 0;
 
-  final keyNotas = new GlobalKey();
-  final keyFotos = new GlobalKey();
-  final keyMats = new GlobalKey();
-  final keyServicios = new GlobalKey();
+  OperacionFullModel resp;
+
+  String estado = "";
 
   @override
   void initState() {
-    _scrollControllerHeader = new ScrollController(initialScrollOffset: 0);
-    _scrollControllerHeader.addListener(() {
-      print(_scrollControllerHeader.position.pixels.toString());
-    });
+    _scrollController = new ScrollController(initialScrollOffset: 400);
+    estado = widget.estadop;
     iniciarProviders();
     cargarNotas();
     cargarFotos();
@@ -170,7 +168,7 @@ class _OperacionPageState extends State<OperacionPage>
 
   @override
   void dispose() {
-    _scrollControllerHeader.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -182,48 +180,151 @@ class _OperacionPageState extends State<OperacionPage>
           DefaultTabController(
             length: 4,
             child: NestedScrollView(
-                controller: _scrollControllerHeader,
+                controller: _scrollController,
                 headerSliverBuilder:
                     (BuildContext context, bool innerBoxIsScrolled) {
                   return <Widget>[
                     SliverAppBar(
-                      backgroundColor: Colors.white,
                       centerTitle: false,
-                      title: Text('Operacion'),
-                      expandedHeight: open == false ? 100.0 : 520.0,
+                      leading: FlatButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(
+                            Icons.arrow_back_ios_rounded,
+                            color: Colors.white,
+                          )),
+                      backgroundColor: _appBarColor,
+                      title: Text('Operacion',
+                          style:
+                              TextStyle(fontFamily: 'fuente72', fontSize: 17)),
+                      expandedHeight: 550.0,
                       floating: false,
                       pinned: true,
                       bottom: PreferredSize(
-                        preferredSize: Size(52.0, 52.0),
+                        preferredSize: Size(90.0, 90.0),
                         child: Icon(
                           Icons.arrow_drop_down,
-                          size: 0,
+                          size: 25,
                         ),
                       ),
-                      flexibleSpace: panelCabecera(context),
+                      flexibleSpace: futureBuilderDetalles(),
                     ),
                     SliverPersistentHeader(
                       delegate: _SliverAppBarDelegate(
                         TabBar(
-                            isScrollable: true,
-                            labelColor: colorLabelTab,
-                            indicatorColor: colorLabelTab,
-                            labelStyle: estiloMore,
-                            unselectedLabelColor: Colors.grey,
-                            tabs: tabs()),
+                          isScrollable: true,
+                          labelColor: colorLabelTab,
+                          indicatorColor: colorLabelTab,
+                          labelStyle: estiloMore,
+                          unselectedLabelColor: Colors.grey,
+                          tabs: [
+                            Tab(
+                              text: "SERVICIOS (${listaServ.length})",
+                            ),
+                            Tab(
+                              text: "MATERIALES (${listaMats.length})",
+                            ),
+                            Tab(
+                              text: "NOTAS (${listaNotas.length})",
+                            ),
+                            Tab(
+                              text: "FOTOS (${listaFotos.length})",
+                            ),
+                          ],
+                        ),
                       ),
                       pinned: true,
                     ),
                   ];
                 },
                 body: new Container(
-                    padding: new EdgeInsets.all(10.0),
                     child: new TabBarView(children: <Widget>[
-                      futureServicios(),
-                      futureBuilderMateriales(),
-                      notasPanel(context),
-                      fotosPanel(context),
-                    ]))),
+                  listaServices(context),
+                  listaMaterialess(context),
+                  SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        FutureBuilder(
+                            future: provNotas,
+                            builder:
+                                (context, AsyncSnapshot<List<Nota>> snapshot) {
+                              if (snapshot.hasData) {
+                                return Container(
+                                    height: 40.0,
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 20.0),
+                                    alignment: Alignment.centerLeft,
+                                    width: double.infinity,
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            'Notas (${listaNotas.length})',
+                                            style: styleContador,
+                                          ),
+                                        ),
+                                        popNota(),
+                                      ],
+                                    ));
+                              } else {
+                                return Container(
+                                    height: 40.0,
+                                    padding: EdgeInsets.only(left: 20.0),
+                                    alignment: Alignment.centerLeft,
+                                    width: double.infinity,
+                                    child: Text(
+                                      'Notas (Estimando..)',
+                                      style: styleContador,
+                                    ));
+                              }
+                            }),
+                        listaNotes(context),
+                      ],
+                    ),
+                  ),
+                  SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        FutureBuilder(
+                            future: provFotos,
+                            builder:
+                                (context, AsyncSnapshot<List<Foto>> snapshot) {
+                              if (snapshot.hasData) {
+                                return Container(
+                                    height: 40.0,
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 20.0),
+                                    alignment: Alignment.centerLeft,
+                                    width: double.infinity,
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            'Fotos (${listaFotos.length})',
+                                            style: styleContador,
+                                          ),
+                                        ),
+                                        popFoto(),
+                                      ],
+                                    ));
+                              } else {
+                                return Container(
+                                    height: 40.0,
+                                    padding: EdgeInsets.only(left: 20.0),
+                                    alignment: Alignment.centerLeft,
+                                    width: double.infinity,
+                                    child: Text(
+                                      'Fotos (Estimando..)',
+                                      style: styleContador,
+                                    ));
+                              }
+                            }),
+                        listaPhotos(context),
+                      ],
+                    ),
+                  ),
+                ]))),
           ),
           Align(
             alignment: Alignment.bottomCenter,
@@ -241,119 +342,14 @@ class _OperacionPageState extends State<OperacionPage>
     );
   }
 
-  List<Tab> tabs() {
-    List<Tab> tabsList = [
-      Tab(
-        text: 'SERVICIOS',
-      ),
-      Tab(
-        text: 'MATERIALES',
-      ),
-      Tab(
-        text: 'NOTAS',
-      ),
-      Tab(
-        //text: 'FOTOS (${listaFotos.length})',
-        text: 'FOTOS',
-      ),
-    ];
-    return tabsList;
-  }
-
-  Widget panelCabecera(BuildContext context) {
-    return SingleChildScrollView(
-      physics: NeverScrollableScrollPhysics(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        // mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            color: _appBarColor,
-            height: 70,
-          ),
-          Container(
-            height: 50,
-            padding: EdgeInsets.only(left: 25),
-            margin: EdgeInsets.only(top: 12),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    '${widget.descriop}',
-                    style: TextStyle(fontSize: 20, fontFamily: 'fuente72'),
-                  ),
-                ),
-                FlatButton(
-                    onPressed: () {
-                      setState(() {});
-                      print(open);
-                      if (!open) {
-                        _scrollControllerHeader.animateTo(0,
-                            duration: Duration(milliseconds: 600),
-                            curve: Curves.fastOutSlowIn);
-                        open = true;
-                      } else {
-                        _scrollControllerHeader.animateTo(10,
-                            duration: Duration(milliseconds: 600),
-                            curve: Curves.linear);
-                        open = false;
-                      }
-                    },
-                    child: open == false
-                        ? Icon(Icons.keyboard_arrow_down_rounded)
-                        : Icon(Icons.keyboard_arrow_up_rounded))
-              ],
-            ),
-          ),
-          panelExpansibleFuture(),
-          // listaOperaciones(),
-        ],
-      ),
-    );
-  }
-
-  Widget serviciosPanel() {
-    Widget panelContador = FutureBuilder(
-        future: provServ,
-        builder: (context, AsyncSnapshot<List<Servicio>> snapshot) {
-          if (snapshot.hasData) {
-            return Container(
-                height: 40.0,
-                padding: EdgeInsets.only(left: 20.0),
-                alignment: Alignment.centerLeft,
-                width: double.infinity,
-                child: Text(
-                  'Servicios (${snapshot.data.length})',
-                  style: styleContador,
-                ));
-          } else {
-            return Container(
-                height: 40.0,
-                padding: EdgeInsets.only(left: 20.0),
-                alignment: Alignment.centerLeft,
-                width: double.infinity,
-                child: Text(
-                  'Servicios (Estimando..)',
-                  style: styleContador,
-                ));
-          }
-        });
-
-    return Column(
-      children: [
-        panelContador,
-        futureServicios(),
-      ],
-    );
-  }
-
-  Widget panelExpansibleFuture() {
+  Widget futureBuilderDetalles() {
     return FutureBuilder(
       future:
           operacionMaterialProvider.obtenerOperacion(widget.idop, widget.token),
       builder: (context, AsyncSnapshot<OperacionFullModel> snapshot) {
         if (snapshot.hasData) {
-          return contenidoPanelExpansible(snapshot.data);
+          resp = snapshot.data;
+          return _panelDetalle(resp);
         } else {
           return Center(child: CircularProgressIndicator());
         }
@@ -361,234 +357,33 @@ class _OperacionPageState extends State<OperacionPage>
     );
   }
 
-  Widget _options(BuildContext context) {
-    return Card(
-      elevation: 6.0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
-      child: Column(
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              FlatButton(
-                  onPressed: () {
-                    cambiarEstadoOp("Confirmar");
-                  },
-                  child: Text(
-                    'Confirmar',
-                    style: TextStyle(
-                        fontSize: 15,
-                        fontFamily: 'fuente72',
-                        color: Color(0xff0854A1)),
-                  )),
-            ],
-          )
-        ],
-      ),
-    );
-  }
-
-  void cambiarEstadoOp(String value) async {
-    var num;
-    if (value == "Confirmar") {
-      num = 1;
-      var resp = await operacionMaterialProvider.cambiarEstadoOpe(
-          widget.idop, widget.token, num.toString());
-      print(resp);
-      if (resp['code'] == 200) {
-        toast('La operacion ha sido confirmada');
-      } else {
-        toast('Ha surgido un inconveniente.');
-      }
-    }
-    if (value == "No Confirmar") {
-      num = 0;
-      var resp = await operacionMaterialProvider.cambiarEstadoOpe(
-          widget.idop, widget.token, num.toString());
-      print(resp);
-      if (resp['code'] == 200) {
-        toast('La operacion no ha sido confirmada');
-      } else {
-        toast('Ha surgido un inconveniente.');
-      }
-    }
-  }
-
-  void toast(String msg) {
-    Fluttertoast.showToast(
-        msg: msg,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.TOP,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.white,
-        textColor: Colors.black,
-        fontSize: 14.0);
-  }
-
-  Widget materialesPanel() {
-    Widget panelContador = FutureBuilder(
-        future: provMats,
-        builder: (context, AsyncSnapshot<List<Materiale>> snapshot) {
-          if (snapshot.hasData) {
-            return Container(
-                height: 40.0,
-                padding: EdgeInsets.only(left: 20.0),
-                alignment: Alignment.centerLeft,
-                width: double.infinity,
-                child: Text(
-                  'Linea de Materiales (${snapshot.data.length})',
-                  style: styleContador,
-                ));
-          } else {
-            return Container(
-                height: 40.0,
-                padding: EdgeInsets.only(left: 20.0),
-                alignment: Alignment.centerLeft,
-                width: double.infinity,
-                child: Text(
-                  'Linea de Materiales (Estimando..)',
-                  style: styleContador,
-                ));
-          }
-        });
-
-    Widget cabecera = Container(
-      color: Color(0xffF2F2F2),
-      padding: EdgeInsets.symmetric(horizontal: 20.0),
-      height: 50.0,
-      child: Row(
-        children: [
-          Expanded(child: Text('Descripcion')),
-          Text('Estatus'),
-        ],
-      ),
-    );
-    return Container(
-      key: keyMats,
-      width: double.infinity,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TituloSeccionWidget(value: 'MATERIALES'),
-          panelContador,
-          cabecera,
-          futureBuilderMateriales(),
-        ],
-      ),
-    );
-  }
-
-  Widget notasPanel(BuildContext context) {
-    Widget panelContador = FutureBuilder(
-        future: provNotas,
-        builder: (context, AsyncSnapshot<List<Nota>> snapshot) {
-          if (snapshot.hasData) {
-            return Container(
-                height: 40.0,
-                padding: EdgeInsets.only(left: 20.0),
-                alignment: Alignment.centerLeft,
-                width: double.infinity,
-                child: Text(
-                  'Notas (${listaNotas.length})',
-                  style: styleContador,
-                ));
-          } else {
-            return Container(
-                height: 40.0,
-                padding: EdgeInsets.only(left: 20.0),
-                alignment: Alignment.centerLeft,
-                width: double.infinity,
-                child: Text(
-                  'Notas (Estimando..)',
-                  style: styleContador,
-                ));
-          }
-        });
-
-    Widget cabecera = Container(
-      color: Color(0xffF2F2F2),
-      padding: EdgeInsets.only(right: 20.0),
-      height: 50.0,
-      child: Row(
-        children: [Expanded(child: panelContador), popNota()],
-      ),
-    );
-    return Container(
-      key: keyNotas,
-      height: double.infinity * 0.7,
-      width: double.infinity,
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            cabecera,
-            futureBuilderNotas(),
-            // Text('Jul 28, 2020 * 7:58 PM'),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget fotosPanel(BuildContext context) {
-    Widget panelContador = FutureBuilder(
-        future: provFotos,
-        builder: (context, AsyncSnapshot<List<Foto>> snapshot) {
-          if (snapshot.hasData) {
-            return Container(
-                height: 40.0,
-                padding: EdgeInsets.only(left: 20.0),
-                alignment: Alignment.centerLeft,
-                width: double.infinity,
-                child: Text(
-                  'Fotos (${listaFotos.length})',
-                  style: styleContador,
-                ));
-          } else {
-            return Container(
-                height: 40.0,
-                padding: EdgeInsets.only(left: 20.0),
-                alignment: Alignment.centerLeft,
-                width: double.infinity,
-                child: Text(
-                  'Fotos (Estimando..)',
-                  style: styleContador,
-                ));
-          }
-        });
-
-    Widget cabecera = Container(
-      color: Color(0xffF2F2F2),
-      padding: EdgeInsets.only(right: 20.0),
-      height: 50.0,
-      child: Row(
-        children: [Expanded(child: panelContador), popFoto()],
-      ),
-    );
-    return Container(
-      key: keyFotos,
-      width: double.infinity,
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            cabecera,
-            futureBuilderFotos(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget contenidoPanelExpansible(OperacionFullModel data) {
+  Widget _panelDetalle(OperacionFullModel resp) {
     return SafeArea(
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 25.0),
+        padding: EdgeInsets.only(left: 20, right: 20, top: 20),
+        margin: EdgeInsets.only(top: 55),
         width: double.infinity,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        color: Colors.white,
+        child: ListView(
+          physics: NeverScrollableScrollPhysics(),
           children: <Widget>[
-            Text('${data.estadoOp}'),
+            Container(
+              height: 60,
+              child: Text(
+                widget.descriop,
+                style: TextStyle(
+                    fontFamily: 'fuente72',
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500),
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Text('${resp.estadoOp}'),
+            SizedBox(
+              height: 20,
+            ),
             Text(
               'Detalles de la operación',
               style: _styleTitleExpansibleBar,
@@ -601,7 +396,7 @@ class _OperacionPageState extends State<OperacionPage>
                 TextSpan(
                     text: 'Oper. Work Ctr.: ',
                     style: TextStyle(color: _greyColor)),
-                TextSpan(text: '${data.operationWorkCenter ?? ""}'),
+                TextSpan(text: '${resp.operationWorkCenter ?? ""}'),
               ]),
             ),
             SizedBox(
@@ -627,7 +422,7 @@ class _OperacionPageState extends State<OperacionPage>
             RichText(
               text: TextSpan(style: _oTextStyle, children: [
                 TextSpan(text: 'Inicio: ', style: TextStyle(color: _greyColor)),
-                TextSpan(text: '${data.fechaIniPlan ?? ""}'),
+                TextSpan(text: '${resp.fechaIniPlan ?? ""}'),
               ]),
             ),
             SizedBox(
@@ -636,7 +431,7 @@ class _OperacionPageState extends State<OperacionPage>
             RichText(
               text: TextSpan(style: _oTextStyle, children: [
                 TextSpan(text: 'Fin: ', style: TextStyle(color: _greyColor)),
-                TextSpan(text: '${data.fechaFinPlan ?? ""}'),
+                TextSpan(text: '${resp.fechaFinPlan ?? ""}'),
               ]),
             ),
             SizedBox(
@@ -646,7 +441,7 @@ class _OperacionPageState extends State<OperacionPage>
               text: TextSpan(style: _oTextStyle, children: [
                 TextSpan(
                     text: 'Duracion: ', style: TextStyle(color: _greyColor)),
-                TextSpan(text: '${data.duracionReal ?? ""}'),
+                TextSpan(text: '${resp.duracionReal ?? ""}'),
               ]),
             ),
             SizedBox(
@@ -656,7 +451,7 @@ class _OperacionPageState extends State<OperacionPage>
               text: TextSpan(style: _oTextStyle, children: [
                 TextSpan(
                     text: 'Personal: ', style: TextStyle(color: _greyColor)),
-                TextSpan(text: '${data.numberReal ?? ""}'),
+                TextSpan(text: '${resp.numberReal ?? ""}'),
               ]),
             ),
             SizedBox(
@@ -666,7 +461,7 @@ class _OperacionPageState extends State<OperacionPage>
               text: TextSpan(style: _oTextStyle, children: [
                 TextSpan(
                     text: 'Trabajo: ', style: TextStyle(color: _greyColor)),
-                TextSpan(text: '${data.workReal ?? ""}'),
+                TextSpan(text: '${resp.workReal ?? ""}'),
               ]),
             ),
             SizedBox(
@@ -683,7 +478,7 @@ class _OperacionPageState extends State<OperacionPage>
               text: TextSpan(style: _oTextStyle, children: [
                 TextSpan(
                     text: 'Ubic. Func: ', style: TextStyle(color: _greyColor)),
-                TextSpan(text: '${data.ubiFuncional ?? ""}'),
+                TextSpan(text: '${resp.ubiFuncional ?? ""}'),
               ]),
             ),
             SizedBox(
@@ -693,7 +488,7 @@ class _OperacionPageState extends State<OperacionPage>
               text: TextSpan(style: _oTextStyle, children: [
                 TextSpan(
                     text: 'Descripcion: ', style: TextStyle(color: _greyColor)),
-                TextSpan(text: '${data.descripcionEquipo ?? ""}'),
+                TextSpan(text: '${resp.descripcionEquipo ?? ""}'),
               ]),
             ),
             SizedBox(
@@ -703,7 +498,7 @@ class _OperacionPageState extends State<OperacionPage>
               text: TextSpan(style: _oTextStyle, children: [
                 TextSpan(
                     text: 'Sort Field: ', style: TextStyle(color: _greyColor)),
-                TextSpan(text: '${data.sortField ?? ""}'),
+                TextSpan(text: '${resp.sortField ?? ""}'),
               ]),
             ),
             SizedBox(
@@ -715,7 +510,53 @@ class _OperacionPageState extends State<OperacionPage>
     );
   }
 
-  Widget futureBuilderMateriales() {
+  Widget listaServices(BuildContext context) {
+    return FutureBuilder(
+      future: provServ,
+      builder: (context, AsyncSnapshot<List<Servicio>> snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data.length == 0) {
+            return Center(
+              child: Text('No existen Servicios en la Operacion'),
+            );
+          }
+          return ListView.separated(
+            separatorBuilder: (context, index) => Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.0),
+              child: Divider(
+                height: 0.1,
+                color: Colors.grey,
+              ),
+            ),
+            itemCount: listaServ.length,
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              return itemServicio(listaServ[index]);
+            },
+          );
+        } else {
+          return Container(
+            height: 10.0,
+          );
+        }
+      },
+    );
+  }
+
+  Widget itemServicio(Servicio data) {
+    return Container(
+      color: Colors.white,
+      child: ListTile(
+        title: Text(
+          data.descripcion,
+          style: _oTextStyle,
+        ),
+      ),
+    );
+  }
+
+  Widget listaMaterialess(BuildContext context) {
     return FutureBuilder(
       future: provMats,
       builder: (context, AsyncSnapshot<List<Materiale>> snapshot) {
@@ -794,41 +635,40 @@ class _OperacionPageState extends State<OperacionPage>
     );
   }
 
-  Widget futureBuilderNotas() {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 20.0),
-      child: FutureBuilder(
-        future: provNotas,
-        builder: (context, AsyncSnapshot<List<Nota>> snapshot) {
-          if (snapshot.hasData) {
-            if (snapshot.data.length == 0) {
-              return Center(
-                child: Text('No existen Notas en la Operacion'),
-              );
-            }
-            return ListView.separated(
-              separatorBuilder: (context, index) => Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
-                child: Divider(
-                  height: 0.1,
-                  color: Colors.grey,
-                ),
-              ),
-              itemCount: listaNotas.length,
-              shrinkWrap: true,
-              scrollDirection: Axis.vertical,
-              itemBuilder: (context, index) {
-                return itemNota(listaNotas[index]);
-              },
-            );
-          } else {
+  Widget listaNotes(BuildContext context) {
+    return FutureBuilder(
+      future: provNotas,
+      builder: (context, AsyncSnapshot<List<Nota>> snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data.length == 0) {
             return Container(
-              height: 10.0,
+              height: 380,
+              child: Center(
+                child: Text('No existen Notas en la Operacion'),
+              ),
             );
           }
-        },
-      ),
+          return ListView.separated(
+            separatorBuilder: (context, index) => Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.0),
+              child: Divider(
+                height: 0.1,
+                color: Colors.grey,
+              ),
+            ),
+            itemCount: listaNotas.length,
+            shrinkWrap: true,
+            scrollDirection: Axis.vertical,
+            itemBuilder: (context, index) {
+              return itemNota(listaNotas[index]);
+            },
+          );
+        } else {
+          return Container(
+            height: 10.0,
+          );
+        }
+      },
     );
   }
 
@@ -847,52 +687,6 @@ class _OperacionPageState extends State<OperacionPage>
         style: TextStyle(fontSize: 12.0, fontFamily: 'fuente72'),
       ),
       trailing: popEditDelNota(data.id.toString(), data.descripcion.toString()),
-    );
-  }
-
-  Widget futureServicios() {
-    return FutureBuilder(
-      future: provServ,
-      builder: (context, AsyncSnapshot<List<Servicio>> snapshot) {
-        if (snapshot.hasData) {
-          if (snapshot.data.length == 0) {
-            return Center(
-              child: Text('No existen Servicios en la Operacion'),
-            );
-          }
-          return ListView.separated(
-            separatorBuilder: (context, index) => Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.0),
-              child: Divider(
-                height: 0.1,
-                color: Colors.grey,
-              ),
-            ),
-            itemCount: listaServ.length,
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              return itemServicio(listaServ[index]);
-            },
-          );
-        } else {
-          return Container(
-            height: 10.0,
-          );
-        }
-      },
-    );
-  }
-
-  Widget itemServicio(Servicio data) {
-    return Container(
-      color: Colors.white,
-      child: ListTile(
-        title: Text(
-          data.descripcion,
-          style: _oTextStyle,
-        ),
-      ),
     );
   }
 
@@ -947,35 +741,70 @@ class _OperacionPageState extends State<OperacionPage>
         )
       ],
       onSelected: (value) {
-        editDelNota(value, idnota, contnota);
+        //editDelNota(value, idnota, contnota);
       },
     );
   }
 
-  void editDelNota(String value, String idnota, String contnota) async {
-    toast('Espere un momento porfavor ..');
-    if (value == "eliminar") {
-      var resp =
-          await operacionMaterialProvider.eliminarNota(widget.token, idnota);
-      if (resp['code'] == 200) {
-        toast('La nota ha sido eliminada exitosamente');
-        setState(() {
-          cargarNotas();
-        });
-      } else {
-        toast('Ha ocurrido un error inesperado borrando la nota');
-      }
-    }
-    if (value == "editar") {
-      Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return NotaPage(
-          token: widget.token,
-          idop: idnota,
-          contnota: contnota,
-          tipo: value,
-        );
-      }));
-    }
+  Widget listaPhotos(BuildContext context) {
+    return SingleChildScrollView(
+      child: Container(
+        height: 500,
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 15.0),
+        child: FutureBuilder(
+          future: provFotos,
+          builder: (context, AsyncSnapshot<List<Foto>> snapshot) {
+            if (snapshot.hasData) {
+              if (snapshot.data.length == 0) {
+                return Center(
+                  child: Text('No existen Fotografias en la Operacion'),
+                );
+              }
+              return GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3),
+                  itemCount: listaFotos.length,
+                  itemBuilder: (context, index) {
+                    return itemFoto(listaFotos[index]);
+                  });
+            } else {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget itemFoto(Foto data) {
+    return GestureDetector(
+      child: Container(
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.0)),
+        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5.0),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(7.0),
+          child: Image.network(
+            data.url,
+            fit: BoxFit.fill,
+            width: 100.0,
+            height: 50.0,
+          ),
+        ),
+      ),
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) {
+              return ImagePageNetwork(
+                  '${data.url}', '${widget.token}', '${data.id.toString()}');
+            },
+          ),
+        ).then((value) => cargarFotos());
+      },
+    );
   }
 
   Widget popFoto() {
@@ -1053,83 +882,96 @@ class _OperacionPageState extends State<OperacionPage>
     }
 
     if (foto != null) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) {
-            return ImagePage(foto, widget.token, widget.idop);
-          },
-        ),
-      ).then((value) => cargarFotos());
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return ImagePage(foto, widget.token, widget.idop);
+      })).then((value) => cargarFotos());
+
+      // Navigator.of(context).push(
+      //   MaterialPageRoute(
+      //     builder: (context) {
+      //       return ImagePage(foto, widget.token, widget.idop);
+      //     },
+      //   ),
+      // ).then((value) => cargarFotos());
     } else {
       print('ruta de imagen nula');
     }
   }
 
-  Widget futureBuilderFotos() {
+  Widget _options(BuildContext context) {
+    setState(() {});
+
     return Container(
-      height: 500,
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 15.0),
-      child: FutureBuilder(
-        future: provFotos,
-        builder: (context, AsyncSnapshot<List<Foto>> snapshot) {
-          if (snapshot.hasData) {
-            if (snapshot.data.length == 0) {
-              return Center(
-                child: Text('No existen Fotografias en la Operacion'),
-              );
-            }
-            return GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3),
-                itemCount: listaFotos.length,
-                itemBuilder: (context, index) {
-                  return itemFoto(listaFotos[index]);
-                });
-            // return ListView.builder(
-            //   scrollDirection: Axis.horizontal,
-            //   shrinkWrap: true,
-            //   itemCount: listaFotos.length,
-            //   itemBuilder: (context, index) {
-            //     return itemFoto(listaFotos[index]);
-            //   },
-            // );
-          } else {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        },
+      decoration: new BoxDecoration(
+        boxShadow: [
+          new BoxShadow(
+              color: Colors.grey, blurRadius: 10.0, spreadRadius: 1.0),
+        ],
+      ),
+      child: Card(
+        elevation: 29.0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
+        child: Column(
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                FlatButton(
+                    onPressed: () {
+                      cambiarEstadoOp(estado);
+                    },
+                    child: Text(
+                      estado == "Pendiente" ? 'Confirmar' : 'No confirmar',
+                      style: TextStyle(
+                          fontSize: 15,
+                          fontFamily: 'fuente72',
+                          color: Color(0xff0854A1)),
+                    )),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
 
-  Widget itemFoto(Foto data) {
-    return GestureDetector(
-      child: Container(
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.0)),
-        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5.0),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(7.0),
-          child: Image.network(
-            data.url,
-            fit: BoxFit.fill,
-            width: 100.0,
-            height: 50.0,
-          ),
-        ),
-      ),
-      onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) {
-              return ImagePageNetwork(
-                  '${data.url}', '${widget.token}', '${data.id.toString()}');
-            },
-          ),
-        ).then((value) => cargarFotos());
-      },
-    );
+  void cambiarEstadoOp(String value) async {
+    var num;
+    //if (value == "Confirmar") {
+    if (value == "Pendiente") {
+      num = 1;
+      var resp = await operacionMaterialProvider.cambiarEstadoOpe(
+          widget.idop, widget.token, num.toString());
+      print(resp);
+      if (resp['code'] == 200) {
+        toast('La operacion ha sido confirmada');
+      } else {
+        toast('Ha surgido un inconveniente.');
+      }
+    }
+    //if (value == "No Confirmar") {
+    if (value == "Terminado") {
+      num = 0;
+      var resp = await operacionMaterialProvider.cambiarEstadoOpe(
+          widget.idop, widget.token, num.toString());
+      print(resp);
+      if (resp['code'] == 200) {
+        toast('La operacion no ha sido confirmada');
+      } else {
+        toast('Ha surgido un inconveniente.');
+      }
+    }
+  }
+
+  void toast(String msg) {
+    Fluttertoast.showToast(
+        msg: msg,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.TOP,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.white,
+        textColor: Colors.black,
+        fontSize: 14.0);
   }
 }
 

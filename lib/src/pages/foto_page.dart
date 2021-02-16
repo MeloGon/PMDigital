@@ -17,6 +17,7 @@ class _ImagePageState extends State<ImagePage> {
       new OperacionMaterialProvider();
   @override
   Widget build(BuildContext context) {
+    print(widget.foto.path);
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
