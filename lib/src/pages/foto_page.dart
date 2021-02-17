@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -15,6 +16,14 @@ class ImagePage extends StatefulWidget {
 class _ImagePageState extends State<ImagePage> {
   final OperacionMaterialProvider operacionMaterialProvider =
       new OperacionMaterialProvider();
+  var byteArray;
+
+  @override
+  void initState() {
+    byteArray = _readFileByte(widget.foto.path);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     print(widget.foto.path);
@@ -43,13 +52,31 @@ class _ImagePageState extends State<ImagePage> {
         ],
       ),
       body: Center(
-        child: Image(
+        child: Container(
+          height: 300.0,
+          child: Image.file(File(widget.foto.path)),
+        ),
+        /* child: Image(
           image: AssetImage(widget.foto.path),
           height: 300.0,
           fit: BoxFit.cover,
-        ),
+        ), */
       ),
     );
+  }
+
+  Future<Uint8List> _readFileByte(String filePath) async {
+    Uri myUri = Uri.parse(filePath);
+    File audioFile = new File.fromUri(myUri);
+    Uint8List bytes;
+    await audioFile.readAsBytes().then((value) {
+      bytes = Uint8List.fromList(value);
+      print('reading of bytes is completed');
+    }).catchError((onError) {
+      print('Exception Error while reading audio from path:' +
+          onError.toString());
+    });
+    return bytes;
   }
 
   guardarFoto(

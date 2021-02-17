@@ -98,7 +98,7 @@ class _DetallesOtPageState extends State<DetallesOtPage>
                             Navigator.pop(context);
                           },
                           child: Icon(
-                            Icons.arrow_back_ios_rounded,
+                            Icons.arrow_back_ios,
                             color: Colors.white,
                           )),
                       backgroundColor: _appBarColor,
