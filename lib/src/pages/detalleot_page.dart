@@ -117,9 +117,6 @@ class _DetallesOtPageState extends State<DetallesOtPage>
                         ),
                       ),
                       flexibleSpace: futureBuilderDetalles(),
-                      actions: <Widget>[
-                        IconButton(icon: Icon(Icons.sync), onPressed: () {})
-                      ],
                     ),
                     SliverPersistentHeader(
                       delegate: _SliverAppBarDelegate(
@@ -424,6 +421,7 @@ class _DetallesOtPageState extends State<DetallesOtPage>
             idop: operacion.id.toString(),
             descriop: operacion.descripcion,
             estadop: operacion.estadoOp,
+            nrop: operacion.actividad,
           );
         })).then((value) => listaOperaciones(context));
       },

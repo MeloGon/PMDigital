@@ -68,46 +68,8 @@ class _MenuPageState extends State<MenuPage> {
         child: Scaffold(
             appBar: AppBar(
               automaticallyImplyLeading: false,
-              title: PopupMenuButton<String>(
-                child: Row(
-                  children: <Widget>[
-                    Text(
-                      'Inicio',
-                      style: TextStyle(fontFamily: 'fuente72', fontSize: 13.0),
-                    ),
-                    Icon(Icons.arrow_drop_down)
-                  ],
-                ),
-                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                  PopupMenuItem<String>(
-                    value: "perfil",
-                    child: Text(
-                      "Mis órdenes hoy",
-                      style: TextStyle(fontFamily: 'fuente72', fontSize: 13.0),
-                    ),
-                  ),
-                  PopupMenuItem<String>(
-                    value: "cerrar_sesion",
-                    child: Text(
-                      "Programa Semanal",
-                      style: TextStyle(fontFamily: 'fuente72', fontSize: 13.0),
-                    ),
-                  ),
-                  PopupMenuItem<String>(
-                    value: "cerrar_sesion",
-                    child: Text(
-                      "Ubicaciones Tecnicas",
-                      style: TextStyle(fontFamily: 'fuente72', fontSize: 13.0),
-                    ),
-                  ),
-                ],
-                /* onSelected: (value) {
-                  if (value == "cerrar_sesion") {
-                    print('Menu');
-                  }
-                },*/
-              ),
-              //title: Text('Inicio',
+
+              title: Text('Inicio'),
               //style: TextStyle(fontFamily: 'fuente72', fontSize: 14.0)),
               backgroundColor: _appBarColor,
               centerTitle: false,
@@ -152,8 +114,6 @@ class _MenuPageState extends State<MenuPage> {
                     children: <Widget>[
                       _titulos("Órdenes de Trabajo"),
                       _botonesRedondeadosOT(),
-                      _titulos("Activos"),
-                      _botonesRedondeadosAT()
                     ],
                   ),
                 )
@@ -308,46 +268,6 @@ class _MenuPageState extends State<MenuPage> {
               contentRb: _contentSt, actionRb: 1, token: widget.token),
           RoundButtonWidget(
               contentRb: _contentWe, actionRb: 2, token: widget.token),
-        ]),
-      ],
-    );
-  }
-
-  Widget _botonesRedondeadosAT() {
-    Widget _iconUt = Padding(
-      padding: EdgeInsets.only(left: 20.0),
-      child: Image(
-        image: AssetImage('assets/images/tool_image.png'),
-        width: 30.0,
-        height: 50.0,
-      ),
-    );
-
-    //no reutilizo el codigo por que los tamaños de las imagenes cambia por cuestiones del diseñador UI
-
-    Widget _contentUt = Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Text('Ubicaciones Técnicas', style: _titleCardStyle),
-        ),
-        _iconUt,
-        SizedBox(height: 5.0)
-      ],
-    );
-
-    return Table(
-      columnWidths: {0: FractionColumnWidth(0.5)},
-      children: [
-        TableRow(children: [
-          RoundButtonWidget(
-              contentRb: _contentUt, actionRb: 3, token: widget.token),
-          SizedBox(
-            height:
-                188, // para la cuarta caja invisible, no existe un alignmnet para el tablerow
-          )
         ]),
       ],
     );

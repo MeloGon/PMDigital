@@ -116,14 +116,14 @@ class _OrdenesPageState extends State<OrdenesPage> {
   Widget _panelContador() {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5.0),
+        borderRadius: BorderRadius.circular(1.0),
         color: Colors.white,
         boxShadow: [
           BoxShadow(
               color: Colors.grey,
-              offset: Offset(0.0, 2.0), //(x,y)
-              blurRadius: 2.0,
-              spreadRadius: 1),
+              offset: Offset(0.0, 1.0), //(x,y)
+              blurRadius: 1,
+              spreadRadius: 0),
         ],
       ),
       width: double.infinity,

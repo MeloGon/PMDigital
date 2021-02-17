@@ -124,7 +124,7 @@ class _CumplimientoPageState extends State<CumplimientoPage> {
               padding: const EdgeInsets.all(5.0),
               child: ListTile(
                 title: Text(
-                  'Éstandar',
+                  'Órdenes de trabajo (${listaOrdenTodaFiltrada.length})',
                   style: TextStyle(fontSize: 20, fontFamily: 'fuente72'),
                 ),
               ),
@@ -157,9 +157,28 @@ class _CumplimientoPageState extends State<CumplimientoPage> {
         },
         controller: editingController,
         decoration: InputDecoration(
-            suffixIcon: Icon(Icons.search),
+            suffixIcon: editingController.text == ""
+                ? Icon(
+                    Icons.search,
+                    color: Color(0xff0854a0),
+                  )
+                : IconButton(
+                    onPressed: () {
+                      editingController.clear();
+                      setState(() {
+                        filterSearchResults("");
+                      });
+                    },
+                    icon: Icon(
+                      Icons.clear,
+                    ),
+                  ),
             hintText: 'Buscar',
-            hintStyle: TextStyle(fontFamily: 'fuente72', fontSize: 14.0),
+            hintStyle: TextStyle(
+                fontFamily: 'fuente72',
+                fontSize: 14.0,
+                color: Colors.black,
+                fontStyle: FontStyle.italic),
             contentPadding: EdgeInsets.all(10),
             border: OutlineInputBorder()),
       ),
@@ -209,7 +228,8 @@ class _CumplimientoPageState extends State<CumplimientoPage> {
         controller: _inputFieldDateController,
         decoration: InputDecoration(
             hintText: 'Seleccione la fecha',
-            hintStyle: TextStyle(fontFamily: 'fuente72', fontSize: 14.0),
+            hintStyle: TextStyle(
+                fontFamily: 'fuente72', fontSize: 14.0, color: Colors.black),
             suffixIcon: Icon(Icons.date_range),
             contentPadding: EdgeInsets.all(10),
             border: OutlineInputBorder()),
@@ -333,23 +353,37 @@ class _CumplimientoPageState extends State<CumplimientoPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           containerBuscar,
-          Text('Fecha'),
+          SizedBox(
+            height: 9,
+          ),
+          Text('Fecha:', style: TextStyle(fontFamily: 'fuente72')),
           containerFecha,
-          Text('Prioridad'),
+          SizedBox(
+            height: 9,
+          ),
+          Text('Prioridad:', style: TextStyle(fontFamily: 'fuente72')),
           containerPrioridad,
-          Text('Estatus'),
+          SizedBox(
+            height: 9,
+          ),
+          Text('Estatus:', style: TextStyle(fontFamily: 'fuente72')),
           containerStatus,
-          RaisedButton(
-              color: Colors.blue,
-              textColor: Colors.white,
-              child: Text('Limpiar Filtros'),
-              onPressed: () {
-                _inputFieldDateController.text = "";
-                editingController.text = "";
-                opcionSeleccionada = 'Seleccione';
-                statusSeleccionado(opcionSeleccionada);
-                cargarInOrdenes();
-              }),
+          SizedBox(
+            height: 9,
+          ),
+          Align(
+            alignment: Alignment.topRight,
+            child: FlatButton(
+                textColor: Color(0xff0A6ED1),
+                child: Text('Restablecer'),
+                onPressed: () {
+                  _inputFieldDateController.text = "";
+                  editingController.text = "";
+                  opcionSeleccionada = 'Seleccione';
+                  statusSeleccionado(opcionSeleccionada);
+                  cargarInOrdenes();
+                }),
+          ),
           SizedBox(
             height: 20.0,
           )

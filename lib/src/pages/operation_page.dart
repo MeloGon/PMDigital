@@ -9,7 +9,6 @@ import 'package:pmdigital_app/src/models/OrdenFullModel.dart';
 import 'package:pmdigital_app/src/pages/foto_page.dart';
 import 'package:pmdigital_app/src/pages/nota_page.dart';
 import 'package:pmdigital_app/src/provider/operacion_provider.dart';
-import 'package:pmdigital_app/src/widgets/tituloSeccion_widget.dart';
 
 import 'image_network.dart';
 
@@ -18,8 +17,10 @@ class OperacionPage extends StatefulWidget {
   String idop;
   String descriop;
   String estadop;
+  String nrop;
 
-  OperacionPage({this.token, this.idop, this.descriop, this.estadop});
+  OperacionPage(
+      {this.token, this.idop, this.descriop, this.estadop, this.nrop});
   @override
   _OperacionPageState createState() => _OperacionPageState();
 }
@@ -46,8 +47,6 @@ List<Item> generateItems(int numberOfItems) {
 }
 
 // ...
-
-List<Item> _data = generateItems(1);
 
 class _OperacionPageState extends State<OperacionPage>
     with SingleTickerProviderStateMixin {
@@ -94,6 +93,7 @@ class _OperacionPageState extends State<OperacionPage>
   List<Materiale> listaMats = new List<Materiale>();
 
   ScrollController _scrollController = new ScrollController();
+  //TabController _tabController;
 
   int currentIndex = 0;
 
@@ -103,6 +103,12 @@ class _OperacionPageState extends State<OperacionPage>
 
   @override
   void initState() {
+    // _tabController = TabController(length: 4, vsync: this);
+
+    // _tabController.addListener(() {
+    //   currentIndex = _tabController.index;
+    //   print('indice' + currentIndex.toString());
+    // });
     _scrollController = new ScrollController(initialScrollOffset: 400);
     estado = widget.estadop;
     iniciarProviders();
@@ -169,6 +175,7 @@ class _OperacionPageState extends State<OperacionPage>
   @override
   void dispose() {
     _scrollController.dispose();
+    // _tabController.dispose();
     super.dispose();
   }
 
@@ -195,7 +202,7 @@ class _OperacionPageState extends State<OperacionPage>
                             color: Colors.white,
                           )),
                       backgroundColor: _appBarColor,
-                      title: Text('Operacion',
+                      title: Text('Operacion ${widget.nrop}',
                           style:
                               TextStyle(fontFamily: 'fuente72', fontSize: 17)),
                       expandedHeight: 550.0,
@@ -213,25 +220,13 @@ class _OperacionPageState extends State<OperacionPage>
                     SliverPersistentHeader(
                       delegate: _SliverAppBarDelegate(
                         TabBar(
+                          // controller: _tabController,
                           isScrollable: true,
                           labelColor: colorLabelTab,
                           indicatorColor: colorLabelTab,
                           labelStyle: estiloMore,
                           unselectedLabelColor: Colors.grey,
-                          tabs: [
-                            Tab(
-                              text: "SERVICIOS (${listaServ.length})",
-                            ),
-                            Tab(
-                              text: "MATERIALES (${listaMats.length})",
-                            ),
-                            Tab(
-                              text: "NOTAS (${listaNotas.length})",
-                            ),
-                            Tab(
-                              text: "FOTOS (${listaFotos.length})",
-                            ),
-                          ],
+                          tabs: tabs(),
                         ),
                       ),
                       pinned: true,
@@ -340,6 +335,24 @@ class _OperacionPageState extends State<OperacionPage>
         ]),
       ),
     );
+  }
+
+  List<Tab> tabs() {
+    List<Tab> tb = [
+      Tab(
+        text: "SERVICIOS (${listaServ.length})",
+      ),
+      Tab(
+        text: "MATERIALES (${listaMats.length})",
+      ),
+      Tab(
+        text: "NOTAS (${listaNotas.length})",
+      ),
+      Tab(
+        text: "FOTOS (${listaFotos.length})",
+      ),
+    ];
+    return tb;
   }
 
   Widget futureBuilderDetalles() {
@@ -515,7 +528,7 @@ class _OperacionPageState extends State<OperacionPage>
       future: provServ,
       builder: (context, AsyncSnapshot<List<Servicio>> snapshot) {
         if (snapshot.hasData) {
-          if (snapshot.data.length == 0) {
+          if (listaServ.length == 0) {
             return Center(
               child: Text('No existen Servicios en la Operacion'),
             );
@@ -561,7 +574,7 @@ class _OperacionPageState extends State<OperacionPage>
       future: provMats,
       builder: (context, AsyncSnapshot<List<Materiale>> snapshot) {
         if (snapshot.hasData) {
-          if (snapshot.data.length == 0) {
+          if (listaMats.length == 0) {
             return Center(
               child: Text('No existen Materiales en la Operacion'),
             );
@@ -640,7 +653,7 @@ class _OperacionPageState extends State<OperacionPage>
       future: provNotas,
       builder: (context, AsyncSnapshot<List<Nota>> snapshot) {
         if (snapshot.hasData) {
-          if (snapshot.data.length == 0) {
+          if (listaNotas.length == 0) {
             return Container(
               height: 380,
               child: Center(
@@ -717,6 +730,7 @@ class _OperacionPageState extends State<OperacionPage>
         );
       })).then((value) {
         cargarNotas();
+        tabs();
       });
     }
   }
@@ -741,9 +755,35 @@ class _OperacionPageState extends State<OperacionPage>
         )
       ],
       onSelected: (value) {
-        //editDelNota(value, idnota, contnota);
+        editDelNota(value, idnota, contnota);
       },
     );
+  }
+
+  void editDelNota(String value, String idnota, String contnota) async {
+    toast('Espere un momento porfavor ..');
+    if (value == "eliminar") {
+      var resp =
+          await operacionMaterialProvider.eliminarNota(widget.token, idnota);
+      if (resp['code'] == 200) {
+        toast('La nota ha sido eliminada exitosamente');
+        setState(() {
+          cargarNotas();
+        });
+      } else {
+        toast('Ha ocurrido un error inesperado borrando la nota');
+      }
+    }
+    if (value == "editar") {
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return NotaPage(
+          token: widget.token,
+          idop: idnota,
+          contnota: contnota,
+          tipo: value,
+        );
+      })).then((value) => cargarNotas());
+    }
   }
 
   Widget listaPhotos(BuildContext context) {
@@ -756,7 +796,7 @@ class _OperacionPageState extends State<OperacionPage>
           future: provFotos,
           builder: (context, AsyncSnapshot<List<Foto>> snapshot) {
             if (snapshot.hasData) {
-              if (snapshot.data.length == 0) {
+              if (listaFotos.length == 0) {
                 return Center(
                   child: Text('No existen Fotografias en la Operacion'),
                 );
@@ -884,7 +924,10 @@ class _OperacionPageState extends State<OperacionPage>
     if (foto != null) {
       Navigator.push(context, MaterialPageRoute(builder: (context) {
         return ImagePage(foto, widget.token, widget.idop);
-      })).then((value) => cargarFotos());
+      })).then((value) {
+        cargarFotos();
+        tabs();
+      });
 
       // Navigator.of(context).push(
       //   MaterialPageRoute(

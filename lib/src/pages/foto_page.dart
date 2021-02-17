@@ -53,7 +53,7 @@ class _ImagePageState extends State<ImagePage> {
       ),
       body: Center(
         child: Container(
-          height: 300.0,
+          height: double.infinity,
           child: Image.file(File(widget.foto.path)),
         ),
         /* child: Image(
