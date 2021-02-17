@@ -68,8 +68,10 @@ class _MenuPageState extends State<MenuPage> {
         child: Scaffold(
             appBar: AppBar(
               automaticallyImplyLeading: false,
-
-              title: Text('Inicio'),
+              title: Text(
+                'Inicio',
+                style: TextStyle(fontFamily: 'fuente72', fontSize: 15),
+              ),
               //style: TextStyle(fontFamily: 'fuente72', fontSize: 14.0)),
               backgroundColor: _appBarColor,
               centerTitle: false,

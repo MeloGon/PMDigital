@@ -33,8 +33,8 @@ class _DetallesOtPageState extends State<DetallesOtPage>
   TextStyle _styleAppBarTitle = TextStyle(
       fontFamily: 'fuente72', fontSize: 14.0, fontWeight: FontWeight.w700);
 
-  TextStyle _styleTitleExpansibleBar =
-      TextStyle(fontSize: 18.0, fontWeight: FontWeight.w700);
+  TextStyle _styleTitleExpansibleBar = TextStyle(
+      fontSize: 18.0, fontWeight: FontWeight.w700, fontFamily: 'fuente72');
 
   TextStyle _styleLabelTab =
       TextStyle(fontFamily: 'fuente72', fontSize: 14, color: Color(0xff0854A0));
@@ -231,7 +231,7 @@ class _DetallesOtPageState extends State<DetallesOtPage>
             physics: NeverScrollableScrollPhysics(),
             children: <Widget>[
               Container(
-                height: 60,
+                height: 52,
                 child: Text(
                   widget.descriot,
                   style: _styleTitleExpansibleBar,
@@ -243,6 +243,9 @@ class _DetallesOtPageState extends State<DetallesOtPage>
               Text(
                 '${resp.estado}',
                 style: TextStyle(color: Hexcolor('${resp.estadoColor}')),
+              ),
+              SizedBox(
+                height: 15,
               ),
               Text('Detalles de la orden', style: _styleAppBarTitle),
               SizedBox(
