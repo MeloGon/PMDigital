@@ -143,7 +143,6 @@ class OrdenesProvider {
 
     cantOpMat.add(operaciones.length.toString());
     cantOpMat.add(materiales.length.toString());
-    print(cantOpMat);
 
     return cantOpMat;
   }

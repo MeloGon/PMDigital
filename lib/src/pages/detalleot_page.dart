@@ -52,6 +52,7 @@ class _DetallesOtPageState extends State<DetallesOtPage>
       new OperacionMaterialProvider();
 
   OrdenFullModel resp;
+  OrdenFullModel ot = new OrdenFullModel();
 
   Color _greyColor = Color(0xff6A6D70);
   Color colorLabelTab = Color(0xff0854A0);
@@ -60,6 +61,7 @@ class _DetallesOtPageState extends State<DetallesOtPage>
 
   String estadoOperaciones = "";
   String estadoDetalles = '';
+  String nuevoEstadoDetalles = '';
   String estadoBoton = '';
   List<Operacion> listaOperacion = new List<Operacion>();
 
@@ -68,7 +70,17 @@ class _DetallesOtPageState extends State<DetallesOtPage>
     super.initState();
     cargarDetalles();
     cargarOperaciones();
+    cerrarot();
     estadoDetalles = widget.estado;
+    if (estadoDetalles == "En proceso") {
+      estadoBoton = "Finalizar";
+    }
+    if (estadoDetalles == "Pendiente") {
+      estadoBoton = "Iniciar";
+    }
+    if (estadoDetalles == "Completado") {
+      estadoBoton = "Finalizada";
+    }
     _scrollController = new ScrollController(initialScrollOffset: 402);
   }
 
@@ -81,6 +93,15 @@ class _DetallesOtPageState extends State<DetallesOtPage>
   cargarDetalles() async {
     setState(() {
       ordenesProvider.obtenerOrden(widget.nrot, widget.token);
+    });
+  }
+
+  cerrarot() async {
+    await ordenesProvider.obtenerOrden(widget.nrot, widget.token).then((value) {
+      setState(() {
+        ot = value;
+        estadoDetalles = ot.estado;
+      });
     });
   }
 
@@ -110,7 +131,7 @@ class _DetallesOtPageState extends State<DetallesOtPage>
                       centerTitle: false,
                       leading: FlatButton(
                           onPressed: () {
-                            Navigator.pop(context);
+                            Navigator.pop(context, true);
                           },
                           child: Icon(
                             Icons.arrow_back_ios,
@@ -241,6 +262,7 @@ class _DetallesOtPageState extends State<DetallesOtPage>
   }
 
   Widget _panelDetalle(OrdenFullModel resp) {
+    estadoDetalles = resp.estado;
     return SafeArea(
       child: Container(
           padding: EdgeInsets.only(left: 20, right: 20, top: 20),
@@ -445,7 +467,12 @@ class _DetallesOtPageState extends State<DetallesOtPage>
             nrop: operacion.actividad,
             estadot: estadoDetalles,
           );
-        })).then((value) => cargarOperaciones());
+        })).then((value) {
+          cargarOperaciones();
+          setState(() {
+            cerrarot();
+          });
+        });
       },
       child: ListTile(
         title: Column(
@@ -618,13 +645,21 @@ class _DetallesOtPageState extends State<DetallesOtPage>
     //     estadoBoton = "Finalizada";
     //   }
     // });
+
+    //esta si sirve
+    // print('el estado es $estadoDetalles');
+    // setState(() {
+    //   if (estadoDetalles == "En proceso") {
+    //     estadoBoton = "Finalizar";
+    //   }
+    //   if (estadoDetalles == "Pendiente") {
+    //     estadoBoton = "Iniciar";
+    //   }
+    //   if (estadoDetalles == "Completado") {
+    //     estadoBoton = "Finalizada";
+    //   }
+    // });
     setState(() {
-      if (estadoDetalles == "En proceso") {
-        estadoBoton = "Finalizar";
-      }
-      if (estadoDetalles == "Pendiente") {
-        estadoBoton = "Iniciar";
-      }
       if (estadoDetalles == "Completado") {
         estadoBoton = "Finalizada";
       }
@@ -651,7 +686,7 @@ class _DetallesOtPageState extends State<DetallesOtPage>
                         onPressed: () {
                           setState(() {
                             cambiarEstado('Iniciar');
-                            estadoDetalles = 'En proceso';
+                            // estadoDetalles = 'En proceso';
                             estadoBoton = 'Finalizar';
                           });
                         },

@@ -15,7 +15,7 @@ class MenuProvider {
           "Authorization": token,
         });
     final jsonresp = jsonDecode(resp.body);
-    print(jsonresp['semanal']);
+
     yield jsonresp['semanal'];
   }
 
@@ -29,7 +29,7 @@ class MenuProvider {
         },
         body: {
           //{"grupo":1, "cantGrupo":20, "buscar":"", "fecha":"", "prioridad":"", "estatus":""}
-          'json': '{"grupo": 1,"cantGrupo": 20,"buscar":""' +
+          'json': '{"grupo": 1,"cantGrupo": 200000,"buscar":""' +
               ',"fecha":"","prioridad":"","estatus":""}'
         });
 
@@ -47,8 +47,6 @@ class MenuProvider {
         _contAbiertas++;
       }
     });
-
-    print(_contAbiertas.toString());
 
     return _contAbiertas;
   }

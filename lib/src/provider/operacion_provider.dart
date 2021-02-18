@@ -212,7 +212,7 @@ class OperacionMaterialProvider {
         });
 
     var jsonconverted = json.decode(resp.body);
-    print(jsonconverted);
+
     return jsonconverted;
   }
 

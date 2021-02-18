@@ -195,7 +195,10 @@ class _OrdenesPageState extends State<OrdenesPage> {
               cantOp: cantOpyMat[0],
               cantMat: cantOpyMat[1],
             );
-          }));
+          })).then((value) {
+            listaOrdenTodaFiltrada.clear();
+            cargarInOrdenes();
+          });
         },
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
