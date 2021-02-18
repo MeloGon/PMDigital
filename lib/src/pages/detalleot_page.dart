@@ -58,13 +58,18 @@ class _DetallesOtPageState extends State<DetallesOtPage>
 
   ScrollController _scrollController = new ScrollController();
 
-  String estadoDetalles = "";
+  String estadoOperaciones = "";
+  String estadoDetalles = '';
+  String estadoBoton = '';
+  List<Operacion> listaOperacion = new List<Operacion>();
 
   @override
   void initState() {
     super.initState();
     cargarDetalles();
-    _scrollController = new ScrollController(initialScrollOffset: 400);
+    cargarOperaciones();
+    estadoDetalles = widget.estado;
+    _scrollController = new ScrollController(initialScrollOffset: 402);
   }
 
   @override
@@ -76,6 +81,16 @@ class _DetallesOtPageState extends State<DetallesOtPage>
   cargarDetalles() async {
     setState(() {
       ordenesProvider.obtenerOrden(widget.nrot, widget.token);
+    });
+  }
+
+  cargarOperaciones() async {
+    await operacionMaterialProvider
+        .obtenerOperaciones(widget.nrot, widget.token)
+        .then((value) {
+      setState(() {
+        listaOperacion = value;
+      });
     });
   }
 
@@ -139,51 +154,55 @@ class _DetallesOtPageState extends State<DetallesOtPage>
                 },
                 body: new Container(
                     child: new TabBarView(children: <Widget>[
-                  Column(
-                    children: [
-                      Container(
-                        color: Color(0xffF2F2F2),
-                        padding: EdgeInsets.symmetric(horizontal: 20.0),
-                        height: 50.0,
-                        child: Row(
-                          children: [
-                            Expanded(
-                                child: Text(
-                              'Descripción',
-                              style: _oTextStyle,
-                            )),
-                            Text(
-                              'Estatus',
-                              style: _oTextStyle,
-                            ),
-                          ],
+                  SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Container(
+                          color: Color(0xffF2F2F2),
+                          padding: EdgeInsets.symmetric(horizontal: 20.0),
+                          height: 50.0,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                  child: Text(
+                                'Descripción',
+                                style: _oTextStyle,
+                              )),
+                              Text(
+                                'Estatus',
+                                style: _oTextStyle,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      listaOperaciones(context),
-                    ],
+                        listaOperaciones(context),
+                      ],
+                    ),
                   ),
-                  Column(
-                    children: [
-                      Container(
-                        color: Color(0xffF2F2F2),
-                        padding: EdgeInsets.symmetric(horizontal: 20.0),
-                        height: 50.0,
-                        child: Row(
-                          children: [
-                            Expanded(
-                                child: Text(
-                              'Descripción',
-                              style: _oTextStyle,
-                            )),
-                            Text(
-                              'Cantidad',
-                              style: _oTextStyle,
-                            ),
-                          ],
+                  SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Container(
+                          color: Color(0xffF2F2F2),
+                          padding: EdgeInsets.symmetric(horizontal: 20.0),
+                          height: 50.0,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                  child: Text(
+                                'Descripción',
+                                style: _oTextStyle,
+                              )),
+                              Text(
+                                'Cantidad',
+                                style: _oTextStyle,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      listaMateriales(context),
-                    ],
+                        listaMateriales(context),
+                      ],
+                    ),
                   ),
                 ]))),
           ),
@@ -194,7 +213,7 @@ class _DetallesOtPageState extends State<DetallesOtPage>
                 alignment: Alignment.bottomCenter,
                 height: 60,
                 width: double.infinity,
-                child: _options(context, widget.estado),
+                child: _options(context, estadoDetalles),
               ),
             ),
           )
@@ -376,9 +395,8 @@ class _DetallesOtPageState extends State<DetallesOtPage>
         builder:
             (BuildContext context, AsyncSnapshot<List<Operacion>> snapshot) {
           if (snapshot.hasData) {
-            final operaciones = snapshot.data;
             // print(operaciones[0].descripcion);return Center(child: Text('si hay operaciones'),);
-            if (operaciones.length == 0) {
+            if (listaOperacion.length == 0) {
               return Container(
                 height: 60.0,
                 child: Center(
@@ -402,9 +420,9 @@ class _DetallesOtPageState extends State<DetallesOtPage>
               physics: NeverScrollableScrollPhysics(),
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
-              itemCount: operaciones.length,
+              itemCount: listaOperacion.length,
               itemBuilder: (context, i) {
-                return itemOpe(operaciones[i]);
+                return itemOpe(listaOperacion[i]);
               },
             );
           } else {
@@ -415,7 +433,7 @@ class _DetallesOtPageState extends State<DetallesOtPage>
   }
 
   Widget itemOpe(Operacion operacion) {
-    estadoDetalles = operacion.estadoOp;
+    estadoOperaciones = operacion.estadoOp;
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -425,8 +443,9 @@ class _DetallesOtPageState extends State<DetallesOtPage>
             descriop: operacion.descripcion,
             estadop: operacion.estadoOp,
             nrop: operacion.actividad,
+            estadot: estadoDetalles,
           );
-        })).then((value) => listaOperaciones(context));
+        })).then((value) => cargarOperaciones());
       },
       child: ListTile(
         title: Column(
@@ -448,13 +467,13 @@ class _DetallesOtPageState extends State<DetallesOtPage>
           child: Row(
             children: [
               Checkbox(
-                value: estadoDetalles == "Terminado" ? true : false,
+                value: estadoOperaciones == "Terminado" ? true : false,
                 onChanged: (bool value) {
                   setState(() {
                     if (value) {
-                      estadoDetalles = "Pendiente";
+                      estadoOperaciones = "Pendiente";
                     } else {
-                      estadoDetalles = "Terminado";
+                      estadoOperaciones = "Terminado";
                     }
                   });
                 },
@@ -585,16 +604,28 @@ class _DetallesOtPageState extends State<DetallesOtPage>
   }
 
   Widget _options(BuildContext context, String estado) {
-    String estadoBoton = "";
-    print(estado);
+    // String estadoBoton = "";
+    // print(estado);
+    // setState(() {
+    //   print(estado);
+    //   if (estado == "En proceso") {
+    //     estadoBoton = "Finalizar";
+    //   }
+    //   if (estado == "Pendiente") {
+    //     estadoBoton = "Iniciar";
+    //   }
+    //   if (estado == "Completado") {
+    //     estadoBoton = "Finalizada";
+    //   }
+    // });
     setState(() {
-      if (estado == "En proceso") {
+      if (estadoDetalles == "En proceso") {
         estadoBoton = "Finalizar";
       }
-      if (estado == "Pendiente") {
+      if (estadoDetalles == "Pendiente") {
         estadoBoton = "Iniciar";
       }
-      if (estado == "Completado") {
+      if (estadoDetalles == "Completado") {
         estadoBoton = "Finalizada";
       }
     });
@@ -615,52 +646,24 @@ class _DetallesOtPageState extends State<DetallesOtPage>
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
-                estado != "Completado"
-                    ? PopupMenuButton<String>(
-                        child: Row(
-                          children: <Widget>[
-                            Container(
-                              height: 50,
-                              width: 80,
-                              margin: EdgeInsets.only(right: 20.0),
-                              child: Center(
-                                child: Text(
-                                  estadoBoton,
-                                  style: TextStyle(
-                                      fontFamily: 'fuente72',
-                                      fontSize: 14.0,
-                                      color: Color(0xff0854A1)),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        itemBuilder: (BuildContext context) =>
-                            <PopupMenuEntry<String>>[
-                          PopupMenuItem<String>(
-                            value: "Iniciar",
-                            child: Text(
-                              "Iniciar",
-                              style: TextStyle(
-                                  fontFamily: 'fuente72', fontSize: 13.0),
-                            ),
-                          ),
-                          PopupMenuItem<String>(
-                            value: "Reprogramar",
-                            child: Text(
-                              "Repogramar",
-                              style: TextStyle(
-                                  fontFamily: 'fuente72', fontSize: 13.0),
-                            ),
-                          ),
-                        ],
-                        onSelected: (value) {
-                          cambiarEstado(value);
+                estadoDetalles != "Completado"
+                    ? FlatButton(
+                        onPressed: () {
+                          setState(() {
+                            cambiarEstado('Iniciar');
+                            estadoDetalles = 'En proceso';
+                            estadoBoton = 'Finalizar';
+                          });
                         },
+                        child: Text(
+                          estadoBoton,
+                          style: TextStyle(
+                              fontFamily: 'fuente72', color: Color(0xff0854A0)),
+                        ),
                       )
                     : FlatButton(
                         onPressed: null,
-                        child: Text('Finalizada',
+                        child: Text(estadoBoton,
                             style: TextStyle(color: Colors.grey)),
                       ),
               ],
@@ -678,16 +681,6 @@ class _DetallesOtPageState extends State<DetallesOtPage>
       print(resp);
       if (resp['code'] == 200) {
         toast('La orden esta en proceso');
-      } else {
-        toast('Ha surgido un inconveniente.');
-      }
-    }
-    if (value == "Reprogramar") {
-      var resp =
-          await ordenesProvider.cambiarEstado(widget.nrot, widget.token, value);
-      print(resp);
-      if (resp['code'] == 200) {
-        toast('La orden ha sido reprogramada');
       } else {
         toast('Ha surgido un inconveniente.');
       }

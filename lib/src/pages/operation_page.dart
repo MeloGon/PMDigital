@@ -18,9 +18,15 @@ class OperacionPage extends StatefulWidget {
   String descriop;
   String estadop;
   String nrop;
+  String estadot;
 
   OperacionPage(
-      {this.token, this.idop, this.descriop, this.estadop, this.nrop});
+      {this.token,
+      this.idop,
+      this.descriop,
+      this.estadop,
+      this.nrop,
+      this.estadot});
   @override
   _OperacionPageState createState() => _OperacionPageState();
 }
@@ -100,6 +106,10 @@ class _OperacionPageState extends State<OperacionPage>
   OperacionFullModel resp;
 
   String estado = "";
+  String estadoDetalles = '';
+  String estadoBoton = '';
+
+  bool btn = true;
 
   @override
   void initState() {
@@ -109,14 +119,22 @@ class _OperacionPageState extends State<OperacionPage>
     //   currentIndex = _tabController.index;
     //   print('indice' + currentIndex.toString());
     // });
-    _scrollController = new ScrollController(initialScrollOffset: 400);
+
+    _scrollController = new ScrollController(initialScrollOffset: 402);
     estado = widget.estadop;
+    estadoDetalles = widget.estadot;
     iniciarProviders();
     cargarNotas();
     cargarFotos();
     cargarServicios();
     cargarMateriale();
     super.initState();
+  }
+
+  cargarDetalles() async {
+    setState(() {
+      operacionMaterialProvider.obtenerOperacion(widget.idop, widget.token);
+    });
   }
 
   cargarNotas() async {
@@ -195,7 +213,7 @@ class _OperacionPageState extends State<OperacionPage>
                       centerTitle: false,
                       leading: FlatButton(
                           onPressed: () {
-                            Navigator.pop(context);
+                            Navigator.pop(context, true);
                           },
                           child: Icon(
                             Icons.arrow_back_ios,
@@ -942,7 +960,14 @@ class _OperacionPageState extends State<OperacionPage>
   }
 
   Widget _options(BuildContext context) {
-    setState(() {});
+    setState(() {
+      if (estado == "Terminado") {
+        estadoBoton = "No Confirmado";
+      }
+      if (estado == 'Pendiente') {
+        estadoBoton = 'Confirmar';
+      }
+    });
 
     return Container(
       decoration: new BoxDecoration(
@@ -959,17 +984,39 @@ class _OperacionPageState extends State<OperacionPage>
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
-                FlatButton(
-                    onPressed: () {
-                      cambiarEstadoOp(estado);
-                    },
-                    child: Text(
-                      estado == "Pendiente" ? 'Confirmar' : 'No confirmar',
-                      style: TextStyle(
-                          fontSize: 15,
-                          fontFamily: 'fuente72',
-                          color: Color(0xff0854A1)),
-                    )),
+                estadoDetalles == 'En proceso'
+                    ? FlatButton(
+                        onPressed: () {
+                          if (btn) {
+                            cambiarEstadoOp(estado, estadoBoton);
+                            estado = 'Terminado';
+                            estadoBoton = 'No Confirmado';
+                            btn = false;
+                          } else {
+                            cambiarEstadoOp(estado, estadoBoton);
+                            estado = 'Pendiente';
+                            estadoBoton = 'Confirmar';
+                            btn = true;
+                          }
+                        },
+                        child: Text(
+                          estadoBoton,
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontFamily: 'fuente72',
+                              color: Color(0xff0854A1)),
+                        ))
+                    : FlatButton(
+                        onPressed: null,
+                        child: Text(
+                          estadoDetalles == "Pendiente"
+                              ? 'Confirmar'
+                              : 'No confirmar',
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontFamily: 'fuente72',
+                              color: Colors.grey),
+                        )),
               ],
             )
           ],
@@ -978,10 +1025,10 @@ class _OperacionPageState extends State<OperacionPage>
     );
   }
 
-  void cambiarEstadoOp(String value) async {
+  void cambiarEstadoOp(String value, String estBtn) async {
     var num;
     //if (value == "Confirmar") {
-    if (value == "Pendiente") {
+    if (value == "Pendiente" && estBtn == 'Confirmar') {
       num = 1;
       var resp = await operacionMaterialProvider.cambiarEstadoOpe(
           widget.idop, widget.token, num.toString());
@@ -993,7 +1040,7 @@ class _OperacionPageState extends State<OperacionPage>
       }
     }
     //if (value == "No Confirmar") {
-    if (value == "Terminado") {
+    if (value == "Terminado" && estBtn == 'No Confirmado') {
       num = 0;
       var resp = await operacionMaterialProvider.cambiarEstadoOpe(
           widget.idop, widget.token, num.toString());
@@ -1004,6 +1051,8 @@ class _OperacionPageState extends State<OperacionPage>
         toast('Ha surgido un inconveniente.');
       }
     }
+
+    cargarDetalles();
   }
 
   void toast(String msg) {
