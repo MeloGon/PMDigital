@@ -5,6 +5,7 @@ import 'package:pmdigital_app/src/models/OrdenModel.dart';
 
 class MenuProvider {
   int _contAbiertas = 0;
+  DateTime currentDate = DateTime.now();
 
   Stream ultimosCambios(String token) async* {
     final resp = await http.get(
@@ -43,7 +44,8 @@ class MenuProvider {
     });
 
     listaordenes.forEach((element) {
-      if (element.estado == "En proceso") {
+      if (element.estado == "En proceso" &&
+          element.fechaFinPlan == currentDate) {
         _contAbiertas++;
       }
     });

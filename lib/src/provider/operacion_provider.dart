@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
+
 import 'package:mime_type/mime_type.dart';
 import 'package:http/http.dart' as http;
 import 'package:pmdigital_app/src/models/OperacionFullModel.dart';
@@ -35,12 +35,12 @@ class OperacionMaterialProvider {
       listaOperaciones.add(element);
     });
 
-    (decode['rpta']['materiales'] as List)
-        .map((e) => Materiale.fromJson(e))
-        .toList()
-        .forEach((element) {
-      listaMatsGlobal.add(element);
-    });
+    // (decode['rpta']['materiales'] as List)
+    //     .map((e) => Materiale.fromJson(e))
+    //     .toList()
+    //     .forEach((element) {
+    //   listaMatsGlobal.add(element);
+    // });
 
     return listaOperaciones;
   }
@@ -62,7 +62,23 @@ class OperacionMaterialProvider {
     //   listaMateriales.add(element);
     // });
 
-    return listaMatsGlobal;
+    final resp = await http.get(_url + nroOt.toString(), headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": token,
+    });
+
+    final List<Materiale> listaMats = new List();
+    final decode = json.decode(resp.body);
+
+    (decode['rpta']['materiales'] as List)
+        .map((e) => Materiale.fromJson(e))
+        .toList()
+        .forEach((element) {
+      listaMats.add(element);
+    });
+
+    return listaMats;
   }
 
   Future<OperacionFullModel> obtenerOperacion(String idop, String token) async {

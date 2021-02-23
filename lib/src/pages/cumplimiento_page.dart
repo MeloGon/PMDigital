@@ -62,6 +62,7 @@ class _CumplimientoPageState extends State<CumplimientoPage> {
   List<OrdenModel> listaOrdenToda = new List<OrdenModel>();
   List<OrdenModel> listaOrdenTodaFiltrada = new List<OrdenModel>();
   DateFormat f = new DateFormat('yyyy-MM-dd');
+  DateTime selectedDate = DateTime.now();
   String _fecha = '';
   String opcionSeleccionada;
   TextEditingController _inputFieldDateController = new TextEditingController();
@@ -94,13 +95,23 @@ class _CumplimientoPageState extends State<CumplimientoPage> {
     ordenesProvider.getOrdenes(widget.token);
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios),
+          onPressed: () => Navigator.pop(context, true),
+        ),
         backgroundColor: _appBarColor,
-        title: Text('Cumplimiento del programa'),
+        centerTitle: false,
+        title: Text(
+          'Cumplimiento del programa',
+          style: TextStyle(fontFamily: 'fuente72', fontSize: 17),
+        ),
       ),
       body: Container(
         width: double.infinity,
         height: double.infinity,
         child: ListView(
+          physics: NeverScrollableScrollPhysics(),
           children: [
             cuerpoPage(),
           ],
@@ -200,16 +211,17 @@ class _CumplimientoPageState extends State<CumplimientoPage> {
             );
           },
           context: context,
-          initialDate: new DateTime.now(),
+          initialDate: selectedDate,
           firstDate: new DateTime(2000),
           lastDate: new DateTime(2030),
           locale: Locale('es', 'ES'));
 
-      if (picked != null) {
+      if (picked != null && picked != selectedDate) {
         setState(() {
           // _fecha = picked.toString();
           _fecha = DateFormat('yyyy-MM-dd').format(picked);
           _inputFieldDateController.text = _fecha;
+          selectedDate = picked;
         });
       }
 
@@ -381,6 +393,7 @@ class _CumplimientoPageState extends State<CumplimientoPage> {
                   editingController.text = "";
                   opcionSeleccionada = 'Seleccione';
                   statusSeleccionado(opcionSeleccionada);
+                  listaOrdenTodaFiltrada.clear();
                   cargarInOrdenes();
                 }),
           ),

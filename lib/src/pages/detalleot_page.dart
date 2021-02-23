@@ -64,12 +64,14 @@ class _DetallesOtPageState extends State<DetallesOtPage>
   String nuevoEstadoDetalles = '';
   String estadoBoton = '';
   List<Operacion> listaOperacion = new List<Operacion>();
+  List<Materiale> listaMats = new List<Materiale>();
 
   @override
   void initState() {
     super.initState();
     cargarDetalles();
     cargarOperaciones();
+    cargarMateriales();
     cerrarot();
     estadoDetalles = widget.estado;
     if (estadoDetalles == "En proceso") {
@@ -111,6 +113,16 @@ class _DetallesOtPageState extends State<DetallesOtPage>
         .then((value) {
       setState(() {
         listaOperacion = value;
+      });
+    });
+  }
+
+  cargarMateriales() async {
+    await operacionMaterialProvider
+        .obtenerMateriales(widget.nrot, widget.token)
+        .then((value) {
+      setState(() {
+        listaMats = value;
       });
     });
   }
@@ -420,14 +432,14 @@ class _DetallesOtPageState extends State<DetallesOtPage>
             // print(operaciones[0].descripcion);return Center(child: Text('si hay operaciones'),);
             if (listaOperacion.length == 0) {
               return Container(
-                height: 60.0,
+                height: 400,
                 child: Center(
                     child: Text(
                   'No existen operaciones en la Orden',
                   style: TextStyle(
                       fontFamily: 'fuente72',
                       fontSize: 13.0,
-                      color: Colors.grey),
+                      color: Colors.black),
                 )),
               );
             }
@@ -540,23 +552,23 @@ class _DetallesOtPageState extends State<DetallesOtPage>
   }
 
   Widget listaMateriales(BuildContext context) {
+    print(listaMats);
     return FutureBuilder(
         future: operacionMaterialProvider.obtenerMateriales(
             widget.nrot, widget.token),
         builder:
             (BuildContext context, AsyncSnapshot<List<Materiale>> snapshot) {
           if (snapshot.hasData) {
-            final materiales = snapshot.data;
-            if (materiales.length == 0) {
+            if (listaMats.length == 0) {
               return Container(
-                height: 60.0,
+                height: 400,
                 child: Center(
                     child: Text(
                   'No existen materiales en la Orden',
                   style: TextStyle(
                       fontFamily: 'fuente72',
                       fontSize: 13.0,
-                      color: Colors.grey),
+                      color: Colors.black),
                 )),
               );
             }
@@ -571,9 +583,9 @@ class _DetallesOtPageState extends State<DetallesOtPage>
               physics: NeverScrollableScrollPhysics(),
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
-              itemCount: materiales.length,
+              itemCount: listaMats.length,
               itemBuilder: (context, i) {
-                return itemMate(materiales[i]);
+                return itemMate(listaMats[i]);
               },
             );
           } else {

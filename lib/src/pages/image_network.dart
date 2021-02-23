@@ -51,7 +51,7 @@ class ImagePageNetwork extends StatelessWidget {
               RaisedButton(
                 color: Colors.blue[900],
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.pop(context, true);
                 },
                 child: Text(
                   "Cerrar",
@@ -60,36 +60,7 @@ class ImagePageNetwork extends StatelessWidget {
               ),
               FlatButton(
                   onPressed: () async {
-                    Fluttertoast.showToast(
-                        msg: "Eliminando fotografia...",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.TOP,
-                        timeInSecForIosWeb: 1,
-                        backgroundColor: Colors.white,
-                        textColor: Colors.black,
-                        fontSize: 14.0);
-                    var resp = await operacionMaterialProvider.eliminarFoto(
-                        token, idfoto);
-                    if (resp['code'] == 200) {
-                      Fluttertoast.showToast(
-                          msg: "Fotografia Eliminada",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.TOP,
-                          timeInSecForIosWeb: 1,
-                          backgroundColor: Colors.white,
-                          textColor: Colors.black,
-                          fontSize: 14.0);
-                      Navigator.pop(context);
-                    } else {
-                      Fluttertoast.showToast(
-                          msg: "Ups algo ha sucedido. Intentelo nuevamente",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.TOP,
-                          timeInSecForIosWeb: 1,
-                          backgroundColor: Colors.white,
-                          textColor: Colors.black,
-                          fontSize: 14.0);
-                    }
+                    showAlertDialog(context);
                   },
                   child: Text(
                     'Eliminar',
@@ -102,6 +73,76 @@ class ImagePageNetwork extends StatelessWidget {
           )
         ],
       ),
+    );
+  }
+
+  showAlertDialog(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = FlatButton(
+      child: Text(
+        "Cancelar",
+        style: TextStyle(fontFamily: 'fuente72', fontSize: 14),
+      ),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+    Widget continueButton = RaisedButton(
+      color: Colors.blue[900],
+      child: Text("Continuar",
+          style: TextStyle(fontFamily: 'fuente72', fontSize: 14)),
+      onPressed: () async {
+        Fluttertoast.showToast(
+            msg: "Eliminando fotografia...",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.TOP,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.white,
+            textColor: Colors.black,
+            fontSize: 14.0);
+        var resp = await operacionMaterialProvider.eliminarFoto(token, idfoto);
+        if (resp['code'] == 200) {
+          Fluttertoast.showToast(
+              msg: "Fotografia Eliminada",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.TOP,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.white,
+              textColor: Colors.black,
+              fontSize: 14.0);
+          Navigator.pop(context);
+          Navigator.pop(context);
+        } else {
+          Fluttertoast.showToast(
+              msg: "Ups algo ha sucedido. Intentelo nuevamente",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.TOP,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.white,
+              textColor: Colors.black,
+              fontSize: 14.0);
+        }
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Confirmación",
+          style: TextStyle(fontFamily: 'fuente72', fontSize: 18)),
+      content: Text("¿ Estas seguro de que deseas eliminar la fotografia ?",
+          style: TextStyle(fontFamily: 'fuente72', fontSize: 14)),
+      actions: [
+        continueButton,
+        cancelButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }

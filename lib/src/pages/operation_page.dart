@@ -252,92 +252,93 @@ class _OperacionPageState extends State<OperacionPage>
                   ];
                 },
                 body: new Container(
+                    margin: EdgeInsets.only(bottom: 65),
                     child: new TabBarView(children: <Widget>[
-                  listaServices(context),
-                  listaMaterialess(context),
-                  SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        FutureBuilder(
-                            future: provNotas,
-                            builder:
-                                (context, AsyncSnapshot<List<Nota>> snapshot) {
-                              if (snapshot.hasData) {
-                                return Container(
-                                    height: 40.0,
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 20.0),
-                                    alignment: Alignment.centerLeft,
-                                    width: double.infinity,
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            'Notas (${listaNotas.length})',
-                                            style: styleContador,
-                                          ),
-                                        ),
-                                        popNota(),
-                                      ],
-                                    ));
-                              } else {
-                                return Container(
-                                    height: 40.0,
-                                    padding: EdgeInsets.only(left: 20.0),
-                                    alignment: Alignment.centerLeft,
-                                    width: double.infinity,
-                                    child: Text(
-                                      'Notas (Estimando..)',
-                                      style: styleContador,
-                                    ));
-                              }
-                            }),
-                        listaNotes(context),
-                      ],
-                    ),
-                  ),
-                  SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        FutureBuilder(
-                            future: provFotos,
-                            builder:
-                                (context, AsyncSnapshot<List<Foto>> snapshot) {
-                              if (snapshot.hasData) {
-                                return Container(
-                                    height: 40.0,
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 20.0),
-                                    alignment: Alignment.centerLeft,
-                                    width: double.infinity,
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            'Fotos (${listaFotos.length})',
-                                            style: styleContador,
-                                          ),
-                                        ),
-                                        popFoto(),
-                                      ],
-                                    ));
-                              } else {
-                                return Container(
-                                    height: 40.0,
-                                    padding: EdgeInsets.only(left: 20.0),
-                                    alignment: Alignment.centerLeft,
-                                    width: double.infinity,
-                                    child: Text(
-                                      'Fotos (Estimando..)',
-                                      style: styleContador,
-                                    ));
-                              }
-                            }),
-                        listaPhotos(context),
-                      ],
-                    ),
-                  ),
-                ]))),
+                      listaServices(context),
+                      listaMaterialess(context),
+                      SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            FutureBuilder(
+                                future: provNotas,
+                                builder: (context,
+                                    AsyncSnapshot<List<Nota>> snapshot) {
+                                  if (snapshot.hasData) {
+                                    return Container(
+                                        height: 40.0,
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 20.0),
+                                        alignment: Alignment.centerLeft,
+                                        width: double.infinity,
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                'Notas (${listaNotas.length})',
+                                                style: styleContador,
+                                              ),
+                                            ),
+                                            popNota(),
+                                          ],
+                                        ));
+                                  } else {
+                                    return Container(
+                                        height: 40.0,
+                                        padding: EdgeInsets.only(left: 20.0),
+                                        alignment: Alignment.centerLeft,
+                                        width: double.infinity,
+                                        child: Text(
+                                          'Notas (Estimando..)',
+                                          style: styleContador,
+                                        ));
+                                  }
+                                }),
+                            listaNotes(context),
+                          ],
+                        ),
+                      ),
+                      SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            FutureBuilder(
+                                future: provFotos,
+                                builder: (context,
+                                    AsyncSnapshot<List<Foto>> snapshot) {
+                                  if (snapshot.hasData) {
+                                    return Container(
+                                        height: 40.0,
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 20.0),
+                                        alignment: Alignment.centerLeft,
+                                        width: double.infinity,
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                'Fotos (${listaFotos.length})',
+                                                style: styleContador,
+                                              ),
+                                            ),
+                                            popFoto(),
+                                          ],
+                                        ));
+                                  } else {
+                                    return Container(
+                                        height: 40.0,
+                                        padding: EdgeInsets.only(left: 20.0),
+                                        alignment: Alignment.centerLeft,
+                                        width: double.infinity,
+                                        child: Text(
+                                          'Fotos (Estimando..)',
+                                          style: styleContador,
+                                        ));
+                                  }
+                                }),
+                            listaPhotos(context),
+                          ],
+                        ),
+                      ),
+                    ]))),
           ),
           Align(
             alignment: Alignment.bottomCenter,
@@ -687,6 +688,7 @@ class _OperacionPageState extends State<OperacionPage>
                 color: Colors.grey,
               ),
             ),
+            physics: NeverScrollableScrollPhysics(),
             itemCount: listaNotas.length,
             shrinkWrap: true,
             scrollDirection: Axis.vertical,
@@ -822,6 +824,7 @@ class _OperacionPageState extends State<OperacionPage>
               return GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3),
+                  physics: NeverScrollableScrollPhysics(),
                   itemCount: listaFotos.length,
                   itemBuilder: (context, index) {
                     return itemFoto(listaFotos[index]);

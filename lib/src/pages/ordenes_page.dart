@@ -79,7 +79,10 @@ class _OrdenesPageState extends State<OrdenesPage> {
               },
               child: Icon(Icons.arrow_back_ios, color: Colors.white)),
           backgroundColor: _appBarColor,
-          title: Text('Mis órdenes de hoy'),
+          title: Text(
+            'Mis órdenes de hoy',
+            style: TextStyle(fontFamily: 'fuente72', fontSize: 17),
+          ),
           centerTitle: false,
         ),
         body: GestureDetector(
