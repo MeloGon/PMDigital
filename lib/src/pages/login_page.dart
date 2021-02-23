@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:pmdigital_app/src/pages/menu_page.dart';
 import 'package:pmdigital_app/src/provider/loguin_provider.dart';
+import 'package:pmdigital_app/src/provider/menu_provider.dart';
 import 'package:pmdigital_app/src/widgets/loginbg_widget.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,6 +16,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   //provider
   final LoguinProvider loguinProvider = new LoguinProvider();
+  final menuprovider = MenuProvider();
   //ui styles
   Color _colorBlueApp = Color(0xff0A6ED1);
   TextStyle _styleTitle = TextStyle(
@@ -222,12 +224,14 @@ class _LoginPageState extends State<LoginPage> {
           emailController.text, passwordController.text);
       // print(rsp);
       if (rsp['code'] == 200) {
+        var rsp1 = await menuprovider.progresoCumpli(rsp['token']);
         toast("Credenciales validados exitosamente", Colors.white,
             Colors.blue[300]);
         //Navigator.pushNamed(context, 'menu', arguments: rsp['token']);
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return MenuPage(
             token: rsp['token'],
+            cumplimientoMenu: rsp1,
           );
         }));
       } else {

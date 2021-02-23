@@ -164,7 +164,8 @@ class _CumplimientoPageState extends State<CumplimientoPage> {
       height: 48,
       child: TextField(
         onChanged: (value) {
-          filterSearchResults(value);
+          // filterSearchResults(value);
+          filterSearchResultsXXX(value);
         },
         controller: editingController,
         decoration: InputDecoration(
@@ -220,12 +221,13 @@ class _CumplimientoPageState extends State<CumplimientoPage> {
         setState(() {
           // _fecha = picked.toString();
           _fecha = DateFormat('yyyy-MM-dd').format(picked);
+          print(_fecha);
           _inputFieldDateController.text = _fecha;
           selectedDate = picked;
         });
       }
-
-      fechaSeleccionada(_inputFieldDateController.text);
+      filterSearchResultsXXX(_inputFieldDateController.text);
+      // fechaSeleccionada(_inputFieldDateController.text);
     }
 
     Widget containerFecha = Container(
@@ -351,7 +353,8 @@ class _CumplimientoPageState extends State<CumplimientoPage> {
           onChanged: (opt) {
             setState(() {
               opcionSeleccionada = opt;
-              statusSeleccionado(opcionSeleccionada);
+              // statusSeleccionado(opcionSeleccionada);
+              filterSearchResultsXXX(opt);
             });
           },
         ),
@@ -529,6 +532,33 @@ class _CumplimientoPageState extends State<CumplimientoPage> {
         ),
       ),
     );
+  }
+
+  void filterSearchResultsXXX(String query) {
+    List<OrdenModel> dummySearchList = List<OrdenModel>();
+    dummySearchList.addAll(listaOrdenToda);
+    if (query.isNotEmpty) {
+      List<OrdenModel> dummyListData = List<OrdenModel>();
+      dummySearchList.forEach((item) {
+        if (item.numeroOt.toLowerCase().contains(query) ||
+            item.descripcion.toLowerCase().contains(query) ||
+            item.tipoOt.toLowerCase().contains(query) ||
+            item.estado.contains(query) ||
+            item.fechaFinPlan.toString().contains(query)) {
+          dummyListData.add(item);
+        }
+      });
+      setState(() {
+        listaOrdenTodaFiltrada.clear();
+        listaOrdenTodaFiltrada.addAll(dummyListData);
+      });
+      return;
+    } else {
+      setState(() {
+        listaOrdenTodaFiltrada.clear();
+        listaOrdenTodaFiltrada.addAll(listaOrdenToda);
+      });
+    }
   }
 
   void filterSearchResults(String query) {

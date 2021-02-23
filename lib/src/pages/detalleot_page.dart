@@ -78,12 +78,12 @@ class _DetallesOtPageState extends State<DetallesOtPage>
       estadoBoton = "Finalizar";
     }
     if (estadoDetalles == "Pendiente") {
-      estadoBoton = "Iniciar";
+      estadoBoton = "Iniciar Orden de Trabajo";
     }
     if (estadoDetalles == "Completado") {
       estadoBoton = "Finalizada";
     }
-    _scrollController = new ScrollController(initialScrollOffset: 402);
+    _scrollController = new ScrollController(initialScrollOffset: 395);
   }
 
   @override
@@ -154,14 +154,18 @@ class _DetallesOtPageState extends State<DetallesOtPage>
                         'Orden ${widget.nrot}',
                         style: TextStyle(fontFamily: 'fuente72', fontSize: 17),
                       ),
-                      expandedHeight: 550.0,
+                      expandedHeight: 520.0,
                       floating: false,
                       pinned: true,
                       bottom: PreferredSize(
-                        preferredSize: Size(90.0, 90.0),
-                        child: Icon(
-                          Icons.arrow_drop_down,
-                          size: 25,
+                        preferredSize: Size(70.0, 70.0),
+                        child: Container(
+                          width: double.infinity,
+                          color: Colors.white,
+                          child: Icon(
+                            Icons.arrow_drop_down,
+                            size: 25,
+                          ),
                         ),
                       ),
                       flexibleSpace: futureBuilderDetalles(),
@@ -284,14 +288,14 @@ class _DetallesOtPageState extends State<DetallesOtPage>
             physics: NeverScrollableScrollPhysics(),
             children: <Widget>[
               Container(
-                height: 52,
                 child: Text(
                   widget.descriot,
+                  overflow: TextOverflow.ellipsis,
                   style: _styleTitleExpansibleBar,
                 ),
               ),
               SizedBox(
-                height: 20,
+                height: 5,
               ),
               Text(
                 '${resp.estado}',
@@ -435,7 +439,7 @@ class _DetallesOtPageState extends State<DetallesOtPage>
                 height: 400,
                 child: Center(
                     child: Text(
-                  'No existen operaciones en la Orden',
+                  'Actualmente no hay Operaciones disponibles',
                   style: TextStyle(
                       fontFamily: 'fuente72',
                       fontSize: 13.0,
@@ -564,7 +568,7 @@ class _DetallesOtPageState extends State<DetallesOtPage>
                 height: 400,
                 child: Center(
                     child: Text(
-                  'No existen materiales en la Orden',
+                  'Actualmente no hay Materiales disponibles',
                   style: TextStyle(
                       fontFamily: 'fuente72',
                       fontSize: 13.0,
@@ -684,6 +688,40 @@ class _DetallesOtPageState extends State<DetallesOtPage>
               color: Colors.grey, blurRadius: 10.0, spreadRadius: 1.0),
         ],
       ),
+      // child: Card(
+      //   elevation: 29.0,
+      //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
+      //   child: Column(
+      //     mainAxisAlignment: MainAxisAlignment.center,
+      //     children: <Widget>[
+      //       Row(
+      //         mainAxisAlignment: MainAxisAlignment.end,
+      //         children: <Widget>[
+      //           estadoDetalles != "Completado"
+      //               ? FlatButton(
+      //                   onPressed: () {
+      //                     setState(() {
+      //                       cambiarEstado('Iniciar Orden de Trabajo');
+      //                       // estadoDetalles = 'En proceso';
+      //                       estadoBoton = 'Finalizar';
+      //                     });
+      //                   },
+      //                   child: Text(
+      //                     estadoBoton,
+      //                     style: TextStyle(
+      //                         fontFamily: 'fuente72', color: Color(0xff0854A0)),
+      //                   ),
+      //                 )
+      //               : FlatButton(
+      //                   onPressed: null,
+      //                   child: Text(estadoBoton,
+      //                       style: TextStyle(color: Colors.grey)),
+      //                 ),
+      //         ],
+      //       )
+      //     ],
+      //   ),
+      // ),
       child: Card(
         elevation: 29.0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
@@ -697,9 +735,8 @@ class _DetallesOtPageState extends State<DetallesOtPage>
                     ? FlatButton(
                         onPressed: () {
                           setState(() {
-                            cambiarEstado('Iniciar');
+                            showAlertDialog(context);
                             // estadoDetalles = 'En proceso';
-                            estadoBoton = 'Finalizar';
                           });
                         },
                         child: Text(
@@ -722,7 +759,8 @@ class _DetallesOtPageState extends State<DetallesOtPage>
   }
 
   void cambiarEstado(String value) async {
-    if (value == "Iniciar") {
+    if (value == "Iniciar Orden de Trabajo") {
+      value = "Iniciar";
       var resp =
           await ordenesProvider.cambiarEstado(widget.nrot, widget.token, value);
       print(resp);
@@ -744,6 +782,48 @@ class _DetallesOtPageState extends State<DetallesOtPage>
         backgroundColor: Colors.white,
         textColor: Colors.black,
         fontSize: 14.0);
+  }
+
+  showAlertDialog(BuildContext context) {
+    var textoBtn = "Esta seguro de que desea iniciar la Orden de trabajo?";
+    if (estadoBoton == "Finalizar") {
+      textoBtn = "Esta seguro de que desea finalizar la Orden de trabajo?";
+    }
+
+    Widget cancelButton = FlatButton(
+      child: Text("Cancelar"),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+    Widget continueButton = FlatButton(
+      child: Text("Confirmar"),
+      onPressed: () async {
+        cambiarEstado('Iniciar Orden de Trabajo');
+        estadoBoton = 'Finalizar';
+        Navigator.pop(context);
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Confirmacion de Cambio de Estado",
+          style: TextStyle(fontFamily: 'fuente72', fontSize: 18)),
+      content: Text(textoBtn,
+          style: TextStyle(fontFamily: 'fuente72', fontSize: 14)),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 }
 

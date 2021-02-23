@@ -15,7 +15,8 @@ import 'package:pmdigital_app/src/widgets/roundbt_widget.dart';
 
 class MenuPage extends StatefulWidget {
   final String token;
-  MenuPage({this.token});
+  final double cumplimientoMenu;
+  MenuPage({this.token, this.cumplimientoMenu});
   @override
   _MenuPageState createState() => _MenuPageState();
 }
@@ -52,11 +53,18 @@ class _MenuPageState extends State<MenuPage> {
   var formater = new DateFormat('mm');
   final menuprovider = MenuProvider();
   final controllerchanges = new StreamController<dynamic>();
+  double cumplimientoShow = 0;
 
   @override
   void dispose() {
     controllerchanges.close();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    cumplimientoShow = widget.cumplimientoMenu * 100;
+    super.initState();
   }
 
   //final fifteenAgo = new DateTime.now().subtract(new Duration(minutes: 15));
@@ -160,8 +168,8 @@ class _MenuPageState extends State<MenuPage> {
       child: CircularPercentIndicator(
         radius: 60.0,
         lineWidth: 5.0,
-        percent: 0.81,
-        center: new Text("81%"),
+        percent: widget.cumplimientoMenu,
+        center: new Text(cumplimientoShow.toStringAsFixed(0) + '%'),
         progressColor: Colors.blue[300],
         backgroundColor: Colors.grey[200],
         animation: true,

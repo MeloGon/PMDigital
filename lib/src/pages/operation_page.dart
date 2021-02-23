@@ -120,7 +120,7 @@ class _OperacionPageState extends State<OperacionPage>
     //   print('indice' + currentIndex.toString());
     // });
 
-    _scrollController = new ScrollController(initialScrollOffset: 402);
+    _scrollController = new ScrollController(initialScrollOffset: 455);
     estado = widget.estadop;
     estadoDetalles = widget.estadot;
     iniciarProviders();
@@ -227,10 +227,14 @@ class _OperacionPageState extends State<OperacionPage>
                       floating: false,
                       pinned: true,
                       bottom: PreferredSize(
-                        preferredSize: Size(90.0, 90.0),
-                        child: Icon(
-                          Icons.arrow_drop_down,
-                          size: 25,
+                        preferredSize: Size(70.0, 70.0),
+                        child: Container(
+                          width: double.infinity,
+                          color: Colors.white,
+                          child: Icon(
+                            Icons.arrow_drop_down,
+                            size: 25,
+                          ),
                         ),
                       ),
                       flexibleSpace: futureBuilderDetalles(),
@@ -271,13 +275,9 @@ class _OperacionPageState extends State<OperacionPage>
                                         alignment: Alignment.centerLeft,
                                         width: double.infinity,
                                         child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
                                           children: [
-                                            Expanded(
-                                              child: Text(
-                                                'Notas (${listaNotas.length})',
-                                                style: styleContador,
-                                              ),
-                                            ),
                                             popNota(),
                                           ],
                                         ));
@@ -288,7 +288,7 @@ class _OperacionPageState extends State<OperacionPage>
                                         alignment: Alignment.centerLeft,
                                         width: double.infinity,
                                         child: Text(
-                                          'Notas (Estimando..)',
+                                          '',
                                           style: styleContador,
                                         ));
                                   }
@@ -306,19 +306,15 @@ class _OperacionPageState extends State<OperacionPage>
                                     AsyncSnapshot<List<Foto>> snapshot) {
                                   if (snapshot.hasData) {
                                     return Container(
-                                        height: 40.0,
+                                        height: 50.0,
                                         padding: EdgeInsets.symmetric(
                                             horizontal: 20.0),
                                         alignment: Alignment.centerLeft,
                                         width: double.infinity,
                                         child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
                                           children: [
-                                            Expanded(
-                                              child: Text(
-                                                'Fotos (${listaFotos.length})',
-                                                style: styleContador,
-                                              ),
-                                            ),
                                             popFoto(),
                                           ],
                                         ));
@@ -399,18 +395,16 @@ class _OperacionPageState extends State<OperacionPage>
         child: ListView(
           physics: NeverScrollableScrollPhysics(),
           children: <Widget>[
-            Container(
-              height: 60,
-              child: Text(
-                widget.descriop,
-                style: TextStyle(
-                    fontFamily: 'fuente72',
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500),
-              ),
+            Text(
+              widget.descriop,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                  fontFamily: 'fuente72',
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500),
             ),
             SizedBox(
-              height: 20,
+              height: 9,
             ),
             Text('${resp.estadoOp}'),
             SizedBox(
@@ -549,7 +543,7 @@ class _OperacionPageState extends State<OperacionPage>
         if (snapshot.hasData) {
           if (listaServ.length == 0) {
             return Center(
-              child: Text('No existen Servicios en la Operacion'),
+              child: Text('Actualmente no hay Servicios disponibles'),
             );
           }
           return ListView.separated(
@@ -595,7 +589,7 @@ class _OperacionPageState extends State<OperacionPage>
         if (snapshot.hasData) {
           if (listaMats.length == 0) {
             return Center(
-              child: Text('No existen Materiales en la Operacion'),
+              child: Text('Actualmente no hay Materiales disponibles'),
             );
           }
           return ListView.separated(
@@ -674,9 +668,9 @@ class _OperacionPageState extends State<OperacionPage>
         if (snapshot.hasData) {
           if (listaNotas.length == 0) {
             return Container(
-              height: 380,
+              height: 480,
               child: Center(
-                child: Text('No existen Notas en la Operacion'),
+                child: Text('Actualmente no hay Notas disponibles'),
               ),
             );
           }
@@ -725,7 +719,10 @@ class _OperacionPageState extends State<OperacionPage>
 
   Widget popNota() {
     return PopupMenuButton<String>(
-      child: Icon(Icons.add),
+      child: Icon(
+        Icons.add,
+        size: 27,
+      ),
       itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
         PopupMenuItem<String>(
           value: "añadir_nota",
@@ -818,7 +815,7 @@ class _OperacionPageState extends State<OperacionPage>
             if (snapshot.hasData) {
               if (listaFotos.length == 0) {
                 return Center(
-                  child: Text('No existen Fotografias en la Operacion'),
+                  child: Text('Actualmente no hay Fotografias disponibles'),
                 );
               }
               return GridView.builder(
@@ -870,7 +867,10 @@ class _OperacionPageState extends State<OperacionPage>
 
   Widget popFoto() {
     return PopupMenuButton<String>(
-      child: Icon(Icons.add),
+      child: Icon(
+        Icons.add,
+        size: 27,
+      ),
       itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
         PopupMenuItem<String>(
           value: "tomar_foto",
@@ -972,6 +972,61 @@ class _OperacionPageState extends State<OperacionPage>
       }
     });
 
+    // return Container(
+    //   decoration: new BoxDecoration(
+    //     boxShadow: [
+    //       new BoxShadow(
+    //           color: Colors.grey, blurRadius: 10.0, spreadRadius: 1.0),
+    //     ],
+    //   ),
+    //   child: Card(
+    //     elevation: 29.0,
+    //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7.0)),
+    //     child: Column(
+    //       children: <Widget>[
+    //         Row(
+    //           mainAxisAlignment: MainAxisAlignment.end,
+    //           children: <Widget>[
+    //             estadoDetalles == 'En proceso'
+    //                 ? FlatButton(
+    //                     onPressed: () {
+    //                       if (btn) {
+
+    //                         cambiarEstadoOp(estado, estadoBoton);
+    //                         estado = 'Terminado';
+    //                         estadoBoton = 'No Confirmado';
+    //                         btn = false;
+    //                       } else {
+    //                         cambiarEstadoOp(estado, estadoBoton);
+    //                         estado = 'Pendiente';
+    //                         estadoBoton = 'Confirmar';
+    //                         btn = true;
+    //                       }
+    //                     },
+    //                     child: Text(
+    //                       estadoBoton,
+    //                       style: TextStyle(
+    //                           fontSize: 15,
+    //                           fontFamily: 'fuente72',
+    //                           color: Color(0xff0854A1)),
+    //                     ))
+    //                 : FlatButton(
+    //                     onPressed: null,
+    //                     child: Text(
+    //                       estadoDetalles == "Pendiente"
+    //                           ? 'Confirmar'
+    //                           : 'No confirmar',
+    //                       style: TextStyle(
+    //                           fontSize: 15,
+    //                           fontFamily: 'fuente72',
+    //                           color: Colors.grey),
+    //                     )),
+    //           ],
+    //         )
+    //       ],
+    //     ),
+    //   ),
+    // );
     return Container(
       decoration: new BoxDecoration(
         boxShadow: [
@@ -990,17 +1045,19 @@ class _OperacionPageState extends State<OperacionPage>
                 estadoDetalles == 'En proceso'
                     ? FlatButton(
                         onPressed: () {
-                          if (btn) {
-                            cambiarEstadoOp(estado, estadoBoton);
-                            estado = 'Terminado';
-                            estadoBoton = 'No Confirmado';
-                            btn = false;
-                          } else {
-                            cambiarEstadoOp(estado, estadoBoton);
-                            estado = 'Pendiente';
-                            estadoBoton = 'Confirmar';
-                            btn = true;
-                          }
+                          showAlertDialog(context);
+                          // if (btn) {
+
+                          //   cambiarEstadoOp(estado, estadoBoton);
+                          //   estado = 'Terminado';
+                          //   estadoBoton = 'No Confirmado';
+                          //   btn = false;
+                          // } else {
+                          //   cambiarEstadoOp(estado, estadoBoton);
+                          //   estado = 'Pendiente';
+                          //   estadoBoton = 'Confirmar';
+                          //   btn = true;
+                          // }
                         },
                         child: Text(
                           estadoBoton,
@@ -1067,6 +1124,58 @@ class _OperacionPageState extends State<OperacionPage>
         backgroundColor: Colors.white,
         textColor: Colors.black,
         fontSize: 14.0);
+  }
+
+  showAlertDialog(BuildContext context) {
+    var textoBtn = "Esta seguro de que desea confirmar la Operacion?";
+    if (estadoBoton == "No Confirmado") {
+      textoBtn = "Esta seguro de que desea no confirmar la Operacion?";
+    }
+
+    // set up the buttons
+    Widget cancelButton = FlatButton(
+      child: Text("Cancelar"),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+    Widget continueButton = FlatButton(
+      child: Text("Confirmar"),
+      onPressed: () {
+        if (btn) {
+          cambiarEstadoOp(estado, estadoBoton);
+          estado = 'Terminado';
+          estadoBoton = 'No Confirmado';
+          btn = false;
+        } else {
+          cambiarEstadoOp(estado, estadoBoton);
+          estado = 'Pendiente';
+          estadoBoton = 'Confirmar';
+          btn = true;
+        }
+        Navigator.pop(context);
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Confirmacion de Cambio de Estado",
+          style: TextStyle(fontFamily: 'fuente72', fontSize: 18)),
+      content: Text(textoBtn,
+          style: TextStyle(fontFamily: 'fuente72', fontSize: 14)),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 }
 
