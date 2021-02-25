@@ -9,6 +9,7 @@ import 'package:pmdigital_app/src/models/OrdenFullModel.dart';
 import 'package:pmdigital_app/src/pages/foto_page.dart';
 import 'package:pmdigital_app/src/pages/nota_page.dart';
 import 'package:pmdigital_app/src/provider/operacion_provider.dart';
+import 'package:pmdigital_app/src/provider/ordenes_provider.dart';
 
 import 'image_network.dart';
 
@@ -19,6 +20,7 @@ class OperacionPage extends StatefulWidget {
   String estadop;
   String nrop;
   String estadot;
+  String nrot;
 
   OperacionPage(
       {this.token,
@@ -26,7 +28,8 @@ class OperacionPage extends StatefulWidget {
       this.descriop,
       this.estadop,
       this.nrop,
-      this.estadot});
+      this.estadot,
+      this.nrot});
   @override
   _OperacionPageState createState() => _OperacionPageState();
 }
@@ -81,10 +84,13 @@ class _OperacionPageState extends State<OperacionPage>
   final OperacionMaterialProvider operacionMaterialProvider =
       new OperacionMaterialProvider();
 
+  final OrdenesProvider ordenesProvider = new OrdenesProvider();
+
   File foto;
 
   bool loading;
   bool open = false;
+  bool operacionesTerminadas = false;
 
   List<String> ids;
 
@@ -619,6 +625,7 @@ class _OperacionPageState extends State<OperacionPage>
 
   Widget itemMat(Materiale data) {
     return ListTile(
+      visualDensity: VisualDensity(horizontal: 3, vertical: -3),
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -656,6 +663,9 @@ class _OperacionPageState extends State<OperacionPage>
               TextSpan(text: '${data.reserva}'),
             ]),
           ),
+          SizedBox(
+            height: 10.0,
+          ),
         ],
       ),
     );
@@ -676,7 +686,7 @@ class _OperacionPageState extends State<OperacionPage>
           }
           return ListView.separated(
             separatorBuilder: (context, index) => Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.0),
+              padding: EdgeInsets.symmetric(horizontal: 15.0),
               child: Divider(
                 height: 0.1,
                 color: Colors.grey,
@@ -701,6 +711,7 @@ class _OperacionPageState extends State<OperacionPage>
 
   Widget itemNota(Nota data) {
     return ListTile(
+      visualDensity: VisualDensity(horizontal: 3, vertical: -3),
       title: RichText(
         text: TextSpan(style: _oTextStyle, children: [
           TextSpan(
@@ -1112,6 +1123,8 @@ class _OperacionPageState extends State<OperacionPage>
       }
     }
 
+    revisionCheck();
+
     cargarDetalles();
   }
 
@@ -1124,6 +1137,14 @@ class _OperacionPageState extends State<OperacionPage>
         backgroundColor: Colors.white,
         textColor: Colors.black,
         fontSize: 14.0);
+  }
+
+  revisionCheck() async {
+    operacionesTerminadas = await operacionMaterialProvider
+        .comprobarEstadoOperaciones(widget.nrot, widget.token);
+    if (operacionesTerminadas) {
+      showAlertDialogOperaciones(context);
+    }
   }
 
   showAlertDialog(BuildContext context) {
@@ -1141,7 +1162,7 @@ class _OperacionPageState extends State<OperacionPage>
     );
     Widget continueButton = FlatButton(
       child: Text("Confirmar"),
-      onPressed: () {
+      onPressed: () async {
         if (btn) {
           cambiarEstadoOp(estado, estadoBoton);
           estado = 'Terminado';
@@ -1162,6 +1183,44 @@ class _OperacionPageState extends State<OperacionPage>
       title: Text("Confirmacion de Cambio de Estado",
           style: TextStyle(fontFamily: 'fuente72', fontSize: 18)),
       content: Text(textoBtn,
+          style: TextStyle(fontFamily: 'fuente72', fontSize: 14)),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  showAlertDialogOperaciones(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = FlatButton(
+      child: Text("Cancelar"),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+    Widget continueButton = FlatButton(
+      child: Text("Confirmar"),
+      onPressed: () async {
+        ordenesProvider.cambiarEstado(widget.nrot, widget.token, "Finalizar");
+        Navigator.pop(context, true);
+        Navigator.pop(context, true);
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Confirmacion de Cambio de Estado",
+          style: TextStyle(fontFamily: 'fuente72', fontSize: 18)),
+      content: Text('Desea Finalizar la Orden de trabajo',
           style: TextStyle(fontFamily: 'fuente72', fontSize: 14)),
       actions: [
         cancelButton,

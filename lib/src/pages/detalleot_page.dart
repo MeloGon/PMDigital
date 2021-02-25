@@ -61,7 +61,7 @@ class _DetallesOtPageState extends State<DetallesOtPage>
 
   String estadoOperaciones = "";
   String estadoDetalles = '';
-  String nuevoEstadoDetalles = '';
+
   String estadoBoton = '';
   List<Operacion> listaOperacion = new List<Operacion>();
   List<Materiale> listaMats = new List<Materiale>();
@@ -243,18 +243,22 @@ class _DetallesOtPageState extends State<DetallesOtPage>
                   ),
                 ]))),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: SafeArea(
-              child: Container(
-                alignment: Alignment.bottomCenter,
-                height: 60,
-                width: double.infinity,
-                child: _options(context, estadoDetalles),
-              ),
-            ),
-          )
+          barraFlotante(),
         ]),
+      ),
+    );
+  }
+
+  Widget barraFlotante() {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: SafeArea(
+        child: Container(
+          alignment: Alignment.bottomCenter,
+          height: 60,
+          width: double.infinity,
+          child: _options(context, estadoDetalles),
+        ),
       ),
     );
   }
@@ -482,6 +486,7 @@ class _DetallesOtPageState extends State<DetallesOtPage>
             estadop: operacion.estadoOp,
             nrop: operacion.actividad,
             estadot: estadoDetalles,
+            nrot: widget.nrot,
           );
         })).then((value) {
           cargarOperaciones();
@@ -735,7 +740,11 @@ class _DetallesOtPageState extends State<DetallesOtPage>
                     ? FlatButton(
                         onPressed: () {
                           setState(() {
-                            showAlertDialog(context);
+                            if (estadoBoton == 'Finalizada') {
+                              toast('Accion no permitida. Orden Finalizada');
+                            } else {
+                              showAlertDialog(context);
+                            }
                             // estadoDetalles = 'En proceso';
                           });
                         },
@@ -769,7 +778,18 @@ class _DetallesOtPageState extends State<DetallesOtPage>
       } else {
         toast('Ha surgido un inconveniente.');
       }
+    } else {
+      value = "Finalizar";
+      var resp =
+          await ordenesProvider.cambiarEstado(widget.nrot, widget.token, value);
+      print(resp);
+      if (resp['code'] == 200) {
+        toast('La orden se ha finalizado');
+      } else {
+        toast('Ha surgido un inconveniente.');
+      }
     }
+
     cargarDetalles();
   }
 
@@ -796,11 +816,19 @@ class _DetallesOtPageState extends State<DetallesOtPage>
         Navigator.pop(context);
       },
     );
+
     Widget continueButton = FlatButton(
       child: Text("Confirmar"),
       onPressed: () async {
-        cambiarEstado('Iniciar Orden de Trabajo');
-        estadoBoton = 'Finalizar';
+        if (textoBtn ==
+            "Esta seguro de que desea finalizar la Orden de trabajo?") {
+          cambiarEstado('Finalizar');
+          estadoBoton = 'Finalizada';
+        } else {
+          cambiarEstado('Iniciar Orden de Trabajo');
+          estadoBoton = 'Finalizar';
+        }
+
         Navigator.pop(context);
       },
     );

@@ -12,10 +12,6 @@ class OperacionMaterialProvider {
   String _urlOperacion =
       'https://innovadis.net.pe/apiPMDigital/public/operacion/';
 
-  List<Servicio> _listaServicios = new List();
-  final List<Nota> _listaNotas = new List();
-  List<Materiale> _listaMateriales = new List();
-
   final List<Materiale> listaMatsGlobal = new List();
 
   Future<List<Operacion>> obtenerOperaciones(String nroOt, String token) async {
@@ -43,6 +39,41 @@ class OperacionMaterialProvider {
     // });
 
     return listaOperaciones;
+  }
+
+  Future<bool> comprobarEstadoOperaciones(String nroOt, String token) async {
+    int contadorTerminados = 0;
+    final resp = await http.get(_url + nroOt.toString(), headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": token,
+    });
+
+    final List<Operacion> listaOperaciones = new List();
+    final decode = json.decode(resp.body);
+
+    (decode['rpta']['operaciones'] as List)
+        .map((e) => Operacion.fromJson(e))
+        .toList()
+        .forEach((element) {
+      if (element.estadoOp == "Terminado") {
+        contadorTerminados++;
+      }
+      listaOperaciones.add(element);
+    });
+    print('terminadosss' + contadorTerminados.toString());
+    if (contadorTerminados == listaOperaciones.length) {
+      return true;
+    } else {
+      return false;
+    }
+
+    // (decode['rpta']['materiales'] as List)
+    //     .map((e) => Materiale.fromJson(e))
+    //     .toList()
+    //     .forEach((element) {
+    //   listaMatsGlobal.add(element);
+    // });
   }
 
   Future<List<Materiale>> obtenerMateriales(String nroOt, String token) async {
