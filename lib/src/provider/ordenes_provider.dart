@@ -15,6 +15,7 @@ class OrdenesProvider {
   int _grupoPage = 0;
   int _cantGrupo = 20;
   bool _cargando = false;
+  DateTime currentDate = DateTime.now();
 
   List<OrdenModel> _ordenes = new List();
 
@@ -90,6 +91,38 @@ class OrdenesProvider {
           .toList()
           .forEach((element) {
         ordenes.add(element);
+      });
+    }
+
+    return ordenes;
+  }
+
+  Future<List<OrdenModel>> cargarOrdenesHoy(String token) async {
+    final response = await http.post(_url, headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": token,
+    }, body: {
+      //{"grupo":1, "cantGrupo":20, "buscar":"", "fecha":"", "prioridad":"", "estatus":""}
+      'json': '{"grupo":' +
+          "1" +
+          ',"cantGrupo":' +
+          "200000" +
+          ',"buscar": "","fecha":"","prioridad":"","estatus":""' +
+          '}',
+    });
+
+    final List<OrdenModel> ordenes = new List();
+    if (response.body.isNotEmpty) {
+      var receivedJson = json.decode(response.body.toString());
+
+      (receivedJson['ots_secundario'] as List)
+          .map((p) => OrdenModel.fromJson(p))
+          .toList()
+          .forEach((element) {
+        if (element.fechaFinPlan == currentDate) {
+          ordenes.add(element);
+        }
       });
     }
 

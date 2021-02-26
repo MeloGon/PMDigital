@@ -561,7 +561,10 @@ class _CumplimientoPageState extends State<CumplimientoPage> {
               cantOp: cantOpyMat[0],
               cantMat: cantOpyMat[1],
             );
-          }));
+          })).then((value) {
+            /*  listaOrdenTodaFiltrada.clear();
+            cargarInOrdenes(); */
+          });
         },
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

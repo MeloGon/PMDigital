@@ -52,7 +52,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
 
   cargarInOrdenes() async {
     //ordenesProvider.getOrdenes(widget.token);
-    ordenesProvider.cargarOrdenes(widget.token).then((value) {
+    ordenesProvider.cargarOrdenesHoy(widget.token).then((value) {
       setState(() {
         listaOrdenToda = value;
         listaOrdenTodaFiltrada.addAll(listaOrdenToda);
@@ -159,21 +159,33 @@ class _OrdenesPageState extends State<OrdenesPage> {
 
   Widget _panelLista(BuildContext context) {
     return FutureBuilder(
-        future: ordenesProvider.cargarOrdenes(widget.token),
+        future: ordenesProvider.cargarOrdenesHoy(widget.token),
         builder:
             (BuildContext context, AsyncSnapshot<List<OrdenModel>> snapshot) {
           if (snapshot.hasData) {
-            return RefreshIndicator(
-              onRefresh: refrescarLista,
-              child: ListView.builder(
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                itemCount: listaOrdenTodaFiltrada.length,
-                itemBuilder: (context, i) {
-                  return itemOt(listaOrdenTodaFiltrada[i]);
-                },
-              ),
-            );
+            if (listaOrdenTodaFiltrada.length == 0) {
+              return Container(
+                height: 100,
+                width: double.infinity,
+                child: Center(
+                    child: Text(
+                  'No hay Ordenes disponibles el dia de hoy',
+                  style: TextStyle(fontFamily: 'fuente72', fontSize: 14),
+                )),
+              );
+            } else {
+              return RefreshIndicator(
+                onRefresh: refrescarLista,
+                child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  itemCount: listaOrdenTodaFiltrada.length,
+                  itemBuilder: (context, i) {
+                    return itemOt(listaOrdenTodaFiltrada[i]);
+                  },
+                ),
+              );
+            }
           } else {
             return Center(child: CircularProgressIndicator());
           }
@@ -289,7 +301,7 @@ class _OrdenesPageState extends State<OrdenesPage> {
 
   Future<Null> refrescarLista() async {
     setState(() {
-      ordenesProvider.cargarOrdenes(widget.token);
+      ordenesProvider.cargarOrdenesHoy(widget.token);
     });
   }
 
