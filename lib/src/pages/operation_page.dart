@@ -750,16 +750,22 @@ class _OperacionPageState extends State<OperacionPage>
   }
 
   void opcionesNota(String value) {
-    if (value == "añadir_nota") {
-      Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return NotaPage(
-          token: widget.token,
-          idop: widget.idop,
-        );
-      })).then((value) {
-        cargarNotas();
-        tabs();
-      });
+    if (estadoDetalles != "Completado" && estadoDetalles != "Pendiente") {
+      if (value == "añadir_nota") {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return NotaPage(
+            token: widget.token,
+            idop: widget.idop,
+          );
+        })).then((value) {
+          cargarNotas();
+          tabs();
+        });
+      }
+    } else {
+      if (value == "añadir_nota") {
+        toast('Acción no permitida');
+      }
     }
   }
 
@@ -905,11 +911,20 @@ class _OperacionPageState extends State<OperacionPage>
   }
 
   void opcionesFoto(String value) {
-    if (value == "tomar_foto") {
-      tomarFoto();
-    }
-    if (value == "escoger_foto") {
-      seleccionarFoto();
+    if (estadoDetalles != "Completado" && estadoDetalles != "Pendiente") {
+      if (value == "tomar_foto") {
+        tomarFoto();
+      }
+      if (value == "escoger_foto") {
+        seleccionarFoto();
+      }
+    } else {
+      if (value == "tomar_foto") {
+        toast('Acción no permitida');
+      }
+      if (value == "escoger_foto") {
+        toast('Acción no permitida');
+      }
     }
   }
 

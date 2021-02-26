@@ -564,6 +564,12 @@ class _CumplimientoPageState extends State<CumplimientoPage> {
           })).then((value) {
             /*  listaOrdenTodaFiltrada.clear();
             cargarInOrdenes(); */
+            /* if (statusFiltro != "" && fechaFiltro != "" && buscar != "") {
+              return;
+            } else {
+              filterSearchResultsTwo(statusFiltro, fechaFiltro, buscar);
+            } */
+            //VER ESTA ACTUALIZACION DE LA LISTA CUANDO SE REALIZA CAMBIO DE ESTADO
           });
         },
         title: Column(
